@@ -1,0 +1,42 @@
+<configuration scan="true" scanPeriod="10 seconds">
+	<appender name="FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">  
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">  
+           		<fileNamePattern>${iss.path}/log/iss.%d{yyyy-MM-dd}.log</fileNamePattern>  
+			<maxHistory>30</maxHistory>
+        	</rollingPolicy>  
+        	<encoder>  
+			<pattern>%d{HH:mm:ss.SSS} [%X{node}] [%thread] %-5level - %msg%n</pattern>	
+			<charset>UTF-8</charset>
+		</encoder> 
+    </appender>
+	
+	<appender name="FILE_THIRD" class="ch.qos.logback.core.rolling.RollingFileAppender">  
+		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">  
+           		<fileNamePattern>${iss.path}/log/third.%d{yyyy-MM-dd}.log</fileNamePattern>  
+			<maxHistory>30</maxHistory>
+        	</rollingPolicy>  
+        	<encoder>  
+			<pattern>%d{HH:mm:ss.SSS} [%X{node}] [%thread] %-5level - %msg%n</pattern>	
+			<charset>UTF-8</charset>
+		</encoder> 
+    </appender> 
+  
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder>
+			<pattern>%d{HH:mm:ss.SSS} [%X{node}] [%thread] %-5level - %msg%n</pattern>	
+		</encoder>
+	</appender>
+
+	<appender name="ASYNC" class="ch.qos.logback.classic.AsyncAppender">
+		<appender-ref ref="FILE" />
+		<discardingThreshold >0</discardingThreshold>  
+            	<queueSize>512</queueSize> 
+	</appender>
+	<logger name="com.ipharmacare.iss" level="ERROR">
+        	<appender-ref ref="FILE" />
+	</logger>
+	<root level="ERROR">
+        	<appender-ref ref="FILE_THIRD" />
+	</root>
+
+</configuration>

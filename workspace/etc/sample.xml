@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<node name="upload">
+	<plugins>
+		<acceptor port="9010"/>
+		<plugin name="cluster" port="9006">
+			<neighbors>
+				
+			</neighbors>
+		</plugin>
+
+		<plugin name="router" thread="1">
+			<routetables>
+			 	<routetable functionid=".+" plugin="dispatcher"/> 
+			</routetables>
+		</plugin>
+		
+		<plugin name="dispatcher" timeout="10000" corePoolSize="100" maxPoolSize="100" keepAliveTime="10000">
+			<bizcomponents>
+				<bizcomponent jar="ipharmacare-distributed-upload-1.0.0" class="com.ipharmacare.iss.core.component.ComponentMgr"/>
+			</bizcomponents>
+		</plugin>
+	
+	</plugins>
+</node>
