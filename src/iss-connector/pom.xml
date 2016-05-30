@@ -7,7 +7,7 @@
         <version>0.0.3-SNAPSHOT</version>
     </parent>
 
-    <artifactId>iss.connector</artifactId>
+    <artifactId>iss-connector</artifactId>
     <build>
         <plugins>
             <plugin>
@@ -53,7 +53,7 @@
         </dependency>
         <dependency>
             <groupId>com.ipharmacare</groupId>
-            <artifactId>iss.common</artifactId>
+            <artifactId>iss-common</artifactId>
         </dependency>
     </dependencies>
 </project>

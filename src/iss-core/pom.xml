@@ -8,7 +8,7 @@
 		<version>0.0.3-SNAPSHOT</version>
 	</parent>
 
-	<artifactId>iss.core</artifactId>
+	<artifactId>iss-core</artifactId>
 
 	<build>
 		<resources>
@@ -17,8 +17,6 @@
 				<targetPath>${project.build.directory}/classes</targetPath>
 			</resource>
 		</resources>
-		
-		<pluginManagement>
 			<plugins>
 				<!-- 解决 m2e plugin:maven-dependency-plugin 在eclipse中不支持该特性 -->
 				<plugin>
@@ -89,7 +87,6 @@
 				<extensions>true</extensions>
 			</plugin>
 		</plugins>
-		</pluginManagement>
 	</build>
 
 	<dependencies>
@@ -141,7 +138,7 @@
 		</dependency>
 		<dependency>
 			<groupId>com.ipharmacare</groupId>
-			<artifactId>iss.common</artifactId>
+			<artifactId>iss-common</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.aspectj</groupId>

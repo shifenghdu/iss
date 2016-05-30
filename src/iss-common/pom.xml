@@ -7,7 +7,7 @@
         <version>0.0.3-SNAPSHOT</version>
     </parent>
 
-    <artifactId>iss.common</artifactId>
+    <artifactId>iss-common</artifactId>
 
     <dependencies>
         <dependency>

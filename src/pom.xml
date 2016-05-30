@@ -8,7 +8,7 @@
     <packaging>pom</packaging>
 
     <name>${project.artifactId}</name>
-    <url>http://maven.apache.org</url>
+    <url>http://isstone.cn</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -30,17 +30,17 @@
             <!-- iss -->
             <dependency>
                 <groupId>com.ipharmacare</groupId>
-                <artifactId>iss.common</artifactId>
+                <artifactId>iss-common</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.ipharmacare</groupId>
-                <artifactId>iss.connector</artifactId>
+                <artifactId>iss-connector</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.ipharmacare</groupId>
-                <artifactId>iss.client</artifactId>
+                <artifactId>iss-client</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -50,7 +50,7 @@
             </dependency>
             <dependency>
                 <groupId>com.ipharmacare</groupId>
-                <artifactId>iss.core</artifactId>
+                <artifactId>iss-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
@@ -148,7 +148,6 @@
 			</dependency>
 
         </dependencies>
-
     </dependencyManagement>
 
     <build>
@@ -202,10 +201,24 @@
     </distributionManagement>
 
     <modules>
-        <module>iss.common</module>
-        <module>iss.connector</module>
-        <module>iss.client</module>
-        <module>iss.base.spring-integration</module>
-        <module>iss.core</module>
+        <module>iss-common</module>
+        <module>iss-connector</module>
+        <module>iss-client</module>
+        <module>iss-dispatcher</module>
+        <module>iss-core</module>
     </modules>
+    <developers>
+        <developer>
+            <id>andy</id>
+            <name>andy</name>
+            <email>shifeng@isstone.com</email>
+            <organization>isstone</organization>
+            <organizationUrl>http://isstone.cn</organizationUrl>
+            <roles>
+                <role>architect</role>
+                <role>developer</role>
+            </roles>
+            <timezone>+8</timezone>
+        </developer>
+    </developers>
 </project>

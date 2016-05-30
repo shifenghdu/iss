@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<node name="upload">
+<node name="test">
 	<plugins>
-		<acceptor port="9010"/>
+		<plugin name="acceptor" port="9010"/>
 		<plugin name="cluster" port="9006">
 			<neighbors>
 				
@@ -14,9 +14,9 @@
 			</routetables>
 		</plugin>
 		
-		<plugin name="dispatcher" timeout="10000" corePoolSize="100" maxPoolSize="100" keepAliveTime="10000">
+		<plugin name="dispatcher" timeout="10000" corePoolSize="5" maxPoolSize="5" keepAliveTime="10000">
 			<bizcomponents>
-				<bizcomponent jar="ipharmacare-distributed-upload-1.0.0" class="com.ipharmacare.iss.core.component.ComponentMgr"/>
+				<bizcomponent jar="test.service-1.0-SNAPSHOT" class="com.ipharmacare.iss.core.component.ComponentMgr"/>
 			</bizcomponents>
 		</plugin>
 	

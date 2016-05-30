@@ -9,12 +9,12 @@
         <version>0.0.3-SNAPSHOT</version>
     </parent>
 
-    <artifactId>iss.base.spring-integration</artifactId>
+    <artifactId>iss-dispatcher</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>com.ipharmacare</groupId>
-            <artifactId>iss.common</artifactId>
+            <artifactId>iss-common</artifactId>
         </dependency>
 
         <dependency>
