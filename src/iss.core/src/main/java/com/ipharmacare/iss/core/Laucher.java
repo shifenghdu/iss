@@ -75,6 +75,7 @@ public class Laucher {
         // 启动插件
         BaseConfig config = ctx.getBean("s_config", BaseConfig.class);
         nodeName = config.getDocument().getRootElement().attributeValue("name");
+        System.setProperty("iss.node",nodeName);
         MDC.put("node", nodeName);
         System.out.println(String.format("Start node [%s] pid [%s]", nodeName,ManagementFactory.getRuntimeMXBean().getName()));
         @SuppressWarnings("unchecked")

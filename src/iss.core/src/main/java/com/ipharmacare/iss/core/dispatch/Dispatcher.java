@@ -95,10 +95,10 @@ public class Dispatcher implements IDispacher, IBizRegister {
     public void dispatch(EsbMsg esbMsg) throws InterruptedException {
         IBizProcessor processor = bizProcessMap.get(String.format("%d#%d", esbMsg.getSystemid(), esbMsg.getFunctionid()));
         // 判断消息是否是请求消息,如请求放入线程池处理
-//        if(processor == null){
-//            logger.warn("未注册对应业务实现：system[{}] function[{}]",esbMsg.getSystemid(),esbMsg.getFunctionid());
-//            return;
-//        }
+        if(processor == null){
+            logger.warn("未注册对应业务实现：system[{}] function[{}]",esbMsg.getSystemid(),esbMsg.getFunctionid());
+            return;
+        }
         if (esbMsg.getMsgtype() == EsbMsg.MSGTYPE_REQ) {
             BizExecutor executor = new BizExecutor(this, router);
             executor.setTimeout(reqTimeout);

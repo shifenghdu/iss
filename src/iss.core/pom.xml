@@ -17,8 +17,7 @@
 				<targetPath>${project.build.directory}/classes</targetPath>
 			</resource>
 		</resources>
-		
-		<pluginManagement>
+
 			<plugins>
 				<!-- 解决 m2e plugin:maven-dependency-plugin 在eclipse中不支持该特性 -->
 				<plugin>
@@ -89,7 +88,6 @@
 				<extensions>true</extensions>
 			</plugin>
 		</plugins>
-		</pluginManagement>
 	</build>
 
 	<dependencies>
