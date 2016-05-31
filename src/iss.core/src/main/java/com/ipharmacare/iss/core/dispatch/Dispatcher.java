@@ -1,15 +1,15 @@
 package com.ipharmacare.iss.core.dispatch;
 
 import com.ipharmacare.iss.common.SystemConst;
-import com.ipharmacare.iss.core.Laucher;
-import com.ipharmacare.iss.core.config.BaseConfig;
-import com.ipharmacare.iss.core.router.IRouter;
+import com.ipharmacare.iss.common.dispatch.IBizMgr;
 import com.ipharmacare.iss.common.dispatch.IBizProcessor;
+import com.ipharmacare.iss.common.dispatch.IBizRegister;
 import com.ipharmacare.iss.common.esb.EsbMsg;
 import com.ipharmacare.iss.common.util.FileUtil;
 import com.ipharmacare.iss.common.util.JarFileUtil;
-import com.ipharmacare.iss.common.dispatch.IBizMgr;
-import com.ipharmacare.iss.common.dispatch.IBizRegister;
+import com.ipharmacare.iss.core.Laucher;
+import com.ipharmacare.iss.core.config.BaseConfig;
+import com.ipharmacare.iss.core.router.IRouter;
 import org.dom4j.Element;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -95,11 +95,10 @@ public class Dispatcher implements IDispacher, IBizRegister {
     public void dispatch(EsbMsg esbMsg) throws InterruptedException {
         IBizProcessor processor = bizProcessMap.get(String.format("%d#%d", esbMsg.getSystemid(), esbMsg.getFunctionid()));
         // 判断消息是否是请求消息,如请求放入线程池处理
-        if(processor == null){
-            logger.warn("未注册对应业务实现：system[{}] function[{}]",esbMsg.getSystemid(),esbMsg.getFunctionid());
-            return;
-        }
         if (esbMsg.getMsgtype() == EsbMsg.MSGTYPE_REQ) {
+            if(processor == null){
+                throw new RuntimeException(String.format("未注册对应业务实现：system[%d] function[%d]",esbMsg.getSystemid(),esbMsg.getFunctionid()));
+            }
             BizExecutor executor = new BizExecutor(this, router);
             executor.setTimeout(reqTimeout);
             executor.setProcessor(processor);
