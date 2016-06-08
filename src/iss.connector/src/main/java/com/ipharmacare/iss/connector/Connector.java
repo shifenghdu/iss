@@ -1,13 +1,8 @@
 package com.ipharmacare.iss.connector;
 
-import java.net.InetSocketAddress;
-import java.util.List;
-import java.util.Map;
-import java.util.Vector;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.Executors;
-import java.util.concurrent.atomic.AtomicLong;
-
+import com.ipharmacare.iss.common.dispatch.IBizContext;
+import com.ipharmacare.iss.common.esb.EsbMsg;
+import com.ipharmacare.iss.connector.msgpack.CommonCodeFactory;
 import org.apache.mina.core.filterchain.DefaultIoFilterChainBuilder;
 import org.apache.mina.core.future.ConnectFuture;
 import org.apache.mina.core.session.IoSession;
@@ -17,9 +12,13 @@ import org.apache.mina.transport.socket.nio.NioSocketConnector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ipharmacare.iss.common.dispatch.IBizContext;
-import com.ipharmacare.iss.common.esb.EsbMsg;
-import com.ipharmacare.iss.connector.msgpack.CommonCodeFactory;
+import java.net.InetSocketAddress;
+import java.util.List;
+import java.util.Map;
+import java.util.Vector;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.Executors;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class Connector {
 
@@ -53,6 +52,8 @@ public class Connector {
 
     private int timeout = 10000;
 
+    private final int SIZE_128K = 131072;
+
     public Connector(String address) {
         this("anonymous", address);
     }
@@ -62,8 +63,8 @@ public class Connector {
         this.address = address;
         connector = new NioSocketConnector();
         connector.getSessionConfig().setReuseAddress(true);
-        // connector.getSessionConfig().setReceiveBufferSize(4096);
-        // connector.getSessionConfig().setReadBufferSize(4096);
+        connector.getSessionConfig().setReceiveBufferSize(SIZE_128K);
+        connector.getSessionConfig().setReadBufferSize(SIZE_128K);
 //        connector.getSessionConfig().setTcpNoDelay(true);
         connector.getSessionConfig().setSoLinger(-1);
         DefaultIoFilterChainBuilder chain = connector.getFilterChain();
@@ -179,10 +180,10 @@ public class Connector {
                 throw new Exception(String.format("recv time out, session [%s]", session.toString()));
             }
             EsbMsg dest = map.get(orgin.getPackageid());
-            if(dest.hashCode() == orgin.hashCode()){
-                logger.error("系统被中断异常唤醒");
-                return null;
-            }
+//            if(dest.hashCode() == orgin.hashCode()){
+//                logger.error("系统被中断异常唤醒");
+//                return null;
+//            }
             return dest;
         }
         return null;
@@ -202,10 +203,10 @@ public class Connector {
             if ((end - begin) > timeout) {
                 throw new Exception(String.format("recv time out, session [%s]", session.toString()));
             }
-            if(orgin.getResponse().size()==0){
-                logger.error("系统被中断异常唤醒");
-                return null;
-            }
+//            if(orgin.getResponse().size()==0){
+//                logger.error("系统被中断异常唤醒");
+//                return null;
+//            }
             return orgin.getResponse();
         }
         return null;

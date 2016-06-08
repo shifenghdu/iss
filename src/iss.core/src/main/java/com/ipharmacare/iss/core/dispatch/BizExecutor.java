@@ -91,10 +91,10 @@ public class BizExecutor implements IBizContext, Runnable {
 //            return null;
         }
         EsbMsg dest = dispatcher.getMsg(Thread.currentThread().getId());
-        if(dest.hashCode() == reqMsg.hashCode()){
-            logger.error("系统被中断异常唤醒");
-            return null;
-        }
+//        if(dest.hashCode() == reqMsg.hashCode()){
+//            logger.error("系统被中断异常唤醒");
+//            return null;
+//        }
         return dest.getContent();
     }
 
@@ -154,10 +154,10 @@ public class BizExecutor implements IBizContext, Runnable {
             throw new RuntimeException("调用远程服务超时");
         }
         List<EsbMsg> responses = reqMsg.getResponse();
-        if(responses.size() == 0){
-            logger.error("系统被中断异常唤醒");
-            return null;
-        }
+//        if(responses.size() == 0){
+//            logger.error("系统被中断异常唤醒");
+//            return null;
+//        }
         ArrayList<byte[]> results = new ArrayList<byte[]>();
         for (EsbMsg esbMsg : responses) {
             results.add(esbMsg.getContent());

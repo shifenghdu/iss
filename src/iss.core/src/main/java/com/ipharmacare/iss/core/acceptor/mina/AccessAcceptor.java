@@ -1,8 +1,6 @@
 package com.ipharmacare.iss.core.acceptor.mina;
 
-import java.net.InetSocketAddress;
-import java.util.concurrent.Executors;
-
+import com.ipharmacare.iss.core.acceptor.MinaAcceptor;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.filter.executor.ExecutorFilter;
@@ -10,7 +8,7 @@ import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.ipharmacare.iss.core.acceptor.MinaAcceptor;
+import java.net.InetSocketAddress;
 
 public class AccessAcceptor {
 
@@ -22,13 +20,15 @@ public class AccessAcceptor {
 
     private MinaAcceptor owner = null;
 
+    private final int SIZE_128K = 131072;
+
     public AccessAcceptor(MinaAcceptor plugin) {
         this.owner = plugin;
         acceptor = new NioSocketAcceptor();
         acceptor.setReuseAddress(true);
         acceptor.getSessionConfig().setReuseAddress(true);
-        // acceptor.getSessionConfig().setReceiveBufferSize(4096);
-        // acceptor.getSessionConfig().setReadBufferSize(4096);
+        acceptor.getSessionConfig().setReceiveBufferSize(SIZE_128K);
+        acceptor.getSessionConfig().setReadBufferSize(SIZE_128K);
 //        acceptor.getSessionConfig().setTcpNoDelay(true);
         acceptor.getSessionConfig().setSoLinger(-1);
         acceptor.setBacklog(10240);

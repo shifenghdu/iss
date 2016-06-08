@@ -22,13 +22,15 @@ public class ClusterAcceptor {
 
     private MinaCluster owner = null;
 
+    private final int SIZE_128K = 131072;
+
     public ClusterAcceptor(MinaCluster plugin) {
         this.owner = plugin;
         acceptor = new NioSocketAcceptor();
         acceptor.setReuseAddress(true);
         acceptor.getSessionConfig().setReuseAddress(true);
-//		acceptor.getSessionConfig().setReceiveBufferSize(4096);
-//		acceptor.getSessionConfig().setReadBufferSize(4096);
+		acceptor.getSessionConfig().setReceiveBufferSize(SIZE_128K);
+		acceptor.getSessionConfig().setReadBufferSize(SIZE_128K);
 //        acceptor.getSessionConfig().setTcpNoDelay(true);
         acceptor.getSessionConfig().setSoLinger(-1);
         acceptor.setBacklog(10240);

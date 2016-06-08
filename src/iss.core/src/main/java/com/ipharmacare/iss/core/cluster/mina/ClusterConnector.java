@@ -1,8 +1,5 @@
 package com.ipharmacare.iss.core.cluster.mina;
 
-import java.net.InetSocketAddress;
-import java.util.concurrent.Executors;
-
 import com.ipharmacare.iss.core.cluster.MinaCluster;
 import org.apache.mina.core.filterchain.DefaultIoFilterChainBuilder;
 import org.apache.mina.core.future.ConnectFuture;
@@ -10,6 +7,8 @@ import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.filter.executor.ExecutorFilter;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
+
+import java.net.InetSocketAddress;
 
 
 public class ClusterConnector {
@@ -20,12 +19,14 @@ public class ClusterConnector {
 
     private MinaCluster owner = null;
 
+    private final int SIZE_128K = 131072;
+
     public ClusterConnector(MinaCluster plugin) {
         this.owner = plugin;
         connector = new NioSocketConnector();
         connector.getSessionConfig().setReuseAddress(true);
-//		connector.getSessionConfig().setReceiveBufferSize(4096);
-//		connector.getSessionConfig().setReadBufferSize(4096);
+		connector.getSessionConfig().setReceiveBufferSize(SIZE_128K);
+		connector.getSessionConfig().setReadBufferSize(SIZE_128K);
 //        connector.getSessionConfig().setTcpNoDelay(true);
         connector.getSessionConfig().setSoLinger(-1);
         DefaultIoFilterChainBuilder chain = connector.getFilterChain();

@@ -17,16 +17,30 @@ public class CommonDecodc extends CumulativeProtocolDecoder implements
 
 	private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-	private MessagePack msgpack;
+	private ThreadLocal<MessagePack> msgpack = new ThreadLocal<>();
+
+//    private MessagePack msgpack;
 
 	public CommonDecodc() {
-		msgpack = new MessagePack();
-		msgpack.register(EsbMsg.class);
+//		msgpack = new MessagePack();
+//		msgpack.register(EsbMsg.class);
 	}
+
+    private MessagePack getMsgpack(){
+        MessagePack m = msgpack.get();
+        if(m == null){
+            synchronized (msgpack) {
+                m = new MessagePack();
+                m.register(EsbMsg.class);
+                msgpack.set(m);
+            }
+        }
+        return m;
+    }
 
 	public void encode(IoSession session, Object message,
 			ProtocolEncoderOutput out) throws Exception {
-		byte[] msg = msgpack.write(message);
+		byte[] msg = getMsgpack().write(message);
 		IoBuffer buffer = IoBuffer.allocate(msg.length + 4);
 		byte[] head = HexUtil.intToBcd(msg.length, 4, 0);
 		if (((EsbMsg) message).getMsgtype() != EsbMsg.MSGTYPE_CLUSTER) {
@@ -57,7 +71,7 @@ public class CommonDecodc extends CumulativeProtocolDecoder implements
 			} else {
 				byte[] msg = new byte[size];
 				in.get(msg, 0, size);
-				EsbMsg pack = msgpack.read(msg, EsbMsg.class);
+				EsbMsg pack = getMsgpack().read(msg, EsbMsg.class);
 				if (pack.getMsgtype() != EsbMsg.MSGTYPE_CLUSTER) {
 					if(logger.isDebugEnabled()) {
 						logger.debug("recv session[{}] message[{}]",
