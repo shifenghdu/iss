@@ -46,6 +46,10 @@ public class EsbMsg {
     private int copyCount = 1;
     // multi call 复制分发标志
     private boolean isCopySend = false;
+    //压缩前长度
+    private Integer originLen;
+    //压缩算法
+    private String compressAlgorithm = "lz4";
 
     public int getMsgtype() {
         return msgtype;
@@ -227,5 +231,21 @@ public class EsbMsg {
 
     public void setTag(String tag) {
         this.tag = tag;
+    }
+
+    public Integer getOriginLen() {
+        return originLen;
+    }
+
+    public void setOriginLen(Integer originLen) {
+        this.originLen = originLen;
+    }
+
+    public String getCompressAlgorithm() {
+        return compressAlgorithm;
+    }
+
+    public void setCompressAlgorithm(String compressAlgorithm) {
+        this.compressAlgorithm = compressAlgorithm;
     }
 }

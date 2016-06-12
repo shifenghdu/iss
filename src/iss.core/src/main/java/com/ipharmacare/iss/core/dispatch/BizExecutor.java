@@ -1,10 +1,14 @@
 package com.ipharmacare.iss.core.dispatch;
 
-import com.ipharmacare.iss.core.router.IRouter;
-import com.ipharmacare.iss.common.dispatch.IBizProcessor;
-import com.ipharmacare.iss.common.esb.EsbMsg;
 import com.ipharmacare.iss.common.SystemConst;
 import com.ipharmacare.iss.common.dispatch.IBizContext;
+import com.ipharmacare.iss.common.dispatch.IBizProcessor;
+import com.ipharmacare.iss.common.esb.EsbMsg;
+import com.ipharmacare.iss.core.router.IRouter;
+import net.jpountz.lz4.LZ4Compressor;
+import net.jpountz.lz4.LZ4Factory;
+import net.jpountz.lz4.LZ4SafeDecompressor;
+import org.apache.mina.core.buffer.IoBuffer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.slf4j.MDC;
@@ -25,6 +29,8 @@ public class BizExecutor implements IBizContext, Runnable {
     private IBizProcessor processor;
 
     private int timeout;// 单位毫秒
+
+    private LZ4Factory factory = LZ4Factory.fastestInstance();
 
     public IBizProcessor getProcessor() {
         return processor;
@@ -50,6 +56,24 @@ public class BizExecutor implements IBizContext, Runnable {
         this.timeout = timeout;
     }
 
+    public byte[] compress(byte[] src){
+        LZ4Compressor compressor = factory.fastCompressor();
+        int maxCompressedLength = compressor.maxCompressedLength(src.length);
+        byte[] compressed = new byte[maxCompressedLength];
+        int compressedLength = compressor.compress(src, 0, src.length, compressed, 0, maxCompressedLength);
+        IoBuffer buffer = IoBuffer.allocate(compressedLength);
+        buffer.put(compressed,0,compressedLength);
+        buffer.flip();
+        return buffer.array();
+    }
+
+    public byte[] decompress(byte[] src,int originLen){
+        LZ4SafeDecompressor decompressor = factory.safeDecompressor();
+        byte[] restored = new byte[originLen];
+        decompressor.decompress(src, 0,src.length, restored, 0);
+        return restored;
+    }
+
     @Override
     public byte[] call(int systemId, int functionId, byte[] msg) {
         return this.call(systemId, functionId, "", msg);
@@ -58,7 +82,8 @@ public class BizExecutor implements IBizContext, Runnable {
     @Override
     public byte[] call(int systemId, int functionId, String tag, byte[] msg) {
         EsbMsg reqMsg = new EsbMsg();
-        reqMsg.setContent(msg);
+        reqMsg.setOriginLen(msg.length);
+        reqMsg.setContent(compress(msg));
         reqMsg.setSystemid(systemId);
         reqMsg.setFunctionid(functionId);
         reqMsg.setTag(tag);
@@ -95,7 +120,10 @@ public class BizExecutor implements IBizContext, Runnable {
 //            logger.error("系统被中断异常唤醒");
 //            return null;
 //        }
-        return dest.getContent();
+        byte[] compressed = dest.getContent();
+        int originLen = dest.getOriginLen();
+        return decompress(compressed,originLen);
+//        return dest.getContent();
     }
 
     @Override
@@ -106,7 +134,8 @@ public class BizExecutor implements IBizContext, Runnable {
     @Override
     public void post(int systemId, int functionId, String tag, byte[] msg) {
         EsbMsg reqMsg = new EsbMsg();
-        reqMsg.setContent(msg);
+        reqMsg.setOriginLen(msg.length);
+        reqMsg.setContent(compress(msg));
         reqMsg.setSystemid(systemId);
         reqMsg.setFunctionid(functionId);
         reqMsg.setTag(tag);
@@ -122,7 +151,8 @@ public class BizExecutor implements IBizContext, Runnable {
     @Override
     public List<byte[]> multiCall(int systemId, int functionId, String tag, byte[] msg) {
         EsbMsg reqMsg = new EsbMsg();
-        reqMsg.setContent(msg);
+        reqMsg.setOriginLen(msg.length);
+        reqMsg.setContent(compress(msg));
         reqMsg.setSystemid(systemId);
         reqMsg.setFunctionid(functionId);
         reqMsg.setTag(tag);
@@ -160,7 +190,9 @@ public class BizExecutor implements IBizContext, Runnable {
 //        }
         ArrayList<byte[]> results = new ArrayList<byte[]>();
         for (EsbMsg esbMsg : responses) {
-            results.add(esbMsg.getContent());
+            byte[] compressed = esbMsg.getContent();
+            int originLen = esbMsg.getOriginLen();
+            results.add(decompress(compressed,originLen));
         }
         return results;
     }
@@ -170,7 +202,9 @@ public class BizExecutor implements IBizContext, Runnable {
         MDC.put("node", dispatcher.getNodeName());
         EsbMsg msg = reqmsg;
         Thread.currentThread().setContextClassLoader(processor.getClass().getClassLoader());
-        byte[] resp = processor.doProcess(this, msg.getContent());
+        byte[] compressed = msg.getContent();
+        int originLen = msg.getOriginLen();
+        byte[] resp = processor.doProcess(this, decompress(msg.getContent(),originLen));
         msg.changeToResponse();
         if (resp == null) {
             if (logger.isWarnEnabled())
@@ -178,7 +212,8 @@ public class BizExecutor implements IBizContext, Runnable {
             msg.setRetcode(SystemConst.ESB_BIZ_EXECUTE_ERR);
             msg.setRetmsg(SystemConst.ESB_BIZ_EXECUTE_ERR_MSG);
         } else {
-            msg.setContent(resp);
+            msg.setOriginLen(resp.length);
+            msg.setContent(compress(resp));
         }
         router.transMsg(msg);
     }
