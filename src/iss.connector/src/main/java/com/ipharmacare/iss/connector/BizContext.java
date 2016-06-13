@@ -59,8 +59,13 @@ public class BizContext implements IBizContext {
             esbMsg.setSystemid(systemId);
             esbMsg.setFunctionid(functionId);
             esbMsg.setTag(tag);
-            esbMsg.setOriginLen(msg.length);
-            esbMsg.setContent(compress(msg));
+            if(msg != null) {
+                esbMsg.setOriginLen(msg.length);
+                esbMsg.setContent(compress(msg));
+            }else{
+                esbMsg.setOriginLen(0);
+                esbMsg.setContent(msg);
+            }
             esbMsg.setIsCopySend(false);
             connector.send(esbMsg);
             EsbMsg rspMsg = connector.recv(connector.getTimeout());
@@ -98,8 +103,13 @@ public class BizContext implements IBizContext {
             esbMsg.setSystemid(systemId);
             esbMsg.setFunctionid(functionId);
             esbMsg.setTag(tag);
-            esbMsg.setOriginLen(msg.length);
-            esbMsg.setContent(compress(msg));
+            if(msg != null) {
+                esbMsg.setOriginLen(msg.length);
+                esbMsg.setContent(compress(msg));
+            }else{
+                esbMsg.setOriginLen(0);
+                esbMsg.setContent(msg);
+            }
             esbMsg.setIsCopySend(true);
             esbMsg.setCopyCount(1);
             connector.send(esbMsg);

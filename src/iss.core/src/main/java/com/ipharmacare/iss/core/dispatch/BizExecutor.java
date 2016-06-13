@@ -82,8 +82,13 @@ public class BizExecutor implements IBizContext, Runnable {
     @Override
     public byte[] call(int systemId, int functionId, String tag, byte[] msg) {
         EsbMsg reqMsg = new EsbMsg();
-        reqMsg.setOriginLen(msg.length);
-        reqMsg.setContent(compress(msg));
+        if(msg != null) {
+            reqMsg.setOriginLen(msg.length);
+            reqMsg.setContent(compress(msg));
+        }else{
+            reqMsg.setOriginLen(0);
+            reqMsg.setContent(msg);
+        }
         reqMsg.setSystemid(systemId);
         reqMsg.setFunctionid(functionId);
         reqMsg.setTag(tag);
@@ -134,8 +139,13 @@ public class BizExecutor implements IBizContext, Runnable {
     @Override
     public void post(int systemId, int functionId, String tag, byte[] msg) {
         EsbMsg reqMsg = new EsbMsg();
-        reqMsg.setOriginLen(msg.length);
-        reqMsg.setContent(compress(msg));
+        if(msg != null) {
+            reqMsg.setOriginLen(msg.length);
+            reqMsg.setContent(compress(msg));
+        }else{
+            reqMsg.setOriginLen(0);
+            reqMsg.setContent(msg);
+        }
         reqMsg.setSystemid(systemId);
         reqMsg.setFunctionid(functionId);
         reqMsg.setTag(tag);
@@ -151,8 +161,13 @@ public class BizExecutor implements IBizContext, Runnable {
     @Override
     public List<byte[]> multiCall(int systemId, int functionId, String tag, byte[] msg) {
         EsbMsg reqMsg = new EsbMsg();
-        reqMsg.setOriginLen(msg.length);
-        reqMsg.setContent(compress(msg));
+        if(msg != null) {
+            reqMsg.setOriginLen(msg.length);
+            reqMsg.setContent(compress(msg));
+        }else{
+            reqMsg.setOriginLen(0);
+            reqMsg.setContent(msg);
+        }
         reqMsg.setSystemid(systemId);
         reqMsg.setFunctionid(functionId);
         reqMsg.setTag(tag);
@@ -204,7 +219,11 @@ public class BizExecutor implements IBizContext, Runnable {
         Thread.currentThread().setContextClassLoader(processor.getClass().getClassLoader());
         byte[] compressed = msg.getContent();
         int originLen = msg.getOriginLen();
-        byte[] resp = processor.doProcess(this, decompress(msg.getContent(),originLen));
+        byte[] data = null;
+        if(compressed != null) {
+            data = decompress(compressed, originLen);
+        }
+        byte[] resp = processor.doProcess(this, data);
         msg.changeToResponse();
         if (resp == null) {
             if (logger.isWarnEnabled())
