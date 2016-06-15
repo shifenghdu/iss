@@ -1,20 +1,6 @@
 #! /bin/bash
 # author andy
 VMOPTION="-server -Xms2048m -Xmx2048m -Xss256k -XX:+AggressiveOpts -XX:+UseParallelGC -XX:+UseBiasedLocking -XX:NewSize=64m -XX:PermSize=256M"
-#remote_debuger_port="$4"
-#  if [ ! -z "$remote_debuger_port" ]; then
-#      if [ $remote_debuger_port -gt 0 ]; then
-#        REMOTE_DEBUGER_OPTS="$REMOTE_DEBUGER_OPTS$remote_debuger_port"
-#        VMOPTION="$REMOTE_DEBUGER_OPTS $VMOPTION"
-#      fi
-#  fi
-#remote_console_port="$3"
-#  if [ ! -z "$remote_console_port" ]; then
-#      if [ $remote_console_port -gt 0 ]; then
-#        REMOTE_CONSOLE_OPTS="-Dcom.sun.management.jmxremote -Dcom.sun.management.jmxremote.port=$remote_console_port -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false"
-#        VMOPTION="$REMOTE_CONSOLE_OPTS $VMOPTION"
-#      fi
-#  fi
 
 function checkpid(){
 	if [ ! -n "$1" ] ; then
@@ -122,9 +108,9 @@ function useage(){
 }
 
 function list(){
-	printf "=================================================================================================\n"
-	printf "|	node	| 	status		|       pid	|	mem		|	jmx	|\n" 
-	printf "=================================================================================================\n"
+	printf "=========================================================================================================\n"
+	printf "|	node		| 	status		|       pid	|	mem		|	jmx	|\n" 
+	printf "=========================================================================================================\n"
 	for file in $ISS_HOME/bin/pid/*.pid
 	do
 		if [ -f $file ] ; then
@@ -135,14 +121,14 @@ function list(){
 			JMXPORT=`cat $ISS_HOME/bin/pid/$NODE.vm.config | grep -o 'com.sun.management.jmxremote.port=[0-9]*' | awk -F '=' '{print $2}'`
 			checkpid $PID
 			if [ $? -eq 1 ] ; then
-				printf "|	%s	| 	\e[32m online \e[0m	|	%d	|\t%s\t|\t%s\t|\n" $NODE $PID $MEM $JMXPORT
+				printf "|%20s\t| 	\e[32m online \e[0m	|	%d	|\t%s\t|\t%s\t|\n" $NODE $PID $MEM $JMXPORT
 			else
 				clearpid $NODE
-				printf "|	%s	|	\e[31m offline \e[0m	|	0	|	0K		|\n" $NODE 
+				printf "|%20s\t|	\e[31m offline \e[0m	|	0	|	0K		|\t0\t|\n" $NODE 
 			fi
 		fi
 	done
-	printf "=================================================================================================\n"
+	printf "=========================================================================================================\n"
 }
 
 function setvm(){
