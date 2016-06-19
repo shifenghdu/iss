@@ -46,18 +46,20 @@ public class DirectoryClassLoader extends URLClassLoader{
             for (String dir : dirs) {
                 File d = new File(dir);
                 String[] files = d.list();
-                for(String file : files){
-                    File t = new File(String.format("%s/%s",dir,file));
-                    if(t.isFile() && file.endsWith(JAR_SUFFIX)){
-                        try {
-                            //jar  URL   jar:file:xxxx/xxx.jar!/xxx.xxx.class
-                            URL url = new URL(String.format("jar:file:%s/%s!/",dir,file));
-                            urls.add(url);
-                        } catch (MalformedURLException e) {
-                            e.printStackTrace();
+                if(files != null) {
+                    for (String file : files) {
+                        File t = new File(String.format("%s/%s", dir, file));
+                        if (t.isFile() && file.endsWith(JAR_SUFFIX)) {
+                            try {
+                                //jar  URL   jar:file:xxxx/xxx.jar!/xxx.xxx.class
+                                URL url = new URL(String.format("jar:file:%s/%s!/", dir, file));
+                                urls.add(url);
+                            } catch (MalformedURLException e) {
+                                e.printStackTrace();
+                            }
+                        } else if (t.isDirectory()) {
+                            urls.addAll(getJarUrls(new String[]{String.format("%s/%s", dir, file)}));
                         }
-                    } else if(t.isDirectory()){
-                        urls.addAll(getJarUrls(new String[]{String.format("%s/%s",dir,file)}));
                     }
                 }
             }

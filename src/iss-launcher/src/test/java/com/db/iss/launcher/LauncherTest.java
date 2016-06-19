@@ -8,11 +8,13 @@ import org.junit.Test;
  */
 public class LauncherTest {
 
-    private final String classPath = LauncherTest.class.getClassLoader().getResource("ctx-app.xml").getPath() + "/../../../../workspace/lib";
+    private final String classPath = LauncherTest.class.getClassLoader().getResource(".").getPath() + "/../../../../workspace/lib";
 
     @Test
     public void launcher(){
         System.out.println(classPath);
+        System.setProperty("iss.path",LauncherTest.class.getClassLoader().getResource(".").getPath() + "/../../../../workspace");
+        System.setProperty("iss.config","test.xml");
         Main main = new Main().run(new String[]{classPath});
     }
 
