@@ -1,5 +1,6 @@
-package com.db.iss.trade.api;
+package com.db.iss.trade.api.plugin;
 
+import com.db.iss.trade.api.alarm.IAlarm;
 import com.db.iss.trade.api.enums.PluginStatus;
 import com.db.iss.trade.api.exception.PluginException;
 
@@ -59,4 +60,11 @@ public interface IPlugin {
      * @throws PluginException
      */
     void stop() throws PluginException;
+
+    /**
+     * 设置警报器
+     * @param alarm
+     */
+    void setAlarm(IAlarm alarm);
+
 }

@@ -1,4 +1,4 @@
-package com.db.iss.trade.api;
+package com.db.iss.trade.api.plugin;
 import java.util.List;
 import java.util.Vector;
 

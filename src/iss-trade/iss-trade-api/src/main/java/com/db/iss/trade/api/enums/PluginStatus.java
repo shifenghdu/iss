@@ -17,4 +17,11 @@ public enum PluginStatus {
         this.describe = describe;
     }
 
+    public Integer getValue() {
+        return value;
+    }
+
+    public String getDescribe() {
+        return describe;
+    }
 }

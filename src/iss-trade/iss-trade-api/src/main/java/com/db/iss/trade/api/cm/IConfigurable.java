@@ -1,4 +1,4 @@
-package com.db.iss.trade.api;
+package com.db.iss.trade.api.cm;
 
 import com.db.iss.trade.api.exception.SettingException;
 

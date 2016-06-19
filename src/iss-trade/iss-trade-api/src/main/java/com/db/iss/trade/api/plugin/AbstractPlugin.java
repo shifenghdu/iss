@@ -1,5 +1,8 @@
-package com.db.iss.trade.api;
+package com.db.iss.trade.api.plugin;
 
+import com.db.iss.trade.api.alarm.IAlarm;
+import com.db.iss.trade.api.cm.IConfigurable;
+import com.db.iss.trade.api.enums.AlarmLevel;
 import com.db.iss.trade.api.enums.PluginStatus;
 
 /**
@@ -7,7 +10,7 @@ import com.db.iss.trade.api.enums.PluginStatus;
  * @author andy.shif
  * 插件基类
  */
-public abstract class AbstractPlugin implements IPlugin,IConfigurable{
+public abstract class AbstractPlugin implements IPlugin,IConfigurable {
 
     //版本号
     private Integer version;
@@ -19,6 +22,8 @@ public abstract class AbstractPlugin implements IPlugin,IConfigurable{
     private String node;
     //插件命名空间
     protected final String namespace = String.format("%s.plugins.%s",node,name);
+    //警报器
+    private IAlarm alarm;
 
 
     AbstractPlugin(String name,Integer version){
@@ -54,5 +59,26 @@ public abstract class AbstractPlugin implements IPlugin,IConfigurable{
     @Override
     public String getNamespace() {
         return namespace;
+    }
+
+    @Override
+    public void setAlarm(IAlarm alarm) {
+        this.alarm = alarm;
+    }
+
+    /**
+     * 发送警报
+     * @param level
+     * @param message
+     * @param args
+     */
+    protected void sendAlarm(AlarmLevel level, String message, String ... args){
+        if(alarm != null){
+            StringBuffer sb = new StringBuffer("plugin ");
+            sb.append(getNamespace());
+            sb.append(" alarm message ");
+            sb.append(message);
+            alarm.sendAlarm(level,sb.toString(),args);
+        }
     }
 }

@@ -1,4 +1,4 @@
-package com.db.iss.trade.api.annotation;
+package com.db.iss.trade.api.plugin.annotation;
 
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;

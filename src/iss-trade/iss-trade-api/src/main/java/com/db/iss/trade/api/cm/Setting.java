@@ -1,6 +1,4 @@
-package com.db.iss.trade.api;
-
-import com.db.iss.common.exception.ISSException;
+package com.db.iss.trade.api.cm;
 
 import java.util.Properties;
 

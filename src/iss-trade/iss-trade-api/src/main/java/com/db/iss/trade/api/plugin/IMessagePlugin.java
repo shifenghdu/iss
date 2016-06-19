@@ -1,4 +1,6 @@
-package com.db.iss.trade.api;
+package com.db.iss.trade.api.plugin;
+
+import com.db.iss.trade.api.exception.PluginException;
 
 /**
  * Created by andy on 2016/6/19.
@@ -36,6 +38,18 @@ public interface IMessagePlugin extends IPlugin{
      * 消息传递接口
      * @param msg
      */
-    void transMessage(EsbMsg msg);
+    void transMessage(EsbMsg msg,IMessagePlugin sender) throws PluginException;
+
+    /**
+     * 设置前置插件
+     * @param plugin
+     */
+    void setPre(IMessagePlugin plugin);
+
+    /**
+     * 设置后置插件
+     * @param plugin
+     */
+    void setNext(IMessagePlugin plugin);
 
 }
