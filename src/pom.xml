@@ -2,9 +2,9 @@
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>com.ipharmacare</groupId>
+    <groupId>com.db</groupId>
     <artifactId>iss</artifactId>
-    <version>0.0.3-SNAPSHOT</version>
+    <version>1.0.0-SNAPSHOT</version>
     <packaging>pom</packaging>
 
     <name>${project.artifactId}</name>
@@ -29,27 +29,27 @@
 		
             <!-- iss -->
             <dependency>
-                <groupId>com.ipharmacare</groupId>
+                <groupId>com.db</groupId>
                 <artifactId>iss-common</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.ipharmacare</groupId>
+                <groupId>com.db</groupId>
                 <artifactId>iss-connector</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.ipharmacare</groupId>
+                <groupId>com.db</groupId>
                 <artifactId>iss-client</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.ipharmacare</groupId>
+                <groupId>com.db</groupId>
                 <artifactId>iss.base.spring-integration</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
-                <groupId>com.ipharmacare</groupId>
+                <groupId>com.db</groupId>
                 <artifactId>iss-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -206,6 +206,8 @@
         <module>iss-client</module>
         <module>iss-dispatcher</module>
         <module>iss-core</module>
+        <module>iss-launcher</module>
+        <module>iss-trade</module>
     </modules>
     <developers>
         <developer>
