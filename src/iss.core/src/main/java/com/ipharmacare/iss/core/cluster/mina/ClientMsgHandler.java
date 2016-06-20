@@ -52,19 +52,27 @@ public class ClientMsgHandler extends ServerMsgHandler {
     @Override
     public void sessionIdle(IoSession session, IdleStatus status)
             throws Exception {
-        session.write(heatbeatMsg);
+        if(session != null && !session.isClosing()) {
+            session.write(heatbeatMsg);
+        }
     }
 
     @Override
     public void sessionOpened(IoSession session) throws Exception {
-        session.getConfig().setIdleTime(IdleStatus.BOTH_IDLE, IDLE);
+        if(session != null) {
+            session.getConfig().setIdleTime(IdleStatus.BOTH_IDLE, IDLE);
+        }
     }
 
     @Override
     public void sessionClosed(IoSession session) throws Exception {
         MDC.put("node", owner.getNodeName());
-        logger.warn("sessionClosed reconnect [{}]", session);
-        owner.reconnect(session.getAttribute("nodename").toString(), session
-                .getAttribute("address").toString());
+        if(session != null) {
+            logger.warn("sessionClosed reconnect [{}]", session);
+            owner.reconnect(session.getAttribute("nodename").toString(), session
+                    .getAttribute("address").toString());
+        }else {
+            logger.warn("sessionClosed reconnect [{}]", session);
+        }
     }
 }

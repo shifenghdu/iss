@@ -1,11 +1,5 @@
 package com.ipharmacare.iss.core.cluster;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.ConcurrentHashMap;
-
-import javax.annotation.PostConstruct;
-
 import com.ipharmacare.iss.common.SystemConst;
 import com.ipharmacare.iss.common.esb.EsbMsg;
 import com.ipharmacare.iss.core.Laucher;
@@ -23,6 +17,11 @@ import org.slf4j.MDC;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
+
+import javax.annotation.PostConstruct;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.ConcurrentHashMap;
 
 
 @Service("p_cluster")
@@ -192,25 +191,31 @@ public class MinaCluster implements ICluster {
         group.addNode(session);
     }
 
-    public synchronized void reconnect(String name, String addr) {
-        IoSession session = null;
-        while (session == null) {
-            try {
-                Thread.sleep(10000);
-                session = connector.connect(addr);
+    public void reconnect(final String name, final String addr) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                IoSession session = null;
+                while (session == null) {
+                    try {
+                        Thread.sleep(10000);
+                        session = connector.connect(addr);
 
-            } catch (Exception e) {
-                logger.error("reconnect failed  [{}://{}]", name, addr);
+                    } catch (Throwable e) {
+                        logger.error(String.format("reconnect failed  [%s://%s]",name,addr),e);
+                    }
+                }
+                session.setAttribute("nodename", name);
+                session.setAttribute("address", addr);
+                addNeighbor(name, session);
+                EsbMsg msg = new EsbMsg();
+                msg.setMsgtype(2);
+                msg.setFunctionid(2);
+                msg.pushRouteInfo(nodeName);
+                session.write(msg);
             }
-        }
-        session.setAttribute("nodename", name);
-        session.setAttribute("address", addr);
-        addNeighbor(name, session);
-        EsbMsg msg = new EsbMsg();
-        msg.setMsgtype(2);
-        msg.setFunctionid(2);
-        msg.pushRouteInfo(nodeName);
-        session.write(msg);
+        }).start();
+
     }
 
     public boolean sendMsg(EsbMsg pack) {

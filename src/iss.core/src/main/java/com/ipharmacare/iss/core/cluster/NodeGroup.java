@@ -1,12 +1,10 @@
 package com.ipharmacare.iss.core.cluster;
 
+import org.apache.mina.core.session.IoSession;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
-import java.util.concurrent.CopyOnWriteArrayList;
-
-import org.apache.mina.core.session.IoSession;
 
 public class NodeGroup {
 

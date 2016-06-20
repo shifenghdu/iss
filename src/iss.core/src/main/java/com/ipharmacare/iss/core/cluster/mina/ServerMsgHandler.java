@@ -61,9 +61,9 @@ public class ServerMsgHandler extends IoHandlerAdapter {
 
     @Override
     public void sessionClosed(IoSession session) throws Exception {
-        if (session != null) {
-            session.close(true);
-        }
+//        if (session != null) {
+//            session.close(true);
+//        }
     }
 
     @SuppressWarnings("deprecation")

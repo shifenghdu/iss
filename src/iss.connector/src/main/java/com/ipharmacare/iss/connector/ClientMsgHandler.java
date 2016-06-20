@@ -1,13 +1,13 @@
 package com.ipharmacare.iss.connector;
 
-import java.util.concurrent.atomic.AtomicLong;
-
 import com.ipharmacare.iss.common.esb.EsbMsg;
 import org.apache.mina.core.service.IoHandlerAdapter;
 import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.atomic.AtomicLong;
 
 public class ClientMsgHandler extends IoHandlerAdapter {
 
@@ -54,7 +54,9 @@ public class ClientMsgHandler extends IoHandlerAdapter {
     @Override
     public void sessionIdle(IoSession session, IdleStatus status)
             throws Exception {
-        session.write(heatbeatMsg);
+        if(session != null && !session.isClosing()) {
+            session.write(heatbeatMsg);
+        }
     }
 
     @Override
@@ -66,6 +68,8 @@ public class ClientMsgHandler extends IoHandlerAdapter {
     public void sessionClosed(IoSession session) throws Exception {
         logger.warn("sessionClosed reconnect [{}]", session);
         Thread.sleep(1000);
-        owner.reconnect(session.getAttribute("address").toString());
+        if(session != null) {
+            owner.reconnect(session.getAttribute("address").toString());
+        }
     }
 }

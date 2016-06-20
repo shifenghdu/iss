@@ -107,22 +107,27 @@ public class Connector {
         super.finalize();
     }
 
-    public void reconnect(String addr) {
-        IoSession session = null;
-        while (session == null) {
-            try {
-                Thread.sleep(10000);
-                String[] strings = addr.split(":");
-                ConnectFuture cf = connector.connect(new InetSocketAddress(
-                        strings[0], Integer.valueOf(strings[1])));
-                cf.awaitUninterruptibly();
-                session = cf.getSession();
-            } catch (Exception e) {
-                logger.error(String.format("reconnect faild [%s]", addr), e);
+    public void reconnect(final String addr) {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                IoSession session = null;
+                while (session == null) {
+                    try {
+                        Thread.sleep(10000);
+                        String[] strings = addr.split(":");
+                        ConnectFuture cf = connector.connect(new InetSocketAddress(
+                                strings[0], Integer.valueOf(strings[1])));
+                        cf.awaitUninterruptibly();
+                        session = cf.getSession();
+                    } catch (Throwable e) {
+                        logger.error(String.format("reconnect faild [%s]", addr), e);
+                    }
+                }
+                session.setAttribute("address", addr);
+                sessions.add(session);
             }
-        }
-        session.setAttribute("address", addr);
-        sessions.add(session);
+        }).start();
     }
 
     private void next() {
