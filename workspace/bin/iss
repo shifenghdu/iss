@@ -26,8 +26,8 @@ function getpidmem()
 	if [ $1 -eq 0 ] ; then
 		return 0
 	fi
-	MEM=`pmap $1 | grep total | awk '{printf $2}'`
-	#MEM="0K"
+	#MEM=`pmap $1 | grep total | awk '{printf $2}'`
+	MEM="0K"
 	echo $MEM
 }
 
@@ -121,7 +121,7 @@ function list(){
 			JMXPORT=`cat $ISS_HOME/bin/pid/$NODE.vm.config | grep -o 'com.sun.management.jmxremote.port=[0-9]*' | awk -F '=' '{print $2}'`
 			checkpid $PID
 			if [ $? -eq 1 ] ; then
-				printf "|%20s\t| 	\e[32m online \e[0m	|	%d	|\t%s\t|\t%s\t|\n" $NODE $PID $MEM $JMXPORT
+				printf "|%20s\t| 	\e[32m online \e[0m	|	%d	|\t%s\t\t|\t%s\t|\n" $NODE $PID $MEM $JMXPORT
 			else
 				clearpid $NODE
 				printf "|%20s\t|	\e[31m offline \e[0m	|	0	|	0K		|\t0\t|\n" $NODE 
