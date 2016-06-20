@@ -21,25 +21,25 @@ import java.util.concurrent.atomic.AtomicLong;
 public abstract class AbstractMessagePlugin extends AbstractPlugin implements IMessagePlugin{
 
     //入口消息队列
-    private LinkedBlockingQueue<Runnable> inQueue;
+    protected LinkedBlockingQueue<Runnable> inQueue;
     //线程池
-    private ExecutorService threadPool;
+    protected ExecutorService threadPool;
     //线程数
-    private Integer threadCount;
+    protected Integer threadCount;
     //队列大小
-    private Integer queueSize;
+    protected Integer queueSize;
     //线程模型
-    private ThreadMode mode;
+    protected ThreadMode mode;
     //pre 组件
-    private IMessagePlugin prePlugin;
+    protected IMessagePlugin prePlugin;
     //next 组件
-    private IMessagePlugin nextPlugin;
+    protected IMessagePlugin nextPlugin;
     //处理消息总量
-    private AtomicLong total;
+    protected AtomicLong total;
     //失败处理数据量
-    private AtomicLong error;
+    protected AtomicLong error;
 
-    private Logger logger = LoggerFactory.getLogger(this.getClass());
+
 
     protected enum ThreadMode {
         ISOLATE,SHARED;
@@ -127,7 +127,7 @@ public abstract class AbstractMessagePlugin extends AbstractPlugin implements IM
      * @param message
      * @param sender
      */
-    private void handleMessage(EsbMsg message,IMessagePlugin sender) throws PluginException{
+    protected void handleMessage(EsbMsg message,IMessagePlugin sender) throws PluginException{
         total.incrementAndGet();//总数统计
         try {
             if (sender.equals(prePlugin)) { // pre -> next
@@ -187,9 +187,9 @@ public abstract class AbstractMessagePlugin extends AbstractPlugin implements IM
     /**
      * 子类实现
      */
-    protected abstract void onStart();
-    protected abstract void onStop();
-    protected abstract void onStetting(Setting setting);
-    protected abstract EsbMsg onForward(EsbMsg message);
-    protected abstract EsbMsg onBackward(EsbMsg message);
+    protected abstract void onStart() throws PluginException;
+    protected abstract void onStop() throws PluginException;
+    protected abstract void onStetting(Setting setting) throws SettingException;
+    protected abstract EsbMsg onForward(EsbMsg message) throws PluginException;
+    protected abstract EsbMsg onBackward(EsbMsg message) throws PluginException;
 }

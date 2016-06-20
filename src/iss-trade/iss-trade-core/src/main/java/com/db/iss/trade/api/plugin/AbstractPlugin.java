@@ -4,6 +4,8 @@ import com.db.iss.trade.api.alarm.IAlarm;
 import com.db.iss.trade.api.cm.IConfigurable;
 import com.db.iss.trade.api.enums.AlarmLevel;
 import com.db.iss.trade.api.enums.PluginStatus;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Created by andy on 2016/6/19.
@@ -13,17 +15,19 @@ import com.db.iss.trade.api.enums.PluginStatus;
 public abstract class AbstractPlugin implements IPlugin,IConfigurable {
 
     //版本号
-    private Integer version;
+    protected Integer version;
     //插件状态
-    private PluginStatus status;
+    protected PluginStatus status;
     //插件名称
-    private String name;
+    protected String name;
     //节点名称
-    private String node;
+    protected String node;
     //插件命名空间
     protected final String namespace = String.format("%s.plugins.%s",node,name);
     //警报器
     private IAlarm alarm;
+
+    protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
 
     AbstractPlugin(String name,Integer version){
