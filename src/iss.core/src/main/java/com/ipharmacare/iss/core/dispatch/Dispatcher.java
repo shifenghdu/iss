@@ -113,8 +113,6 @@ public class Dispatcher implements IDispacher, IBizRegister {
                     if (oldMsg != null) {
                         synchronized (oldMsg) {
                             msgMap.put(threadId, esbMsg);
-                            if (logger.isDebugEnabled())
-                                logger.debug("call notify object [{}]", oldMsg.hashCode());
                             oldMsg.notify();
                         }
                     }
@@ -123,8 +121,6 @@ public class Dispatcher implements IDispacher, IBizRegister {
                     if (oldMsg != null) {
                         synchronized (oldMsg) {
                             oldMsg.getResponse().add(esbMsg);
-                            if (logger.isDebugEnabled())
-                                logger.debug("multi call notify object [{}] [{}]", oldMsg.hashCode(), esbMsg.getCopyCount());
                             if (oldMsg.getResponse().size() == esbMsg.getCopyCount()) {
                                 oldMsg.notify();
                             }

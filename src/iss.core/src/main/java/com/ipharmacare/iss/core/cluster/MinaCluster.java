@@ -47,6 +47,8 @@ public class MinaCluster implements ICluster {
 
     private String pluginName = "cluster";
 
+    private final int RETRY_TIMES = 3;
+
     @Autowired
     private CommonCodeFactory codecFactory;
 
@@ -85,7 +87,10 @@ public class MinaCluster implements ICluster {
                 } else {
                     pack.addTimetick(getNodeName(), getPluginName(),
                             System.nanoTime());
-                    session.write(pack);
+                    if(!writeSession(session,pack,RETRY_TIMES)){
+                        logger.error("请求消息写入失败: System: [{}], Function: [{}]", pack.getSystemid(), pack.getFunctionid());
+                        return false;
+                    }
                 }
             } else {// resp
                 if (pack.getNextSession() == 0) {
@@ -98,12 +103,28 @@ public class MinaCluster implements ICluster {
                     } else {
                         pack.addTimetick(getNodeName(), getPluginName(),
                                 System.nanoTime());
-                        session.write(pack);
+                        if(!writeSession(session,pack,RETRY_TIMES)){
+                            logger.error("返回消息写入失败: System: [{}], Function: [{}]", pack.getSystemid(), pack.getFunctionid());
+                            return false;
+                        }
                     }
                 }
             }
         }
         return true;
+    }
+
+    public boolean writeSession(IoSession session,EsbMsg msg,int times){
+        int t = 0;
+        if(session == null || session.isClosing() || msg == null) return false;
+        while (t < times) {
+            if(session.write(msg).awaitUninterruptibly().isWritten()){
+                return true;
+            }
+            t ++;
+        }
+        session.close(true);
+        return false;
     }
 
     @PostConstruct
@@ -146,14 +167,17 @@ public class MinaCluster implements ICluster {
                                 session.setAttribute("address",
                                         e.attributeValue("address"));
                                 addNeighbor(e.attributeValue("node"), session);
-                                neighbors.remove(e);
                                 EsbMsg msg = new EsbMsg();
                                 msg.setMsgtype(2);
                                 msg.setFunctionid(2);
                                 msg.pushRouteInfo(nodeName);
-                                session.write(msg);
+                                if(writeSession(session,msg,RETRY_TIMES)){
+                                    neighbors.remove(e);
+                                }else{
+                                    logger.error("send hello failed  [{}://{}]", e.attributeValue("node"), e.attributeValue("address"));
+                                }
                             }
-                        } catch (Exception ex) {
+                        } catch (Throwable ex) {
                             logger.error("connect failed  [{}://{}]", e.attributeValue("node"), e.attributeValue("address"));
                         }
                     }
@@ -212,7 +236,9 @@ public class MinaCluster implements ICluster {
                 msg.setMsgtype(2);
                 msg.setFunctionid(2);
                 msg.pushRouteInfo(nodeName);
-                session.write(msg);
+                if(!writeSession(session,msg,RETRY_TIMES)){
+                    session.close(true);
+                }
             }
         }).start();
 

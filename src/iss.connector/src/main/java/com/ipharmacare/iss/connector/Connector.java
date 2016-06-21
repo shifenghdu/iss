@@ -36,7 +36,7 @@ public class Connector {
 
     private Map<Long, EsbMsg> map = new ConcurrentHashMap<Long, EsbMsg>();
 
-    public static AtomicLong id = new AtomicLong(0);
+    public AtomicLong id = new AtomicLong(0);
 
     public static ThreadLocal<EsbMsg> local = new ThreadLocal<EsbMsg>();
 
@@ -54,6 +54,10 @@ public class Connector {
 
     private final int SIZE_128K = 131072;
 
+    private final int RETRY_TIMES = 3;
+
+    public AtomicLong receiveCount = new AtomicLong(0);
+
     public Connector(String address) {
         this("anonymous", address);
     }
@@ -69,7 +73,7 @@ public class Connector {
         connector.getSessionConfig().setSoLinger(-1);
         DefaultIoFilterChainBuilder chain = connector.getFilterChain();
         chain.addLast("codec", new ProtocolCodecFilter(new CommonCodeFactory()));
-        chain.addLast("threadpool", new ExecutorFilter(Executors.newCachedThreadPool()));
+        chain.addLast("threadpool", new ExecutorFilter(Executors.newFixedThreadPool(Runtime.getRuntime().availableProcessors() + 1)));
         connector.setHandler(new ClientMsgHandler(this));
         connector.setConnectTimeoutMillis(CONNECT_TIME_OUT);
         this.bizContext = new BizContext(this);
@@ -159,14 +163,17 @@ public class Connector {
         return session;
     }
 
-    public void send(EsbMsg pack) {
+    public void send(EsbMsg pack) throws Exception {
         pack.setPackageid(Thread.currentThread().getId());
         pack.addTimetick(clientname, "connector", System.nanoTime());
+        map.put(pack.getPackageid(),pack);
         local.set(pack);
         if (callBack != null) {
             IoSession session = getNext();
-            if (session != null)
-                session.write(pack);
+            if (writeSession(session,pack,RETRY_TIMES)){
+                throw new RuntimeException(String.format("send msg system [%d] function [%d] failed session [%s]",
+                        pack.getSystemid(),pack.getFunctionid(), session.toString()));
+            }
         }
     }
 
@@ -174,44 +181,72 @@ public class Connector {
         IoSession session = getNext();
         if (session != null) {
             EsbMsg orgin = local.get();
-            long begin = System.currentTimeMillis();
-            synchronized (orgin) {
-                map.put(Thread.currentThread().getId(), orgin);
-                session.write(orgin);
-                orgin.wait(timeout);
+            int total = 0;
+            synchronized (orgin) { //同步发送接收线程
+                if (writeSession(session, orgin, RETRY_TIMES)) { //发送成功
+                    while (orgin.getResponse().size() == 0) {
+                        long begin = System.currentTimeMillis();
+                        try {
+                            orgin.wait(timeout);
+                        } catch (InterruptedException e) {
+                            if (logger.isWarnEnabled())
+                                logger.warn("中断异常");
+                        }
+                        long end = System.currentTimeMillis();
+                        total += (end - begin);
+                        if (total > timeout) {
+                            throw new Exception(String.format("recv time out, session [%s]", session.toString()));
+                        }
+                    }
+                } else {
+                    throw new Exception(String.format("send msg system [%d] function [%d] failed session [%s]",
+                            orgin.getSystemid(), orgin.getFunctionid(), session.toString()));
+                }
             }
-            long end = System.currentTimeMillis();
-            if ((end - begin) > timeout) {
-                throw new Exception(String.format("recv time out, session [%s]", session.toString()));
-            }
-            EsbMsg dest = map.get(orgin.getPackageid());
-//            if(dest.hashCode() == orgin.hashCode()){
-//                logger.error("系统被中断异常唤醒");
-//                return null;
-//            }
-            return dest;
+            return orgin.getResponse().get(0);
         }
         return null;
+    }
+
+    private boolean writeSession(IoSession session,EsbMsg msg,int times){
+        int t = 0;
+        if(session == null || session.isClosing() || msg == null) return false;
+        while (t < times) {
+            if(session.write(msg).awaitUninterruptibly().isWritten()){ // 存在返回延迟 需要与接收线程同步
+                return true;
+            }
+            t ++;
+        }
+        session.close(true);
+        return false;
     }
     
     public List<EsbMsg> recvMulti(long timeout) throws Exception {
         IoSession session = getNext();
         if (session != null) {
             EsbMsg orgin = local.get();
-            long begin = System.currentTimeMillis();
-            synchronized (orgin) {
-                map.put(Thread.currentThread().getId(), orgin);
-                session.write(orgin);
-                orgin.wait(timeout);
+            int total = 0;
+            synchronized (orgin) { //同步发送接收线程
+                if (writeSession(session, orgin, RETRY_TIMES)) { //发送成功
+                    while (orgin.getResponse().size() == 0) {
+                        long begin = System.currentTimeMillis();
+                        try {
+                            orgin.wait(timeout);
+                        } catch (InterruptedException e) {
+                            if (logger.isWarnEnabled())
+                                logger.warn("中断异常");
+                        }
+                        long end = System.currentTimeMillis();
+                        total += (end - begin);
+                        if (total >= timeout) {
+                            throw new Exception(String.format("recv time out, session [%s]", session.toString()));
+                        }
+                    }
+                } else {
+                    throw new Exception(String.format("send msg system [%d] function [%d] failed session [%s]",
+                            orgin.getSystemid(), orgin.getFunctionid(), session.toString()));
+                }
             }
-            long end = System.currentTimeMillis();
-            if ((end - begin) > timeout) {
-                throw new Exception(String.format("recv time out, session [%s]", session.toString()));
-            }
-//            if(orgin.getResponse().size()==0){
-//                logger.error("系统被中断异常唤醒");
-//                return null;
-//            }
             return orgin.getResponse();
         }
         return null;
@@ -229,23 +264,31 @@ public class Connector {
 	        	if(pack.getCopyCount() <= 1 && !pack.isCopySend()){
 		            EsbMsg orgin = map.get(pack.getPackageid());
 		            if(orgin != null){
-			            synchronized (orgin) {
-			                map.put(pack.getPackageid(), pack);
-			                orgin.notify();
+                        synchronized (orgin) { //同步发送接收线程
+                            orgin.getResponse().add(pack);
+			                orgin.notifyAll();
+                            receiveCount.incrementAndGet();
 			            }
-		            }
+		            }else {
+                        logger.warn("返回包 [{}] 未找到匹配线程",pack.toString());
+                    }
 	        	}else{
 		            EsbMsg orgin = map.get(pack.getPackageid());
 		            if(orgin != null){
-			            synchronized (orgin) {
-			            	orgin.getResponse().add(pack);
+			            synchronized (orgin) { //同步发送接收线程
+                            orgin.getResponse().add(pack);
 			            	if(pack.getCopyCount() == orgin.getResponse().size()){
-			            		orgin.notify();
+			            		orgin.notifyAll();
+                                receiveCount.incrementAndGet();
 			            	}
 			            }
-		            }
+		            }else {
+                        logger.warn("返回包 [{}] 未找到匹配线程",pack.toString());
+                    }
 	        	}
-        	}
+        	}else {
+                logger.warn("返回异常包 [{}] ",pack.toString());
+            }
         }
     }
 

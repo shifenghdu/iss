@@ -44,7 +44,7 @@ public class ClientMsgHandler extends IoHandlerAdapter {
         if (pack.getMsgtype() == EsbMsg.MSGTYPE_CLUSTER) {
 
         } else {
-            long current = cout.incrementAndGet();
+            cout.incrementAndGet();
             pack.addTimetick(owner.getClientname(), "connector",
                     System.nanoTime());
             owner.onReceived(pack);

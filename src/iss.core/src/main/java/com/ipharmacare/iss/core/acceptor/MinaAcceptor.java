@@ -1,8 +1,6 @@
 package com.ipharmacare.iss.core.acceptor;
 
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.atomic.AtomicLong;
-
+import com.ipharmacare.iss.common.esb.EsbMsg;
 import com.ipharmacare.iss.core.Laucher;
 import com.ipharmacare.iss.core.acceptor.mina.AccessAcceptor;
 import com.ipharmacare.iss.core.config.BaseConfig;
@@ -15,7 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.stereotype.Service;
 
-import com.ipharmacare.iss.common.esb.EsbMsg;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Service("p_acceptor")
 public class MinaAcceptor implements IAcceptor {
@@ -38,6 +37,8 @@ public class MinaAcceptor implements IAcceptor {
 
 	private static AtomicLong count = new AtomicLong(0);
 
+    private final int RETRY_TIMES = 3;
+
 	@Autowired
 	private CommonCodeFactory codecFactory;
 
@@ -55,14 +56,29 @@ public class MinaAcceptor implements IAcceptor {
 		synchronized (sessionMap) {
 			if (sessionMap.containsKey(pack.getSendarg())) {
 				IoSession session = sessionMap.get(pack.getSendarg());
-				session.getConfig().setThroughputCalculationInterval(0);
-				session.write(pack);
+                if(!writeSession(session,pack,RETRY_TIMES)){
+                    logger.warn("发送消息至客户端失败 msg[{}]", pack);
+                    return false;
+                }
 			} else {
 				logger.warn("客户端链接不存在消息丢弃 msg[{}]", pack);
 			}
 		}
 		return true;
 	}
+
+    private boolean writeSession(IoSession session,EsbMsg msg,int times){
+        int t = 0;
+        if(session == null || session.isClosing() || msg == null) return false;
+        while (t < times) {
+            if(session.write(msg).awaitUninterruptibly().isWritten()){
+                return true;
+            }
+            t ++;
+        }
+        session.close(true);
+        return false;
+    }
 
 	@Override
 	public void onStart(ApplicationContext context) {

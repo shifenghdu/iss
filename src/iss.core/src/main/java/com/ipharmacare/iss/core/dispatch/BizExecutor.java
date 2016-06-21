@@ -82,13 +82,7 @@ public class BizExecutor implements IBizContext, Runnable {
     @Override
     public byte[] call(int systemId, int functionId, String tag, byte[] msg) {
         EsbMsg reqMsg = new EsbMsg();
-        if(msg != null) {
-            reqMsg.setOriginLen(msg.length);
-            reqMsg.setContent(compress(msg));
-        }else{
-            reqMsg.setOriginLen(0);
-            reqMsg.setContent(msg);
-        }
+        setContent(reqMsg,msg);
         reqMsg.setSystemid(systemId);
         reqMsg.setFunctionid(functionId);
         reqMsg.setTag(tag);
@@ -96,39 +90,45 @@ public class BizExecutor implements IBizContext, Runnable {
         reqMsg.setSendname(dispatcher.getPluginName());
         reqMsg.setSendarg(String.valueOf(Thread.currentThread().getId()));
         reqMsg.setIsCopySend(false);
-        // concurrentHashMap.put(String.valueOf(Thread.currentThread().getId()),reqMsg);
         dispatcher.pollMsg(Thread.currentThread().getId(), reqMsg);
+        EsbMsg dest = reqMsg;
+        router.transMsg(reqMsg);
 
-        long startTime = System.currentTimeMillis();
-        int timeoutReal = 0;
-        try {
-            synchronized (reqMsg) {
-                router.transMsg(reqMsg);
-                timeoutReal = timeout != 0 ? timeout : 500;
-                reqMsg.wait(timeoutReal);
+        long total = 0;
+        while (dest.equals(reqMsg)) {
+            long startTime = System.currentTimeMillis();
+            int timeoutReal = timeout != 0 ? timeout : 500;
+            try {
+                synchronized (reqMsg) {
+                    reqMsg.wait(timeoutReal);
+                }
+                long endTime = System.currentTimeMillis();
+                long processTime = endTime - startTime;
+                total += processTime;
+                if (total >= timeoutReal) {
+                    throw new RuntimeException("调用远程服务超时");
+                }
+            }catch (InterruptedException e){
+                if(logger.isWarnEnabled()){
+                    logger.warn("中断唤醒异常");
+                }
+                continue;
             }
-            if (logger.isDebugEnabled()) {
-                logger.debug("call wait end [{}]", reqMsg.hashCode());
-            }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
+            dest = dispatcher.getMsg(Thread.currentThread().getId());
         }
-        long endTime = System.currentTimeMillis();
-        long processTime = endTime - startTime;
-        if (processTime >= timeoutReal) {
-            // dispatcher.getMsg(Thread.currentThread().getId()).setRetcode(-1);
-            throw new RuntimeException("调用远程服务超时");
-//            return null;
-        }
-        EsbMsg dest = dispatcher.getMsg(Thread.currentThread().getId());
-//        if(dest.hashCode() == reqMsg.hashCode()){
-//            logger.error("系统被中断异常唤醒");
-//            return null;
-//        }
         byte[] compressed = dest.getContent();
         int originLen = dest.getOriginLen();
-        return decompress(compressed,originLen);
-//        return dest.getContent();
+        return decompress(compressed, originLen);
+    }
+
+    private void setContent(EsbMsg reqMsg,byte[] msg){
+        if(msg != null) {
+            reqMsg.setOriginLen(msg.length);
+            reqMsg.setContent(compress(msg));
+        }else{
+            reqMsg.setOriginLen(0);
+            reqMsg.setContent(msg);
+        }
     }
 
     @Override
@@ -139,13 +139,7 @@ public class BizExecutor implements IBizContext, Runnable {
     @Override
     public void post(int systemId, int functionId, String tag, byte[] msg) {
         EsbMsg reqMsg = new EsbMsg();
-        if(msg != null) {
-            reqMsg.setOriginLen(msg.length);
-            reqMsg.setContent(compress(msg));
-        }else{
-            reqMsg.setOriginLen(0);
-            reqMsg.setContent(msg);
-        }
+        setContent(reqMsg,msg);
         reqMsg.setSystemid(systemId);
         reqMsg.setFunctionid(functionId);
         reqMsg.setTag(tag);
@@ -161,13 +155,7 @@ public class BizExecutor implements IBizContext, Runnable {
     @Override
     public List<byte[]> multiCall(int systemId, int functionId, String tag, byte[] msg) {
         EsbMsg reqMsg = new EsbMsg();
-        if(msg != null) {
-            reqMsg.setOriginLen(msg.length);
-            reqMsg.setContent(compress(msg));
-        }else{
-            reqMsg.setOriginLen(0);
-            reqMsg.setContent(msg);
-        }
+        setContent(reqMsg,msg);
         reqMsg.setSystemid(systemId);
         reqMsg.setFunctionid(functionId);
         reqMsg.setTag(tag);
@@ -177,32 +165,31 @@ public class BizExecutor implements IBizContext, Runnable {
         reqMsg.setIsCopySend(true);
         reqMsg.setCopyCount(1);
         dispatcher.pollMsg(Thread.currentThread().getId(), reqMsg);
-        long startTime = System.currentTimeMillis();
-        int timeoutReal = 0;
-        try {
-            synchronized (reqMsg) {
-                router.transMsg(reqMsg);
-                timeoutReal = timeout != 0 ? timeout : 500;
-                reqMsg.wait(timeoutReal);
+        router.transMsg(reqMsg);
+
+        int total = 0;
+
+        while(reqMsg.getResponse().size() == 0) {
+            long startTime = System.currentTimeMillis();
+            int timeoutReal = timeout != 0 ? timeout : 500;
+            try {
+                synchronized (reqMsg) {
+                    reqMsg.wait(timeoutReal);
+                }
+            } catch (InterruptedException e) {
+                if(logger.isWarnEnabled()){
+                    logger.warn("中断唤醒异常");
+                }
+                continue;
             }
-            if (logger.isDebugEnabled()) {
-                logger.debug("call wait end [{}]", reqMsg.hashCode());
+            long endTime = System.currentTimeMillis();
+            long processTime = endTime - startTime;
+            total += processTime;
+            if (total >= timeoutReal) {
+                throw new RuntimeException("调用远程服务超时");
             }
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        long endTime = System.currentTimeMillis();
-        long processTime = endTime - startTime;
-        if (processTime >= timeoutReal) {
-            // dispatcher.getMsg(Thread.currentThread().getId()).setRetcode(-1);
-//            return null;
-            throw new RuntimeException("调用远程服务超时");
         }
         List<EsbMsg> responses = reqMsg.getResponse();
-//        if(responses.size() == 0){
-//            logger.error("系统被中断异常唤醒");
-//            return null;
-//        }
         ArrayList<byte[]> results = new ArrayList<byte[]>();
         for (EsbMsg esbMsg : responses) {
             byte[] compressed = esbMsg.getContent();
