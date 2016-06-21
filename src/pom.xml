@@ -53,6 +53,11 @@
                 <artifactId>iss-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.db</groupId>
+                <artifactId>iss-trade-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <!-- spring -->
             <dependency>
