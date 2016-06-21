@@ -185,16 +185,17 @@ public class Connector {
             synchronized (orgin) { //同步发送接收线程
                 if (writeSession(session, orgin, RETRY_TIMES)) { //发送成功
                     while (orgin.getResponse().size() == 0) {
-                        long begin = System.currentTimeMillis();
                         try {
+                            long begin = System.currentTimeMillis();
                             orgin.wait(timeout);
+                            long end = System.currentTimeMillis();
+                            total += (end - begin);
                         } catch (InterruptedException e) {
                             if (logger.isWarnEnabled())
                                 logger.warn("中断异常");
+                            continue;
                         }
-                        long end = System.currentTimeMillis();
-                        total += (end - begin);
-                        if (total > timeout) {
+                        if (total >= timeout) {
                             throw new Exception(String.format("recv time out, session [%s]", session.toString()));
                         }
                     }
@@ -229,15 +230,16 @@ public class Connector {
             synchronized (orgin) { //同步发送接收线程
                 if (writeSession(session, orgin, RETRY_TIMES)) { //发送成功
                     while (orgin.getResponse().size() == 0) {
-                        long begin = System.currentTimeMillis();
                         try {
+                            long begin = System.currentTimeMillis();
                             orgin.wait(timeout);
+                            long end = System.currentTimeMillis();
+                            total += (end - begin);
                         } catch (InterruptedException e) {
                             if (logger.isWarnEnabled())
                                 logger.warn("中断异常");
+                            continue;
                         }
-                        long end = System.currentTimeMillis();
-                        total += (end - begin);
                         if (total >= timeout) {
                             throw new Exception(String.format("recv time out, session [%s]", session.toString()));
                         }

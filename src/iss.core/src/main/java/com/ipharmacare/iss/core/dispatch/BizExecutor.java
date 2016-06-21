@@ -92,29 +92,28 @@ public class BizExecutor implements IBizContext, Runnable {
         reqMsg.setIsCopySend(false);
         dispatcher.pollMsg(Thread.currentThread().getId(), reqMsg);
         EsbMsg dest = reqMsg;
-        router.transMsg(reqMsg);
-
-        long total = 0;
-        while (dest.equals(reqMsg)) {
-            long startTime = System.currentTimeMillis();
-            int timeoutReal = timeout != 0 ? timeout : 500;
-            try {
-                synchronized (reqMsg) {
+        synchronized (reqMsg) {
+            router.transMsg(reqMsg);
+            long total = 0;
+            while (dest.equals(reqMsg)) {
+                int timeoutReal = timeout != 0 ? timeout : 500;
+                try {
+                    long startTime = System.currentTimeMillis();
                     reqMsg.wait(timeoutReal);
+                    long endTime = System.currentTimeMillis();
+                    long processTime = endTime - startTime;
+                    total += processTime;
+                    if (total >= timeoutReal) {
+                        throw new RuntimeException("调用远程服务超时");
+                    }
+                } catch (InterruptedException e) {
+                    if (logger.isWarnEnabled()) {
+                        logger.warn("中断异常");
+                    }
+                    continue;
                 }
-                long endTime = System.currentTimeMillis();
-                long processTime = endTime - startTime;
-                total += processTime;
-                if (total >= timeoutReal) {
-                    throw new RuntimeException("调用远程服务超时");
-                }
-            }catch (InterruptedException e){
-                if(logger.isWarnEnabled()){
-                    logger.warn("中断唤醒异常");
-                }
-                continue;
+                dest = dispatcher.getMsg(Thread.currentThread().getId());
             }
-            dest = dispatcher.getMsg(Thread.currentThread().getId());
         }
         byte[] compressed = dest.getContent();
         int originLen = dest.getOriginLen();
@@ -165,28 +164,26 @@ public class BizExecutor implements IBizContext, Runnable {
         reqMsg.setIsCopySend(true);
         reqMsg.setCopyCount(1);
         dispatcher.pollMsg(Thread.currentThread().getId(), reqMsg);
-        router.transMsg(reqMsg);
-
-        int total = 0;
-
-        while(reqMsg.getResponse().size() == 0) {
-            long startTime = System.currentTimeMillis();
-            int timeoutReal = timeout != 0 ? timeout : 500;
-            try {
-                synchronized (reqMsg) {
+        synchronized (reqMsg) {
+            router.transMsg(reqMsg);
+            int total = 0;
+            while (reqMsg.getResponse().size() == 0) {
+                int timeoutReal = timeout != 0 ? timeout : 500;
+                try {
+                    long startTime = System.currentTimeMillis();
                     reqMsg.wait(timeoutReal);
+                    long endTime = System.currentTimeMillis();
+                    long processTime = endTime - startTime;
+                    total += processTime;
+                } catch (InterruptedException e) {
+                    if (logger.isWarnEnabled()) {
+                        logger.warn("中断异常");
+                    }
+                    continue;
                 }
-            } catch (InterruptedException e) {
-                if(logger.isWarnEnabled()){
-                    logger.warn("中断唤醒异常");
+                if (total >= timeoutReal) {
+                    throw new RuntimeException("调用远程服务超时");
                 }
-                continue;
-            }
-            long endTime = System.currentTimeMillis();
-            long processTime = endTime - startTime;
-            total += processTime;
-            if (total >= timeoutReal) {
-                throw new RuntimeException("调用远程服务超时");
             }
         }
         List<EsbMsg> responses = reqMsg.getResponse();
