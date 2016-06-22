@@ -71,7 +71,9 @@ function getVmOption()
 }
 
 function start(){
-    checkPidFile $1
+	TIME=`date`
+	echo $TIME " iss start node [" $1 "]" >> iss.log
+    	checkPidFile $1
 	checkVmOption $1
 	OPTION=`getVmOption $1`
 	PID=`cat $ISS_HOME/bin/pid/$1.pid`
@@ -88,7 +90,9 @@ function start(){
 }
 
 function stop(){
-    checkPidFile $1
+	TIME=`date`
+	echo $TIME " iss stop node [" $1 "]" >> iss.log
+    	checkPidFile $1
 	checkVmOption $1
 	PID=`cat $ISS_HOME/bin/pid/$1.pid`
 	checkpid $PID
