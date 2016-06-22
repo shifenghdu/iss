@@ -45,11 +45,11 @@ public abstract class AbstractMessagePlugin extends AbstractPlugin implements IM
         ISOLATE,SHARED;
     }
 
-    AbstractMessagePlugin(String name, Integer version) {
+    AbstractMessagePlugin(String name, String version) {
         this(name,version,ThreadMode.SHARED);
     }
 
-    AbstractMessagePlugin(String name,Integer version,ThreadMode mode){
+    AbstractMessagePlugin(String name,String version,ThreadMode mode){
         super(name,version);
         this.mode = mode;
     }

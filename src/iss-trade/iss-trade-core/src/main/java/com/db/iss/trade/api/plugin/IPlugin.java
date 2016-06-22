@@ -15,7 +15,7 @@ public interface IPlugin {
      * 版本号
      * @return
      */
-    Integer getVersion();
+    String getVersion();
 
     /**
      * 插件名称

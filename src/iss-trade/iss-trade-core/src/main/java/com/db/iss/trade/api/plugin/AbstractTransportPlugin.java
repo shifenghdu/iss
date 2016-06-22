@@ -2,6 +2,8 @@ package com.db.iss.trade.api.plugin;
 
 import com.db.iss.trade.api.enums.AlarmLevel;
 import com.db.iss.trade.api.exception.PluginException;
+import com.db.iss.trade.api.registry.IRegistry;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Created by andy on 16/6/20.
@@ -10,11 +12,14 @@ import com.db.iss.trade.api.exception.PluginException;
  */
 public abstract class AbstractTransportPlugin extends AbstractMessagePlugin {
 
-    AbstractTransportPlugin(String name, Integer version) {
+    @Autowired
+    protected IRegistry registry;
+
+    public AbstractTransportPlugin(String name, String version) {
         super(name, version);
     }
 
-    AbstractTransportPlugin(String name, Integer version, ThreadMode mode) {
+    public AbstractTransportPlugin(String name, String version, ThreadMode mode) {
         super(name, version, mode);
     }
 
@@ -38,7 +43,7 @@ public abstract class AbstractTransportPlugin extends AbstractMessagePlugin {
      * 向next传递消息
      * @param message
      */
-    protected void forward(EsbMsg message){
+    public void forward(EsbMsg message){
         try {
             if (nextPlugin != null) {
                 nextPlugin.transMessage(message, this);

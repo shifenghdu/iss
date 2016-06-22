@@ -4,19 +4,14 @@ import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecFactory;
 import org.apache.mina.filter.codec.ProtocolDecoder;
 import org.apache.mina.filter.codec.ProtocolEncoder;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
-
-@Service
 public class ClusterCodecFactory implements ProtocolCodecFactory {
 
 	private ThreadLocal<ClusterDecoder> clusterDecoder;
 
 	private SerializerType type = SerializerType.MSGPACK;
 
-	@Autowired
-	private SerializerFactory serializerFactory;
+	private SerializerFactory serializerFactory = new SerializerFactory();
 
 	@Override
 	public ProtocolEncoder getEncoder(IoSession session) throws Exception {
@@ -36,9 +31,8 @@ public class ClusterCodecFactory implements ProtocolCodecFactory {
 		return decoder;
 	}
 
-	public void setSerializerType(SerializerType type){
+	public ClusterCodecFactory(SerializerType type){
 		this.type = type;
 	}
-
 
 }

@@ -15,7 +15,7 @@ import org.slf4j.LoggerFactory;
 public abstract class AbstractPlugin implements IPlugin,IConfigurable {
 
     //版本号
-    protected Integer version;
+    protected String version;
     //插件状态
     protected PluginStatus status;
     //插件名称
@@ -30,7 +30,7 @@ public abstract class AbstractPlugin implements IPlugin,IConfigurable {
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
 
 
-    AbstractPlugin(String name,Integer version){
+    AbstractPlugin(String name,String version){
         this.name = name;
         this.version = version;
     }
@@ -41,7 +41,7 @@ public abstract class AbstractPlugin implements IPlugin,IConfigurable {
     }
 
     @Override
-    public Integer getVersion() {
+    public String getVersion() {
         return version;
     }
 

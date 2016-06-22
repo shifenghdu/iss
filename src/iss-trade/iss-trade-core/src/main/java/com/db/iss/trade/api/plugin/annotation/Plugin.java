@@ -10,7 +10,7 @@ import java.lang.annotation.Target;
  * @author andy.shif
  * 插件注解
  */
-@Target(ElementType.METHOD)
+@Target(ElementType.TYPE)
 @Retention(RetentionPolicy.RUNTIME)
 public @interface Plugin {
 

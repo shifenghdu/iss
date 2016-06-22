@@ -36,14 +36,12 @@ public class EsbMsg {
     private String retmsg;
     // 包类型
     private int msgtype;
-    // 系统号
-    private int systemid;
-    // 功能号
-    private int functionid;
+    // 命名空间
+    private String namespace;
+    // 方法
+    private String method;
     // 自定义路由标记
     private String tag;
-    // 路由路径
-    private List<String> routeinfo = new Vector<String>();
     // 转发下一条节点名
     private String nextnode;
     // 业务消息包
@@ -52,18 +50,12 @@ public class EsbMsg {
     private String sendname;
     // 发送者附带参数
     private String sendarg;
-    // 转发下一节点session
-    private long nextSession = 0;
+    // 传入session id
+    private long sessionId;
     //消息ID
     private Long packageid;
-    //时间戳
-    private List<String> timeticks = new Vector<String>();
-    // multi call 情况下对应的返回
-    private List<EsbMsg> response = new Vector<EsbMsg>();
-    // multi call 情况下被复制分发的数量
-    private int copyCount = 1;
-    // multi call 复制分发标志
-    private boolean isCopySend = false;
+    //返回消息
+    private EsbMsg response;
     //content字段是否压缩
     private boolean isCompress = false;
     //压缩前长度
@@ -77,50 +69,6 @@ public class EsbMsg {
 
     public void setMsgtype(int msgtype) {
         this.msgtype = msgtype;
-    }
-
-    public int getFunctionid() {
-        return functionid;
-    }
-
-    public void setFunctionid(int functionid) {
-        this.functionid = functionid;
-    }
-
-    public List<String> getRouteinfo() {
-        return routeinfo;
-    }
-
-    public void setRouteinfo(List<String> routeinfo) {
-        synchronized (this.routeinfo) {
-            this.routeinfo = routeinfo;
-        }
-    }
-
-    public String popLastRouteInfo() {
-        synchronized (routeinfo) {
-            if (routeinfo.size() >= 1) {
-                String info = routeinfo.get(routeinfo.size() - 1);
-                routeinfo.remove(routeinfo.size() - 1);
-                return info;
-            }
-            return null;
-        }
-    }
-
-    public synchronized void appendLastRouteInfo(String s) {
-        synchronized (routeinfo) {
-            if (routeinfo.size() >= 1) {
-                String info = routeinfo.get(routeinfo.size() - 1);
-                routeinfo.set(routeinfo.size() - 1, String.format("%s;%s", info, s));
-            }
-        }
-    }
-
-    public void pushRouteInfo(String info) {
-        synchronized (routeinfo) {
-            routeinfo.add(info);
-        }
     }
 
     public String getNextnode() {
@@ -161,14 +109,6 @@ public class EsbMsg {
         this.retmsg = retMsg;
     }
 
-    public int getSystemid() {
-        return systemid;
-    }
-
-    public void setSystemid(int systemid) {
-        this.systemid = systemid;
-    }
-
     public String getSendname() {
         return sendname;
     }
@@ -188,9 +128,8 @@ public class EsbMsg {
     @Override
     public String toString() {
         return String
-                .format("msgtype:[%d] systemid:[%d] functionid:[%d] routerinfo:[%s] sender:[%s|%s] next[%s] session[%d] iscopy[%b] copy[%d]",
-                        msgtype, systemid, functionid, routeinfo.toString(),
-                        sendname, sendarg, nextnode, nextSession, isCopySend, copyCount);
+                .format("msgtype:[%d] namespace:[%d] method:[%d] sender:[%s|%s] next[%s] session[%d]",
+                        msgtype, namespace, method, sendname, sendarg, nextnode, sessionId);
     }
 
     public Long getPackageid() {
@@ -201,48 +140,20 @@ public class EsbMsg {
         this.packageid = packageid;
     }
 
-    public List<String> getTimeticks() {
-        return timeticks;
-    }
-
-    public void setTimeticks(List<String> timeticks) {
-        this.timeticks = timeticks;
-    }
-
-    public void addTimetick(String node, String plugin, long tick) {
-        this.timeticks.add(String.format("%s;%s;%d", node, plugin, tick));
-    }
-
-    public List<EsbMsg> getResponse() {
+    public EsbMsg getResponse() {
         return response;
     }
 
-    public void setResponse(List<EsbMsg> response) {
+    public void setResponse(EsbMsg response) {
         this.response = response;
     }
 
-    public int getCopyCount() {
-        return copyCount;
+    public long getSessionId() {
+        return sessionId;
     }
 
-    public void setCopyCount(int copyCount) {
-        this.copyCount = copyCount;
-    }
-
-    public boolean isCopySend() {
-        return isCopySend;
-    }
-
-    public void setIsCopySend(boolean isCopySend) {
-        this.isCopySend = isCopySend;
-    }
-
-    public Long getNextSession() {
-        return nextSession;
-    }
-
-    public void setNextSession(Long nextSession) {
-        this.nextSession = nextSession;
+    public void setSessionId(long sessionId) {
+        this.sessionId = sessionId;
     }
 
     public String getTag() {
@@ -284,4 +195,21 @@ public class EsbMsg {
     public void setCompress(boolean compress) {
         isCompress = compress;
     }
+
+    public String getNamespace() {
+        return namespace;
+    }
+
+    public void setNamespace(String namespace) {
+        this.namespace = namespace;
+    }
+
+    public String getMethod() {
+        return method;
+    }
+
+    public void setMethod(String method) {
+        this.method = method;
+    }
+
 }

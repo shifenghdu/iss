@@ -9,7 +9,7 @@ import org.msgpack.MessagePack;
  * @author andy.shi
  * 序列化适配器
  */
-public class MsgpackSerializerAdapter implements ISerializer<EsbMsg>{
+public class MessagePackSerializerAdapter implements ISerializer<EsbMsg>{
 
     private MessagePack messagePack = new MessagePack();
 

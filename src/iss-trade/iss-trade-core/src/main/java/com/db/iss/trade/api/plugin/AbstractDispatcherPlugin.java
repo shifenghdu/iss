@@ -9,7 +9,7 @@ import com.db.iss.trade.api.exception.PluginException;
  */
 public abstract class AbstractDispatcherPlugin extends AbstractMessagePlugin {
 
-    AbstractDispatcherPlugin(String name, Integer version) {
+    public AbstractDispatcherPlugin(String name, String version) {
         super(name, version,ThreadMode.ISOLATE);
     }
 
