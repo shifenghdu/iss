@@ -112,8 +112,13 @@ public class Dispatcher implements IDispacher, IBizRegister {
                     EsbMsg oldMsg = msgMap.get(threadId);
                     if (oldMsg != null) {
                         synchronized (oldMsg) {
-                            msgMap.put(threadId, esbMsg);
+                            if(logger.isDebugEnabled())
+                                logger.debug("notify on object [{}] begin",oldMsg.hashCode());
+//                            msgMap.put(threadId, esbMsg);
+                            oldMsg.getResponse().add(esbMsg);
                             oldMsg.notify();
+                            if(logger.isDebugEnabled())
+                                logger.debug("notify on object [{}] end",oldMsg.hashCode());
                         }
                     }
                 } else {

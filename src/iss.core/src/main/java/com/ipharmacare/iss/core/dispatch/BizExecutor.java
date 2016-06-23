@@ -95,11 +95,15 @@ public class BizExecutor implements IBizContext, Runnable {
         synchronized (reqMsg) {
             router.transMsg(reqMsg);
             long total = 0;
-            while (dest.equals(reqMsg)) {
+            while (reqMsg.getResponse().size() == 0) {
                 int timeoutReal = timeout != 0 ? timeout : 500;
                 try {
                     long startTime = System.currentTimeMillis();
+                    if(logger.isDebugEnabled())
+                        logger.debug("wait on object [{}] begin",reqMsg.hashCode());
                     reqMsg.wait(timeoutReal);
+                    if(logger.isDebugEnabled())
+                        logger.debug("wait on object [{}] end",reqMsg.hashCode());
                     long endTime = System.currentTimeMillis();
                     long processTime = endTime - startTime;
                     total += processTime;
@@ -112,9 +116,10 @@ public class BizExecutor implements IBizContext, Runnable {
                     }
                     continue;
                 }
-                dest = dispatcher.getMsg(Thread.currentThread().getId());
+//                dest = dispatcher.getMsg(Thread.currentThread().getId());
             }
         }
+        dest = reqMsg.getResponse().get(0);
         byte[] compressed = dest.getContent();
         int originLen = dest.getOriginLen();
         return decompress(compressed, originLen);
