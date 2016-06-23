@@ -55,6 +55,7 @@
 								<mainClass>com.ipharmacare.iss.core.Laucher</mainClass>
 							</manifest>
 						</archive>
+                        <outputDirectory>../../workspace/lib</outputDirectory>
 					</configuration>
 				</plugin>
 				<plugin>
