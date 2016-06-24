@@ -46,7 +46,7 @@ public class ComponentMgr implements IBizMgr {
                     }
                 }
             }catch (NoSuchBeanDefinitionException e1){
-                logger.error("未找到接口对应实现 {}",classz.getName());
+                logger.trace("未找到接口对应实现 {}",classz.getName());
             } catch (Throwable e){
                 logger.error("注册接口实现错误",e);
             }
