@@ -1,7 +1,5 @@
 package com.db.iss.trade.api.plugin;
 
-import com.db.iss.trade.api.exception.PluginException;
-
 /**
  * Created by andy on 16/6/21.
  * @author andy.shif
@@ -56,11 +54,11 @@ public abstract class AbstractDispatcherPlugin extends AbstractMessagePlugin {
 
     /**
      * 业务处理
-     * @param messgae
+     * @param message
      * @return
      * @throws PluginException
      */
-    protected abstract EsbMsg onHandler(EsbMsg messgae) throws PluginException;
+    protected abstract EsbMsg onHandler(EsbMsg message) throws PluginException;
 
 
 }

@@ -1,11 +1,8 @@
 package com.db.iss.trade.api.plugin;
 
 import com.db.iss.trade.api.cm.Setting;
-import com.db.iss.trade.api.enums.AlarmLevel;
-import com.db.iss.trade.api.exception.PluginException;
-import com.db.iss.trade.api.exception.SettingException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import com.db.iss.trade.api.alarm.AlarmLevel;
+import com.db.iss.trade.api.cm.SettingException;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.LinkedBlockingQueue;
@@ -25,9 +22,9 @@ public abstract class AbstractMessagePlugin extends AbstractPlugin implements IM
     //线程池
     protected ExecutorService threadPool;
     //线程数
-    protected Integer threadCount;
+    protected Integer threadCount = 10;
     //队列大小
-    protected Integer queueSize;
+    protected Integer queueSize = 10000;
     //线程模型
     protected ThreadMode mode;
     //pre 组件
@@ -45,11 +42,11 @@ public abstract class AbstractMessagePlugin extends AbstractPlugin implements IM
         ISOLATE,SHARED;
     }
 
-    AbstractMessagePlugin(String name, String version) {
+    public AbstractMessagePlugin(String name, String version) {
         this(name,version,ThreadMode.SHARED);
     }
 
-    AbstractMessagePlugin(String name,String version,ThreadMode mode){
+    public AbstractMessagePlugin(String name,String version,ThreadMode mode){
         super(name,version);
         this.mode = mode;
     }
@@ -57,8 +54,8 @@ public abstract class AbstractMessagePlugin extends AbstractPlugin implements IM
     @Override
     public void setSetting(Setting setting) throws SettingException {
         try {
-            threadCount = Integer.valueOf(setting.getProperty(namespace + ".thread"));
-            queueSize = Integer.valueOf(setting.getProperty(namespace + ".queue"));
+            threadCount = Integer.valueOf(setting.getProperty(name + ".thread"));
+            queueSize = Integer.valueOf(setting.getProperty(name + ".queue"));
             onStetting(setting);
         }catch (Throwable e){
             throw new SettingException("Setting configuration error",e);
@@ -73,12 +70,8 @@ public abstract class AbstractMessagePlugin extends AbstractPlugin implements IM
                 threadPool = new ThreadPoolExecutor(threadCount, threadCount, 0, TimeUnit.SECONDS, inQueue);
             }
             onStart();
-        }catch (Throwable e){
-            throw new PluginException("Plugin " + getNamespace() + " start failed",e);
-        }finally {
-            if(threadPool != null){
-                threadPool.shutdown();
-            }
+        }catch (Throwable e) {
+            throw new PluginException("Plugin " + getNamespace() + " start failed", e);
         }
     }
 

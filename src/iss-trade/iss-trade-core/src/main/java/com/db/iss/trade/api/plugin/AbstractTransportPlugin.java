@@ -1,7 +1,6 @@
 package com.db.iss.trade.api.plugin;
 
-import com.db.iss.trade.api.enums.AlarmLevel;
-import com.db.iss.trade.api.exception.PluginException;
+import com.db.iss.trade.api.alarm.AlarmLevel;
 import com.db.iss.trade.api.registry.IRegistry;
 import org.springframework.beans.factory.annotation.Autowired;
 

@@ -25,16 +25,10 @@ public interface IRegistry {
 
 
     /**
-     * 根据命名空间获取节点名称
+     * 根据命名空间获取节点信息
      * @param namespace
      * @return
      */
-    String getNode(String namespace);
+    RegistryNode getNode(String namespace);
 
-    /**
-     * 根据节点名称获取URL
-     * @param node
-     * @return
-     */
-    URL getUrl(String node);
 }

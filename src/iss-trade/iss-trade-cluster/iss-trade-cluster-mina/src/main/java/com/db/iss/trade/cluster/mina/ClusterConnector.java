@@ -3,7 +3,8 @@ package com.db.iss.trade.cluster.mina;
 import com.db.iss.trade.api.plugin.AbstractTransportPlugin;
 import com.db.iss.trade.api.plugin.EsbMsg;
 import com.db.iss.trade.cluster.mina.codec.ClusterCodecFactory;
-import com.db.iss.trade.cluster.mina.codec.SerializerType;
+import com.db.iss.trade.api.compressor.CompressorType;
+import com.db.iss.trade.api.serializer.SerializerType;
 import com.db.iss.trade.cluster.mina.handler.ClientMsgHandler;
 import org.apache.mina.core.filterchain.DefaultIoFilterChainBuilder;
 import org.apache.mina.core.future.ConnectFuture;
@@ -16,7 +17,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.net.InetSocketAddress;
-import java.net.SocketAddress;
 import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -38,14 +38,14 @@ public class ClusterConnector {
 
     private Map<String,IoSession> sessionMap = new ConcurrentHashMap<>();
 
-    public ClusterConnector(SerializerType type, AbstractTransportPlugin plugin) {
+    public ClusterConnector(SerializerType type, CompressorType compressorType, AbstractTransportPlugin plugin) {
         connector = new NioSocketConnector();
         connector.getSessionConfig().setReuseAddress(true);
 		connector.getSessionConfig().setReceiveBufferSize(SIZE_128K);
 		connector.getSessionConfig().setReadBufferSize(SIZE_128K);
         connector.getSessionConfig().setSoLinger(-1);
         DefaultIoFilterChainBuilder chain = connector.getFilterChain();
-        chain.addLast("codec", new ProtocolCodecFilter(new ClusterCodecFactory(type)));
+        chain.addLast("codec", new ProtocolCodecFilter(new ClusterCodecFactory(type,compressorType)));
         chain.addLast("pool", new ExecutorFilter(Runtime.getRuntime().availableProcessors() + 1));
         connector.setHandler(new ClientMsgHandler(plugin,this));
         connector.setConnectTimeoutMillis(CONNECT_TIME_OUT);

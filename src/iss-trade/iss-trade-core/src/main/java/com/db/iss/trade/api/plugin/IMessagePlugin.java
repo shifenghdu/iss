@@ -1,7 +1,5 @@
 package com.db.iss.trade.api.plugin;
 
-import com.db.iss.trade.api.exception.PluginException;
-
 /**
  * Created by andy on 2016/6/19.
  * @author andy.shif

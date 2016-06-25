@@ -1,6 +1,9 @@
 package com.db.iss.trade.cluster.mina.codec;
 
+import com.db.iss.trade.api.compressor.ICompressor;
+import com.db.iss.trade.api.plugin.PluginException;
 import com.db.iss.trade.api.plugin.EsbMsg;
+import com.db.iss.trade.api.serializer.ISerializer;
 import com.db.iss.trade.api.util.HexUtil;
 import org.apache.mina.core.buffer.IoBuffer;
 import org.apache.mina.core.session.IoSession;
@@ -15,24 +18,43 @@ public class ClusterDecoder extends CumulativeProtocolDecoder implements Protoco
 
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private ISerializer<EsbMsg> serialize;
+    private ISerializer serialize;
 
-    public ClusterDecoder(ISerializer serialize) {
+    private ICompressor compressor;
+
+    public ClusterDecoder(ISerializer serialize,ICompressor compressor) {
         this.serialize = serialize;
+        this.compressor = compressor;
     }
 
     @Override
     public void encode(IoSession session, Object message, ProtocolEncoderOutput out) throws Exception {
-        byte[] msg = serialize.encode((EsbMsg) message);
-        IoBuffer buffer = IoBuffer.allocate(msg.length + 4);
-        byte[] head = HexUtil.intToBcd(msg.length, 4, 0);
-        if (((EsbMsg) message).getMsgtype() != EsbMsg.MSGTYPE_CLUSTER) {
-            if (logger.isTraceEnabled()) {
+        //序列化
+        byte[] msg = serialize.encode(message);
+        int originLen = msg.length;
+        int compressLen = originLen;
+
+        //压缩
+        if(compressor != null){
+            msg = compressor.compress(msg);
+            compressLen = msg.length;
+        }
+
+        //编码长度
+        IoBuffer buffer = IoBuffer.allocate(msg.length + 8);
+        byte[] compress = HexUtil.intToBcd(compressLen, 4, 0);
+        byte[] origin = HexUtil.intToBcd(originLen, 4, 0);
+
+        if (logger.isTraceEnabled()) {
+            if (((EsbMsg) message).getMsgtype() != EsbMsg.MSGTYPE_CLUSTER) {
                 logger.trace("send session[{}] message[{}]", session.getAttribute("address"),
                         new String(HexUtil.hexToAscii(msg)));
             }
         }
-        buffer.put(head);
+
+        //写入数据
+        buffer.put(compress);
+        buffer.put(origin);
         buffer.put(msg);
         buffer.flip();
         out.write(buffer);
@@ -40,24 +62,49 @@ public class ClusterDecoder extends CumulativeProtocolDecoder implements Protoco
 
     @Override
     protected boolean doDecode(IoSession session, IoBuffer in, ProtocolDecoderOutput out) throws Exception {
-        if (in.remaining() > 4) {
-            byte[] head = new byte[4];
+        if (in.remaining() > 8) {
+            byte[] compress = new byte[4];
+            byte[] origin = new byte[4];
             in.mark();
-            in.get(head);
-            int size = HexUtil.bcdToInt(head, 0);
+            in.get(compress);
+            in.get(origin);
+            //压缩长度
+            int size = HexUtil.bcdToInt(compress, 0);
+            //非压缩长度
+            int originSize = HexUtil.bcdToInt(origin,0);
             if (size > in.remaining()) {
                 in.reset();
                 return false;
             } else {
                 byte[] msg = new byte[size];
                 in.get(msg, 0, size);
-                EsbMsg pack = serialize.decode(msg, EsbMsg.class);
-                if (pack.getMsgtype() != EsbMsg.MSGTYPE_CLUSTER) {
-                    if (logger.isTraceEnabled()) {
+
+                //解压
+                if(size != originSize) { //经压缩
+                    if (compressor != null) {
+                        try {
+                            msg = compressor.decompress(msg, originSize);
+                        }catch (Throwable e){
+                            throw new PluginException("decompress failed please check compress algorithm",e);
+                        }
+                    }
+                }
+
+                //反序列化
+                EsbMsg pack = (EsbMsg) serialize.decode(msg, EsbMsg.class);
+
+                if (logger.isTraceEnabled()) {
+                    if (pack.getMsgtype() != EsbMsg.MSGTYPE_CLUSTER) {
                         logger.trace("receive session[{}] message[{}]", session.getAttribute("address"),
                                 new String(HexUtil.hexToAscii(msg)));
                     }
                 }
+
+                //版本不匹配
+                if(!pack.getVersion().equalsIgnoreCase(EsbMsg.CURRENT_VERSION)){
+                    throw new PluginException(String.format("esbmsg version %s not support",pack.getVersion()));
+                }
+
                 out.write(pack);
                 if (in.remaining() > 0) {
                     return true;

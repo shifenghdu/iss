@@ -2,8 +2,7 @@ package com.db.iss.trade.api.plugin;
 
 import com.db.iss.trade.api.alarm.IAlarm;
 import com.db.iss.trade.api.cm.IConfigurable;
-import com.db.iss.trade.api.enums.AlarmLevel;
-import com.db.iss.trade.api.enums.PluginStatus;
+import com.db.iss.trade.api.alarm.AlarmLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

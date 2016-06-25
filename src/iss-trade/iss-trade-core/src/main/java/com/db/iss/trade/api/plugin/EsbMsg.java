@@ -1,4 +1,6 @@
 package com.db.iss.trade.api.plugin;
+import org.msgpack.annotation.Message;
+
 import java.util.List;
 import java.util.Vector;
 
@@ -6,7 +8,10 @@ import java.util.Vector;
  * Trade 基础消息
  * @author  andy.shif
  */
+@Message
 public class EsbMsg {
+
+    public static final String CURRENT_VERSION = "v1.0.0";
 
     /**
      * 消息类型
@@ -45,7 +50,7 @@ public class EsbMsg {
     // 转发下一条节点名
     private String nextnode;
     // 业务消息包
-    private List<byte[]> params;
+    private List<byte[]> content;
     // 发送者插件名
     private String sendname;
     // 发送者附带参数
@@ -56,12 +61,6 @@ public class EsbMsg {
     private Long packageid;
     //返回消息
     private EsbMsg response;
-    //content字段是否压缩
-    private boolean isCompress = false;
-    //压缩前长度
-    private Integer originLen;
-    //压缩算法
-    private String compressAlgorithm;
 
     public int getMsgtype() {
         return msgtype;
@@ -79,12 +78,12 @@ public class EsbMsg {
         this.nextnode = nextnode;
     }
 
-    public List<byte[]> getParams() {
-        return params;
+    public List<byte[]> getContent() {
+        return content;
     }
 
-    public void setParams(List<byte[]> params) {
-        this.params = params;
+    public void setContent(List<byte[]> content) {
+        this.content = content;
     }
 
     public void changeToResponse() {
@@ -170,30 +169,6 @@ public class EsbMsg {
 
     public void setVersion(String version) {
         this.version = version;
-    }
-
-    public String getCompressAlgorithm() {
-        return compressAlgorithm;
-    }
-
-    public void setCompressAlgorithm(String compressAlgorithm) {
-        this.compressAlgorithm = compressAlgorithm;
-    }
-
-    public Integer getOriginLen() {
-        return originLen;
-    }
-
-    public void setOriginLen(Integer originLen) {
-        this.originLen = originLen;
-    }
-
-    public boolean isCompress() {
-        return isCompress;
-    }
-
-    public void setCompress(boolean compress) {
-        isCompress = compress;
     }
 
     public String getNamespace() {

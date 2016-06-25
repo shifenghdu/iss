@@ -1,12 +1,13 @@
 package com.db.iss.trade.cluster.mina;
 
 import com.db.iss.trade.api.cm.Setting;
-import com.db.iss.trade.api.exception.PluginException;
-import com.db.iss.trade.api.exception.SettingException;
+import com.db.iss.trade.api.plugin.PluginException;
+import com.db.iss.trade.api.cm.SettingException;
 import com.db.iss.trade.api.plugin.AbstractTransportPlugin;
 import com.db.iss.trade.api.plugin.EsbMsg;
-import com.db.iss.trade.api.plugin.annotation.Plugin;
-import com.db.iss.trade.cluster.mina.codec.SerializerType;
+import com.db.iss.trade.api.registry.RegistryNode;
+import com.db.iss.trade.api.compressor.CompressorType;
+import com.db.iss.trade.api.serializer.SerializerType;
 import org.springframework.stereotype.Service;
 
 /**
@@ -15,7 +16,6 @@ import org.springframework.stereotype.Service;
  * mina transport 插件实现
  */
 @Service
-@Plugin("cluster")
 public class MinaTransportPlugin extends AbstractTransportPlugin {
 
     private ClusterConnector connector;
@@ -24,14 +24,16 @@ public class MinaTransportPlugin extends AbstractTransportPlugin {
 
     private SerializerType type = SerializerType.MSGPACK;
 
+    private CompressorType compressorType = CompressorType.LZ4;
+
     public MinaTransportPlugin() {
         super("cluster", "v1.0.0",ThreadMode.SHARED);
     }
 
     @Override
     protected void onStart() throws PluginException {
-        connector = new ClusterConnector(type,this);
-        acceptor = new ClusterAcceptor(type,this);
+        connector = new ClusterConnector(type,compressorType,this);
+        acceptor = new ClusterAcceptor(type,compressorType,this);
     }
 
     @Override
@@ -42,18 +44,30 @@ public class MinaTransportPlugin extends AbstractTransportPlugin {
 
     @Override
     protected void onStetting(Setting setting) throws SettingException {
-        String serializer = setting.getProperty(namespace + ".serializer");
+        String serializer = setting.getProperty("serializer");
         if(serializer.equalsIgnoreCase("msgpack")){
             type = SerializerType.MSGPACK;
         }else if(serializer.equalsIgnoreCase("json")){
             type = SerializerType.JSON;
         }
+
+        String compressor = setting.getProperty("compressor");
+        if(compressor.equalsIgnoreCase("lz4")){
+            compressorType = CompressorType.LZ4;
+        }else{
+            compressorType = null;
+        }
     }
 
     @Override
     protected EsbMsg onBackward(EsbMsg message) throws PluginException {
-        if(!connector.write(message.getNextnode(),registry.getUrl(message.getNextnode()),message)){
-            throw new PluginException("write message to endpoint failed " +  message);
+        RegistryNode node = registry.getNode(message.getNamespace());
+        if(node != null) {
+            if (!connector.write(node.getNode(), node.getUrl(), message)) {
+                throw new PluginException("write message to endpoint failed " + message);
+            }
+        }else {
+            logger.error("namespace {} not found",message.getNamespace());
         }
         return null;
     }

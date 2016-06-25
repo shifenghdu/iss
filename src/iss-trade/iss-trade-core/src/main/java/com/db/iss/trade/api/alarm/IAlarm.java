@@ -1,7 +1,5 @@
 package com.db.iss.trade.api.alarm;
 
-import com.db.iss.trade.api.enums.AlarmLevel;
-
 /**
  * Created by andy on 16/6/19.
  * @author andy.shif

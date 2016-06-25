@@ -1,7 +1,5 @@
 package com.db.iss.trade.api.cm;
 
-import com.db.iss.trade.api.exception.SettingException;
-
 /**
  * Created by andy on 2016/6/19.
  * @author andy.shi

@@ -3,7 +3,8 @@ package com.db.iss.trade.cluster.mina;
 import com.db.iss.trade.api.plugin.AbstractTransportPlugin;
 import com.db.iss.trade.api.plugin.EsbMsg;
 import com.db.iss.trade.cluster.mina.codec.ClusterCodecFactory;
-import com.db.iss.trade.cluster.mina.codec.SerializerType;
+import com.db.iss.trade.api.compressor.CompressorType;
+import com.db.iss.trade.api.serializer.SerializerType;
 import com.db.iss.trade.cluster.mina.handler.ServerMsgHandler;
 import org.apache.mina.core.future.WriteFuture;
 import org.apache.mina.core.session.IdleStatus;
@@ -35,7 +36,7 @@ public class ClusterAcceptor {
 
     private Map<Long,IoSession> sessionMap = new ConcurrentHashMap<>();
 
-    public ClusterAcceptor(SerializerType type, AbstractTransportPlugin plugin) {
+    public ClusterAcceptor(SerializerType type, CompressorType compressorType, AbstractTransportPlugin plugin) {
         acceptor = new NioSocketAcceptor();
         acceptor.setReuseAddress(false);
         acceptor.getSessionConfig().setReuseAddress(false);
@@ -43,7 +44,7 @@ public class ClusterAcceptor {
 		acceptor.getSessionConfig().setReadBufferSize(SIZE_128K);
         acceptor.getSessionConfig().setSoLinger(-1);
         acceptor.setBacklog(10240);
-        acceptor.getFilterChain().addLast("codec", new ProtocolCodecFilter(new ClusterCodecFactory(type)));
+        acceptor.getFilterChain().addLast("codec", new ProtocolCodecFilter(new ClusterCodecFactory(type,compressorType)));
         acceptor.getFilterChain().addLast("pool", new ExecutorFilter(Runtime.getRuntime().availableProcessors() + 1));
         acceptor.setHandler(new ServerMsgHandler(plugin,this));
         acceptor.getSessionConfig().setIdleTime(IdleStatus.BOTH_IDLE, TIME_OUT);
