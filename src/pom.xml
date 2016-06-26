@@ -59,6 +59,12 @@
                 <version>${org.springframework.version}</version>
                 <scope>test</scope>
             </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-beans</artifactId>
+                <version>${org.springframework.version}</version>
+                <scope>provided</scope>
+            </dependency>
 
             <!-- msgpack -->
             <dependency>
@@ -201,6 +207,7 @@
         <module>iss-dispatcher</module>
         <module>iss-registry</module>
         <module>iss-launcher</module>
+        <module>iss-test</module>
     </modules>
     <developers>
         <developer>

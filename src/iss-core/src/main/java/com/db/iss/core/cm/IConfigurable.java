@@ -14,6 +14,4 @@ public interface IConfigurable {
      */
     void setSetting(Setting setting) throws SettingException;
 
-
-
 }

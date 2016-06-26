@@ -1,7 +1,7 @@
 package com.db.iss.dispatcher.spring;
 
-import com.db.iss.dispatcher.proxy.DefaultReflectProxyFactory;
-import com.db.iss.dispatcher.proxy.IReflectProxy;
+import com.db.iss.dispatcher.proxy.reflect.DefaultReflectProxyFactory;
+import com.db.iss.dispatcher.proxy.reflect.IReflectProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;

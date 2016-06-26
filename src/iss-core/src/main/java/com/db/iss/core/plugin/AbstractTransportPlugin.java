@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public abstract class AbstractTransportPlugin extends AbstractMessagePlugin {
 
-    @Autowired
+//    @Autowired
     protected IRegistry registry;
 
     public AbstractTransportPlugin(String name, String version) {

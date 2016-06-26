@@ -1,6 +1,7 @@
 package com.db.iss.dispatcher.spring;
 
 import com.db.iss.dispatcher.future.IFuture;
+import com.db.iss.dispatcher.proxy.IServiceProxy;
 
 /**
  * Created by andy on 16/6/26.
@@ -16,5 +17,12 @@ public interface IRemoteServiceProvider {
      * @return
      */
     <T> T getService(Class<T> type);
+
+    /**
+     * 获取远程接口管理接口实现
+     * @param type
+     * @return
+     */
+    IServiceProxy getServiceManager(Class<?> type);
 
 }

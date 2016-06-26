@@ -34,9 +34,12 @@ public abstract class AbstractServiceProxy implements IServiceProxy{
 
     private long timeout = 10000L;
 
-    protected  Object invoke(String namespace,String method,Object[] args) {
+    protected Object invoke(String namespace,String method,Object[] args) {
         total.incrementAndGet();
         try {
+            if(logger.isDebugEnabled()){
+                logger.debug("remote invoke namespace [{}] method [{}]",namespace,method);
+            }
             EsbMsg request = new EsbMsg();
             request.setNamespace(namespace);
             request.setMethod(method);
@@ -48,6 +51,7 @@ public abstract class AbstractServiceProxy implements IServiceProxy{
 
             IFuture<EsbMsg> future = messageSend.send(request);
             EsbMsg response = future.get(timeout);
+
             if(response == null){
                 throw new RemoteException("remote return null");
             }else{

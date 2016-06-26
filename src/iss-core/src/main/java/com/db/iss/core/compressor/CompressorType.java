@@ -6,14 +6,16 @@ package com.db.iss.core.compressor;
  * 压缩算法类型
  */
 public enum CompressorType {
+    NULL("null"),
+    LZ4("LZ4");
 
-    LZ4(0,"LZ4");
+    private String value;
 
-    private int value;
-    private String name;
-
-    CompressorType(int value, String name){
+    CompressorType(String value){
         this.value = value;
-        this.name = name;
+    }
+
+    public String getValue() {
+        return value;
     }
 }

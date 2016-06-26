@@ -8,8 +8,10 @@ import com.db.iss.core.serializer.ISerializer;
 import com.db.iss.core.serializer.SerializerFactory;
 import com.db.iss.core.serializer.SerializerType;
 import com.db.iss.dispatcher.annotation.Remote;
-import com.db.iss.dispatcher.proxy.IReflectProxy;
-import com.db.iss.dispatcher.proxy.IReflectProxyFactory;
+import com.db.iss.dispatcher.proxy.IServiceProxy;
+import com.db.iss.dispatcher.proxy.reflect.IReflectProxy;
+import com.db.iss.dispatcher.proxy.reflect.IReflectProxyFactory;
+import com.db.iss.dispatcher.spring.IRemoteServiceProvider;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -26,7 +28,7 @@ import java.lang.reflect.Method;
 import java.util.*;
 
 /**
- * Created by apple on 16/6/25.
+ * Created by andy on 16/6/25.
  */
 @Service
 @RunWith(SpringJUnit4ClassRunner.class)
@@ -39,11 +41,14 @@ public class SpringInvoke implements ApplicationContextAware {
     private IReflectProxyFactory methodProxyFactory;
 
     @Autowired
-    private IMessagePlugin messagePlugin;
+    private DispatcherPlugin messagePlugin;
 
     private SerializerFactory factory = new SerializerFactory();
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    @Autowired
+    private IRemoteServiceProvider serviceProvider;
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -159,7 +164,12 @@ public class SpringInvoke implements ApplicationContextAware {
         end = System.currentTimeMillis();
 
         logger.error("json time [{}] tps",TIMES/(end - start)*1000);
+    }
 
 
+    @Test
+    public void serviceProxy(){
+        IDemo demo = serviceProvider.getService(IDemo.class);
+        logger.error("{}",demo.hello("andy.shif"));
     }
 }

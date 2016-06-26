@@ -11,7 +11,7 @@ public interface IDemo {
 
     String hello(String name);
 
-    EsbMsg call (int a, int b, String s);
+    EsbMsg call(int a, int b, String s);
 
     void get();
 

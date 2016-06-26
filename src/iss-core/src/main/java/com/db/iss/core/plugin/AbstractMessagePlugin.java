@@ -54,8 +54,16 @@ public abstract class AbstractMessagePlugin extends AbstractPlugin implements IM
     @Override
     public void setSetting(Setting setting) throws SettingException {
         try {
-            threadCount = Integer.valueOf(setting.getProperty(name + ".thread"));
-            queueSize = Integer.valueOf(setting.getProperty(name + ".queue"));
+            String value = setting.getProperty(name + ".thread");
+            if(value != null && !value.isEmpty()) {
+                threadCount = Integer.valueOf(value);
+            }
+
+            value = setting.getProperty(name + ".queue");
+            if(value != null && !value.isEmpty()) {
+                queueSize = Integer.valueOf(value);
+            }
+
             onStetting(setting);
         }catch (Throwable e){
             throw new SettingException("Setting configuration error",e);

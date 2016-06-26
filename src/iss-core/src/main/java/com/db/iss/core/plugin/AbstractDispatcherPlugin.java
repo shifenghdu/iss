@@ -57,9 +57,7 @@ public abstract class AbstractDispatcherPlugin extends AbstractMessagePlugin {
      * @throws PluginException
      */
     protected void backward(EsbMsg message) throws PluginException{
-        if(prePlugin != null){
-            prePlugin.transMessage(message,this);
-        }
+        prePlugin.transMessage(message,this);
     }
 
     /**

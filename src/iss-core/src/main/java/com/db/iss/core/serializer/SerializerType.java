@@ -7,13 +7,15 @@ package com.db.iss.core.serializer;
  */
 public enum  SerializerType {
 
-    MSGPACK(0,"msgpack"),JSON(1,"json");
+    MSGPACK("msgpack"),JSON("json");
 
-    private int value;
-    private String name;
+    private String value;
 
-    SerializerType(int value,String name){
+    SerializerType(String value){
         this.value = value;
-        this.name = name;
+    }
+
+    public String getValue() {
+        return value;
     }
 }

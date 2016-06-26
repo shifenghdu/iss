@@ -1,4 +1,4 @@
-package com.db.iss.dispatcher.proxy;
+package com.db.iss.dispatcher.proxy.reflect;
 
 import javassist.*;
 import org.slf4j.Logger;
@@ -35,8 +35,8 @@ public class DefaultReflectProxyFactory implements IReflectProxyFactory {
 
 
     public IReflectProxy createPoxy(String proxyName, Method method, Object target) throws Exception{
-        if(logger.isDebugEnabled()){
-            logger.debug("createPoxy {}",proxyName);
+        if(logger.isTraceEnabled()){
+            logger.trace("createPoxy {}",proxyName);
         }
         //创建代理对象
         ClassPool pool = ClassPool.getDefault();
@@ -63,7 +63,9 @@ public class DefaultReflectProxyFactory implements IReflectProxyFactory {
         //构建反射函数
         StringBuffer buffer = new StringBuffer();
         buildMethod(buffer,target,method);
-        logger.debug("proxy method code: {}",buffer.toString());
+        if(logger.isTraceEnabled()) {
+            logger.trace("proxy method code: {}", buffer.toString());
+        }
         m = CtNewMethod.make(buffer.toString(),proxyClass);
         proxyClass.addMethod(m);
 

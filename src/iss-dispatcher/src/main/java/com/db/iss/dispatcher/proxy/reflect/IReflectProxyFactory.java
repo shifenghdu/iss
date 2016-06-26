@@ -1,4 +1,4 @@
-package com.db.iss.dispatcher.proxy;
+package com.db.iss.dispatcher.proxy.reflect;
 
 import java.lang.reflect.Method;
 

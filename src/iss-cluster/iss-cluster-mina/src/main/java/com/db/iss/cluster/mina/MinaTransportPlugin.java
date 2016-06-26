@@ -1,6 +1,7 @@
 package com.db.iss.cluster.mina;
 
 import com.db.iss.core.cm.Setting;
+import com.db.iss.core.cm.SettingKey;
 import com.db.iss.core.plugin.PluginException;
 import com.db.iss.core.cm.SettingException;
 import com.db.iss.core.plugin.AbstractTransportPlugin;
@@ -27,7 +28,7 @@ public class MinaTransportPlugin extends AbstractTransportPlugin {
     private CompressorType compressorType = CompressorType.LZ4;
 
     public MinaTransportPlugin() {
-        super("cluster", "v1.0.0",ThreadMode.SHARED);
+        super("cluster-mina", "v1.0.0",ThreadMode.SHARED);
     }
 
     @Override
@@ -44,18 +45,18 @@ public class MinaTransportPlugin extends AbstractTransportPlugin {
 
     @Override
     protected void onStetting(Setting setting) throws SettingException {
-        String serializer = setting.getProperty("serializer");
-        if(serializer.equalsIgnoreCase("msgpack")){
+        String serializer = setting.getProperty(SettingKey.SERIALIZER.getValue());
+        if(serializer != null && serializer.equalsIgnoreCase(SerializerType.MSGPACK.getValue())){
             type = SerializerType.MSGPACK;
-        }else if(serializer.equalsIgnoreCase("json")){
+        }else if(serializer != null && serializer.equalsIgnoreCase(SerializerType.JSON.getValue())){
             type = SerializerType.JSON;
         }
 
-        String compressor = setting.getProperty("compressor");
-        if(compressor.equalsIgnoreCase("lz4")){
+        String compressor = setting.getProperty(SettingKey.COMPRESSOR.getValue());
+        if(compressor != null && compressor.equalsIgnoreCase(CompressorType.LZ4.getValue())){
             compressorType = CompressorType.LZ4;
-        }else{
-            compressorType = null;
+        } else {
+            compressorType = CompressorType.NULL;
         }
     }
 

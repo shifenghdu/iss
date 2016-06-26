@@ -21,7 +21,7 @@ public class CompressorFactory {
 
     public ICompressor getCompressor(CompressorType type){
         try {
-            if(type == null) return null;
+            if(type == CompressorType.NULL) return null;
             return (ICompressor) Class.forName(className.get(type)).newInstance();
         } catch (Throwable e) {
             logger.error("get compressor failed",e);

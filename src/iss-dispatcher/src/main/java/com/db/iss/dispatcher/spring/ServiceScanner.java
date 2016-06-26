@@ -52,7 +52,7 @@ public class ServiceScanner implements ApplicationContextAware {
                     String describe = (String) remote.annotationType().getDeclaredMethod("describe", null).invoke(remote, null);
                     String version = (String) remote.annotationType().getDeclaredMethod("version", null).invoke(remote, null);
                     Method[] methods = inter.getDeclaredMethods();
-                    logger.debug("remote service [{}] version [{}] ",inter.getName(),version);
+                    logger.debug("register remote service [{}] version [{}] ",inter.getName(),version);
                     for (Method method : methods) {
                         try {
                             logger.trace("register service [{}] method [{}] ",inter.getName(),method.getName());

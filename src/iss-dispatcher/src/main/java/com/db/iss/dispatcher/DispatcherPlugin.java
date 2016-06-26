@@ -2,6 +2,7 @@ package com.db.iss.dispatcher;
 
 import com.db.iss.core.cm.Setting;
 import com.db.iss.core.cm.SettingException;
+import com.db.iss.core.cm.SettingKey;
 import com.db.iss.core.plugin.AbstractDispatcherPlugin;
 import com.db.iss.core.plugin.EsbMsg;
 import com.db.iss.core.plugin.IMessagePlugin;
@@ -113,10 +114,10 @@ public class DispatcherPlugin extends AbstractDispatcherPlugin implements IMessa
 
     @Override
     protected void onStetting(Setting setting) throws SettingException {
-        String serializer = setting.getProperty("serializer");
-        if(serializer.equalsIgnoreCase("msgpack")){
+        String serializer = setting.getProperty(SettingKey.SERIALIZER.getValue());
+        if(serializer != null && serializer.equalsIgnoreCase(SerializerType.MSGPACK.getValue())){
             serializerWrapper.setSerializerType(SerializerType.MSGPACK);
-        }else if(serializer.equalsIgnoreCase("json")){
+        }else if(serializer != null && serializer.equalsIgnoreCase(SerializerType.JSON.getValue())){
             serializerWrapper.setSerializerType(SerializerType.JSON);
         }
     }
