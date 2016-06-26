@@ -5,7 +5,7 @@ package com.db.iss.dispatcher.proxy;
  * @author andy.shif
  * 反射代理接口
  */
-public interface IMethodProxy {
+public interface IReflectProxy {
 
     /**
      * 反射接口

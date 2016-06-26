@@ -1,7 +1,7 @@
 package com.db.iss.dispatcher.spring;
 
-import com.db.iss.dispatcher.proxy.MethodProxyFactory;
-import com.db.iss.dispatcher.proxy.IMethodProxy;
+import com.db.iss.dispatcher.proxy.DefaultReflectProxyFactory;
+import com.db.iss.dispatcher.proxy.IReflectProxy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
@@ -23,14 +23,14 @@ import java.util.concurrent.ConcurrentHashMap;
 public class ServiceMapper implements ApplicationContextAware {
 
     //代理映射map
-    private Map<String,IMethodProxy> proxyMap = new ConcurrentHashMap<>();
+    private Map<String,IReflectProxy> proxyMap = new ConcurrentHashMap<>();
     //spring上下文
     private ApplicationContext context;
 
     private Map<String,Class[]> paramsMap = new ConcurrentHashMap<>();
 
     @Autowired
-    private MethodProxyFactory proxyFactory;
+    private DefaultReflectProxyFactory proxyFactory;
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -60,7 +60,7 @@ public class ServiceMapper implements ApplicationContextAware {
      * @return
      */
     public Object invokeService(String namespace,String method,Object[] args) throws Throwable{
-        IMethodProxy proxy = proxyMap.get(String.format("%s#%s",namespace,method));
+        IReflectProxy proxy = proxyMap.get(String.format("%s#%s",namespace,method));
         long start = System.currentTimeMillis();
         Object result = proxy.invoke(args);
         long end = System.currentTimeMillis();

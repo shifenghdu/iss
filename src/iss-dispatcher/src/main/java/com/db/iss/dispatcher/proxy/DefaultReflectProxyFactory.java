@@ -15,16 +15,16 @@ import java.util.concurrent.ConcurrentHashMap;
  * 字节码反射动态代理工厂
  */
 @Service
-public class MethodProxyFactory implements IMethodProxyFactory {
+public class DefaultReflectProxyFactory implements IReflectProxyFactory {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private Map<String,IMethodProxy> proxyMap = new ConcurrentHashMap<>();
+    private Map<String,IReflectProxy> proxyMap = new ConcurrentHashMap<>();
 
     @Override
-    public IMethodProxy getProxy(Method method, Object target) throws Exception{
+    public IReflectProxy getProxy(Method method, Object target) throws Exception{
         String proxyName = String.format("%s#%s$Proxy",target.getClass().getName(),method.getName());
-        IMethodProxy proxy = proxyMap.get(proxyName);
+        IReflectProxy proxy = proxyMap.get(proxyName);
         if(proxy != null){
             return proxy;
         }
@@ -34,14 +34,14 @@ public class MethodProxyFactory implements IMethodProxyFactory {
     }
 
 
-    public IMethodProxy createPoxy(String proxyName, Method method, Object target) throws Exception{
+    public IReflectProxy createPoxy(String proxyName, Method method, Object target) throws Exception{
         if(logger.isDebugEnabled()){
             logger.debug("createPoxy {}",proxyName);
         }
         //创建代理对象
         ClassPool pool = ClassPool.getDefault();
         CtClass proxyClass = pool.makeClass(proxyName);
-        proxyClass.addInterface(pool.get(IMethodProxy.class.getName()));
+        proxyClass.addInterface(pool.get(IReflectProxy.class.getName()));
         CtClass targetClass = pool.get(target.getClass().getName());
 
         //设置被代理对象
@@ -68,7 +68,7 @@ public class MethodProxyFactory implements IMethodProxyFactory {
         proxyClass.addMethod(m);
 
         //实例化代理对象
-        IMethodProxy proxy = (IMethodProxy) proxyClass.toClass().newInstance();
+        IReflectProxy proxy = (IReflectProxy) proxyClass.toClass().newInstance();
         proxy.setTarget(target);
         return proxy;
     }

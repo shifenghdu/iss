@@ -1,5 +1,7 @@
 package com.db.iss.dispatcher.future;
 
+import com.db.iss.core.exception.TimeoutException;
+
 /**
  * Created by andy on 16/6/25.
  * @author andy.shif
@@ -12,7 +14,7 @@ public interface IFuture<T> {
      * @param timeout
      * @return
      */
-    T get(long timeout);
+    T get(long timeout) throws TimeoutException;
 
 
     /**

@@ -7,10 +7,9 @@ import com.db.iss.core.plugin.IMessagePlugin;
 import com.db.iss.core.serializer.ISerializer;
 import com.db.iss.core.serializer.SerializerFactory;
 import com.db.iss.core.serializer.SerializerType;
-import com.db.iss.core.util.HexUtil;
 import com.db.iss.dispatcher.annotation.Remote;
-import com.db.iss.dispatcher.proxy.IMethodProxy;
-import com.db.iss.dispatcher.proxy.IMethodProxyFactory;
+import com.db.iss.dispatcher.proxy.IReflectProxy;
+import com.db.iss.dispatcher.proxy.IReflectProxyFactory;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -24,9 +23,7 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 /**
  * Created by apple on 16/6/25.
@@ -39,7 +36,7 @@ public class SpringInvoke implements ApplicationContextAware {
     private ApplicationContext context;
 
     @Autowired
-    private IMethodProxyFactory methodProxyFactory;
+    private IReflectProxyFactory methodProxyFactory;
 
     @Autowired
     private IMessagePlugin messagePlugin;
@@ -56,22 +53,22 @@ public class SpringInvoke implements ApplicationContextAware {
     @Test
     public void proxyTests() throws Throwable {
         try {
-            IMethodProxyFactory factory = methodProxyFactory;
-            Class type = Class.forName("IDemo");
+            IReflectProxyFactory factory = methodProxyFactory;
+            Class type = Class.forName("com.db.iss.dispatcher.IDemo");
             Object object = context.getBean(type);
-            Method method = object.getClass().getDeclaredMethod("call",new Class[]{int.class,int.class,Object.class});
-            IMethodProxy invoke = factory.getProxy(method,object);
+            Method method = object.getClass().getDeclaredMethod("call",new Class[]{int.class,int.class,String.class});
+            IReflectProxy invoke = factory.getProxy(method,object);
 
             long start = System.currentTimeMillis();
             for(int i=0; i< 10000000; i++) {
-                invoke.invoke(new Object[]{1, 2, type});
+                invoke.invoke(new Object[]{1, 2, "123"});
             }
             long end = System.currentTimeMillis();
             System.out.println("bytecode " + (end - start) + " ms");
 
             start = System.currentTimeMillis();
             for(int i=0; i< 10000000; i++) {
-                method.invoke(object, new Object[]{1, 2, type});
+                method.invoke(object, new Object[]{1, 2, "123"});
             }
             end = System.currentTimeMillis();
             System.out.println("reflect " + (end - start) + " ms");

@@ -7,7 +7,7 @@ import java.lang.reflect.Method;
  * @author andy.shif
  * 反射代理工厂
  */
-public interface IMethodProxyFactory {
+public interface IReflectProxyFactory {
 
     /**
      * 获取方法反射代理
@@ -15,6 +15,6 @@ public interface IMethodProxyFactory {
      * @param target 被代理对象
      * @return
      */
-    IMethodProxy getProxy(Method method, Object target) throws Exception;
+    IReflectProxy getProxy(Method method, Object target) throws Exception;
 
 }

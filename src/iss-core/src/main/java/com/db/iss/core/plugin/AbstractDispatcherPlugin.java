@@ -15,7 +15,11 @@ public abstract class AbstractDispatcherPlugin extends AbstractMessagePlugin {
     protected void handleMessage(EsbMsg message, IMessagePlugin sender) throws PluginException {
         total.incrementAndGet();
         try {
-            sender.transMessage(this.onHandler(message), this);
+            if(message.getMsgtype() == EsbMsg.MSGTYPE_REQ) {
+                sender.transMessage(this.onRequest(message), this);
+            }else{
+                this.onResponse(message);
+            }
         }catch (Throwable e){
             error.incrementAndGet();
             throw new PluginException(String.format("Plugin %s handler message failed",getNamespace()),e);
@@ -59,12 +63,21 @@ public abstract class AbstractDispatcherPlugin extends AbstractMessagePlugin {
     }
 
     /**
-     * 业务处理
+     * 请求处理
      * @param message
      * @return
      * @throws PluginException
      */
-    protected abstract EsbMsg onHandler(EsbMsg message) throws PluginException;
+    protected abstract EsbMsg onRequest(EsbMsg message) throws PluginException;
+
+
+    /**
+     *  返回处理
+     * @param message
+     * @return
+     * @throws PluginException
+     */
+    protected abstract void onResponse(EsbMsg message) throws PluginException;
 
 
 }
