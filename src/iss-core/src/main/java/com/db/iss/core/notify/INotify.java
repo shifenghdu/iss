@@ -7,8 +7,10 @@ package com.db.iss.core.notify;
  */
 public interface INotify {
 
-    void publish(String namespace,Object message);
+    void createNamespace(String namespace);
 
-    void setHandler(INotifyHandler handler);
+    void publish(String topic,byte[] message);
+
+    void subscribe(String topic,INotifyHandler handler);
 
 }

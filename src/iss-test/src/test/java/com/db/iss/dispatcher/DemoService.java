@@ -1,6 +1,7 @@
 package com.db.iss.dispatcher;
 
 import com.db.iss.core.plugin.EsbMsg;
+import com.db.iss.dispatcher.IDemo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;

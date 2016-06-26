@@ -51,6 +51,10 @@
             <artifactId>spring-context</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.github.sgroschupf</groupId>
+            <artifactId>zkclient</artifactId>
+        </dependency>
     </dependencies>
 
 

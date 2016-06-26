@@ -9,6 +9,6 @@ import java.util.Objects;
  */
 public interface INotifyHandler {
 
-    void onMessage(Object message);
+    void onMessage(byte[] message);
 
 }
