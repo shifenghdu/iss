@@ -1,5 +1,0 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<component>
-    <contexts>spring-ctx.xml</contexts>
-    <scanner package="com.x1501.iss.core.component"/>
-</component>

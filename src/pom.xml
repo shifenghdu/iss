@@ -14,9 +14,9 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <org.springframework.version>4.0.6.RELEASE</org.springframework.version>
         <jdk.version>1.7</jdk.version>
-        <msgpack.version>0.6.11</msgpack.version>
         <cglib.version>2.2.2</cglib.version>
         <javassist.version>3.18.1-GA</javassist.version>
+        <msgpack.version>0.8.7</msgpack.version>
     </properties>
 
     <dependencyManagement>
@@ -30,32 +30,7 @@
             <!-- iss -->
             <dependency>
                 <groupId>com.db</groupId>
-                <artifactId>iss-common</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.db</groupId>
-                <artifactId>iss-connector</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.db</groupId>
-                <artifactId>iss-client</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.db</groupId>
-                <artifactId>iss.base.spring-integration</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.db</groupId>
                 <artifactId>iss-core</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>com.db</groupId>
-                <artifactId>iss-trade-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
@@ -64,25 +39,38 @@
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-context</artifactId>
                 <version>${org.springframework.version}</version>
+                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-core</artifactId>
                 <version>${org.springframework.version}</version>
+                <scope>provided</scope>
             </dependency>
             <dependency>
                 <groupId>org.springframework</groupId>
                 <artifactId>spring-aop</artifactId>
                 <version>${org.springframework.version}</version>
+                <scope>provided</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.springframework</groupId>
+                <artifactId>spring-test</artifactId>
+                <version>${org.springframework.version}</version>
+                <scope>test</scope>
             </dependency>
 
             <!-- msgpack -->
             <dependency>
                 <groupId>org.msgpack</groupId>
-                <artifactId>msgpack</artifactId>
+                <artifactId>msgpack-core</artifactId>
                 <version>${msgpack.version}</version>
             </dependency>
-
+            <dependency>
+                <groupId>org.msgpack</groupId>
+                <artifactId>jackson-dataformat-msgpack</artifactId>
+                <version>${msgpack.version}</version>
+            </dependency>
             <!-- cglib -->
             <dependency>
                 <groupId>cglib</groupId>
@@ -206,13 +194,13 @@
     </distributionManagement>
 
     <modules>
-        <module>iss-common</module>
-        <module>iss-connector</module>
-        <module>iss-client</module>
-        <module>iss-dispatcher</module>
+        <module>iss-cm</module>
         <module>iss-core</module>
+        <module>iss-cluster</module>
+        <module>iss-logger</module>
+        <module>iss-dispatcher</module>
+        <module>iss-registry</module>
         <module>iss-launcher</module>
-        <module>iss-trade</module>
     </modules>
     <developers>
         <developer>
