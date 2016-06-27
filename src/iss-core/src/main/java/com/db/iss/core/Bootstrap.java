@@ -1,20 +1,22 @@
-package com.db.iss.core.cm;
+package com.db.iss.core;
 
+import com.db.iss.core.cm.IConfigurable;
+import com.db.iss.core.cm.Setting;
+import com.db.iss.core.cm.SettingKey;
+import com.db.iss.core.cm.SettingLoader;
 import com.db.iss.core.plugin.AbstractDispatcherPlugin;
 import com.db.iss.core.plugin.AbstractTransportPlugin;
 import com.db.iss.core.plugin.IMessagePlugin;
-import com.db.iss.core.plugin.IPlugin;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Map;
-import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -27,16 +29,16 @@ public class Bootstrap implements ApplicationContextAware {
 
     private ApplicationContext context;
 
-    private String pipe = "cluster-mina | dispatcher";
-
     private Map<String,IMessagePlugin> pluginMap = new ConcurrentHashMap<>();
+
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.context = applicationContext;
-        this.loadPlugins();
-        this.onStart();
+        loadPlugins();
+        onStart();
     }
 
     /**
@@ -51,23 +53,19 @@ public class Bootstrap implements ApplicationContextAware {
     }
 
     /**
-     * 启动配置
+     * 装配插件
      */
     private void onStart() {
-        String[] names = pipe.split("\\|");
-        Setting setting = new Setting();
-        Properties properties = new Properties();
+        Setting setting = SettingLoader.getSetting();
+        String[] names = setting.getProperty(SettingKey.PIPE.getValue()).split("\\|");
+        String node = "default";
         try {
-            properties.load(Thread.currentThread().getContextClassLoader().getResourceAsStream("iss.properties"));
-        } catch (IOException e) {
-            System.out.println("load classpath iss.properties failed");
+            node = InetAddress.getLocalHost().toString();
+        } catch (UnknownHostException e) {
+            logger.error("get local address by host name failed",e);
+            System.exit(0);
         }
-        setting.setProperties(properties);
-        String value = setting.getProperty(SettingKey.PIPE.getValue());
-        if(value != null && !value.isEmpty()){
-            pipe = value;
-        }
-
+        logger.info("node [{}] wait for start",node);
         int current = 0;
         IMessagePlugin pre = null;
         for(String name : names){
@@ -80,20 +78,21 @@ public class Bootstrap implements ApplicationContextAware {
                 throw new RuntimeException("pipe tail must dispatcher plugin");
             }
             try {
+                plugin.setNode(node);
                 ((IConfigurable) plugin).setSetting(setting);
                 plugin.setPre(pre);
                 plugin.start();
-
             }catch (Throwable e){
-                e.printStackTrace();
+                logger.error("iss start failed",e);
             }
             if(pre != null){
                 pre.setNext(plugin);
             }
             pre = plugin;
             current ++;
+            logger.info("plugin [{}] start success",name);
         }
-
+        logger.info("node [{}] start success",node);
     }
 }
 

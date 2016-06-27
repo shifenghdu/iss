@@ -11,7 +11,10 @@ public enum SettingKey {
 
     COMPRESSOR("iss.compressor"),   // lz4
 
+    REGISTRY("iss.registry"), // zookeeper://127.0.0.1:2181,zookeeper://127.0.0.1:2182
+
     PIPE("iss.pipe"); // 消息处理链  cluster | dispatcher
+
 
 
 

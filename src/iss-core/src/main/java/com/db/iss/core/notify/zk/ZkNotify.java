@@ -1,6 +1,5 @@
 package com.db.iss.core.notify.zk;
 
-import com.alibaba.fastjson.JSON;
 import com.db.iss.core.notify.INotify;
 import com.db.iss.core.notify.INotifyHandler;
 import org.I0Itec.zkclient.IZkChildListener;
@@ -19,12 +18,16 @@ public class ZkNotify implements INotify{
 
     private String namespace;
 
+    private final int SESSION_TIME_OUT = 10000;
+
+    private final int CONNECT_TIME_OUT = 10000;
+
     public ZkNotify(String address){
-        zkClient = new ZkClient(address,10000,1000);
+        zkClient = new ZkClient(address,SESSION_TIME_OUT,CONNECT_TIME_OUT);
     }
 
     @Override
-    public void createNamespace(String namespace) {
+    public void setNamespace(String namespace) {
         this.namespace = namespace.replaceAll("\\.","\\/");
         if(zkClient.exists(namespace)){
             zkClient.createPersistent(this.namespace,true);

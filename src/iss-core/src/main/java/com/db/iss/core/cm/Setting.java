@@ -1,6 +1,8 @@
 package com.db.iss.core.cm;
 
+import java.util.Map;
 import java.util.Properties;
+import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * Created by andy on 2016/6/19.
@@ -9,7 +11,7 @@ import java.util.Properties;
  */
 public class Setting {
 
-    private Properties properties;
+    private Map<Object,Object> properties = new ConcurrentHashMap<>();
 
     //配置版本号
     private Integer version;
@@ -23,11 +25,11 @@ public class Setting {
     }
 
     public void setProperties(Properties properties){
-        this.properties = properties;
+        this.properties.putAll(properties);
     }
 
     public String getProperty(String key){
-        return properties.getProperty(key);
+        return (String)properties.get(key);
     }
 
     public void setProperty(String key,String value){

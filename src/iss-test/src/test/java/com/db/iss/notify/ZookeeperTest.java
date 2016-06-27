@@ -6,6 +6,8 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.List;
 
 /**
@@ -36,5 +38,11 @@ public class ZookeeperTest {
             e.printStackTrace();
         }
 
+    }
+
+    @Test
+    public void getIp() throws UnknownHostException {
+        InetAddress addr = InetAddress.getLocalHost();
+        logger.debug("{}",addr.getHostAddress());//获得本机IP
     }
 }

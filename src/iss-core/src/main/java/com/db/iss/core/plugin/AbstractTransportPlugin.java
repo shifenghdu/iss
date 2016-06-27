@@ -23,7 +23,7 @@ public abstract class AbstractTransportPlugin extends AbstractMessagePlugin {
 
     @Override
     protected void handleMessage(EsbMsg message, IMessagePlugin sender) throws PluginException {
-        this.onBackward(message);
+        this.writeEndpoint(message);
     }
 
     /**

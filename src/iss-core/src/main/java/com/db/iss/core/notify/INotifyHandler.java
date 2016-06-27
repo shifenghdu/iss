@@ -9,6 +9,10 @@ import java.util.Objects;
  */
 public interface INotifyHandler {
 
+    /**
+     * 消息回调接口
+     * @param message
+     */
     void onMessage(byte[] message);
 
 }

@@ -218,7 +218,6 @@
         <module>iss-cluster</module>
         <module>iss-logger</module>
         <module>iss-dispatcher</module>
-        <module>iss-registry</module>
         <module>iss-launcher</module>
         <module>iss-test</module>
     </modules>

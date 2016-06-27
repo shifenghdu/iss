@@ -7,7 +7,11 @@ package com.db.iss.core.notify;
  */
 public interface INotify {
 
-    void createNamespace(String namespace);
+    /**
+     * 设置namespace
+     * @param namespace
+     */
+    void setNamespace(String namespace);
 
     void publish(String topic,byte[] message);
 

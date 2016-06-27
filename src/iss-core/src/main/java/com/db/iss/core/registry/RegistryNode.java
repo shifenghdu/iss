@@ -1,6 +1,7 @@
 package com.db.iss.core.registry;
 
 import java.net.URL;
+import java.util.List;
 
 /**
  * Created by adny on 16/6/25.
@@ -13,6 +14,8 @@ public class RegistryNode {
     private String node;
     //节点URL
     private URL url;
+    //命名空间名称(接口名)
+    private List<String> namespaces;
 
 
     public String getNode() {
