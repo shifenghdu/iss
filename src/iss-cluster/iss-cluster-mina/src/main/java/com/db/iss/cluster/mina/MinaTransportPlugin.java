@@ -1,13 +1,13 @@
 package com.db.iss.cluster.mina;
 
 import com.db.iss.core.cm.Setting;
-import com.db.iss.core.cm.SettingKey;
-import com.db.iss.core.plugin.PluginException;
 import com.db.iss.core.cm.SettingException;
+import com.db.iss.core.cm.SettingKey;
+import com.db.iss.core.compressor.CompressorType;
 import com.db.iss.core.plugin.AbstractTransportPlugin;
 import com.db.iss.core.plugin.EsbMsg;
+import com.db.iss.core.plugin.PluginException;
 import com.db.iss.core.registry.RegistryNode;
-import com.db.iss.core.compressor.CompressorType;
 import com.db.iss.core.serializer.SerializerType;
 import org.springframework.stereotype.Service;
 
@@ -61,15 +61,20 @@ public class MinaTransportPlugin extends AbstractTransportPlugin {
     }
 
     @Override
-    protected EsbMsg onBackward(EsbMsg message) throws PluginException {
-        RegistryNode node = registry.getNode(message.getNamespace());
-        if(node != null) {
-            if (!connector.write(node.getNode(), node.getUrl(), message)) {
-                throw new PluginException("write message to endpoint failed " + message);
+    protected void writeEndpoint(EsbMsg message) throws PluginException {
+        if(message.getMsgtype() == EsbMsg.MSGTYPE_REQ) { //request
+            RegistryNode node = registry.getNode(message.getNamespace());
+            if (node != null) {
+                if (!connector.write(node.getNode(), node.getUrl(), message)) {
+                    throw new PluginException("write request message to endpoint failed " + message);
+                }
+            } else {
+                logger.error("namespace {} not found", message.getNamespace());
             }
-        }else {
-            logger.error("namespace {} not found",message.getNamespace());
+        } else { //response
+            if(!acceptor.write(message)){
+                throw new PluginException("write response message to endpoint failed " + message);
+            }
         }
-        return null;
     }
 }

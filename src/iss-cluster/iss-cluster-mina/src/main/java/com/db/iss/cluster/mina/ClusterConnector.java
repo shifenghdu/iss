@@ -1,10 +1,10 @@
 package com.db.iss.cluster.mina;
 
+import com.db.iss.cluster.mina.codec.ClusterCodecFactory;
 import com.db.iss.cluster.mina.handler.ClientMsgHandler;
+import com.db.iss.core.compressor.CompressorType;
 import com.db.iss.core.plugin.AbstractTransportPlugin;
 import com.db.iss.core.plugin.EsbMsg;
-import com.db.iss.cluster.mina.codec.ClusterCodecFactory;
-import com.db.iss.core.compressor.CompressorType;
 import com.db.iss.core.serializer.SerializerType;
 import org.apache.mina.core.filterchain.DefaultIoFilterChainBuilder;
 import org.apache.mina.core.future.ConnectFuture;
@@ -27,8 +27,6 @@ public class ClusterConnector {
     private NioSocketConnector connector = null;
 
     private int CONNECT_TIME_OUT = 5000;
-
-    private final int RETRY_INTERVAL = 10000;
 
     private final int RETRY_TIMES = 3;
 
@@ -61,39 +59,46 @@ public class ClusterConnector {
         return session;
     }
 
-    public boolean write(String node,URL url,EsbMsg msg){
+    /**
+     * 获取session
+     * @param node
+     * @param url
+     * @return
+     */
+    public IoSession getSession(String node,URL url){
         IoSession session = sessionMap.get(node);
+        if(session == null || session.isClosing()){
+            synchronized (this) {
+                session = sessionMap.get(node); //再次检查 避免并发情况下重复链接
+                if(session == null || session.isClosing()) {
+                    session = connect(node, url);
+                }
+            }
+        }
+        return session;
+    }
+
+    /**
+     * 写入数据
+     * @param node
+     * @param url
+     * @param msg
+     * @return
+     */
+    public boolean write(String node,URL url,EsbMsg msg){
+        IoSession session = getSession(node,url);
         int times = 0;
         while(times < RETRY_TIMES) {
             times ++;
             WriteFuture future = session.write(msg, new InetSocketAddress(url.getHost(), url.getPort()));
             future.awaitUninterruptibly();
-            if(future.isWritten()){
+            if (future.isWritten()) {
                 return true;
             }
         }
+        logger.error("url [{}] write request message[{}] error",url,msg);
         session.close(true);
         return false;
-    }
-
-    public void reconnect(final String node,final URL url) {
-        Thread thread = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                IoSession session = null;
-                while (session == null) {
-                    try {
-                        Thread.sleep(RETRY_INTERVAL);
-                        session = connect(node,url);
-                    } catch (Throwable e) {
-                        logger.error("reconnect failed {} {}", node,url);
-                    }
-                }
-                session.setAttribute("node", node);
-                session.setAttribute("url", url);
-            }
-        });
-        thread.start();
     }
 
     @Override

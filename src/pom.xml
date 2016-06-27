@@ -214,7 +214,6 @@
     </distributionManagement>
 
     <modules>
-        <module>iss-cm</module>
         <module>iss-core</module>
         <module>iss-cluster</module>
         <module>iss-logger</module>

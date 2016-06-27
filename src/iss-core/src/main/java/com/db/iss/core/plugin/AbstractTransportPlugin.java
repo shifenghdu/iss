@@ -2,7 +2,6 @@ package com.db.iss.core.plugin;
 
 import com.db.iss.core.alarm.AlarmLevel;
 import com.db.iss.core.registry.IRegistry;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Created by andy on 16/6/20.
@@ -37,6 +36,14 @@ public abstract class AbstractTransportPlugin extends AbstractMessagePlugin {
     protected EsbMsg onForward(EsbMsg message) throws PluginException {
         return null;
     }
+
+    @Deprecated
+    @Override
+    protected EsbMsg onBackward(EsbMsg message) throws PluginException {
+        return null;
+    }
+
+    protected abstract void writeEndpoint(EsbMsg message) throws PluginException;
 
     /**
      * 向next传递消息
