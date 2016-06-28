@@ -5,7 +5,7 @@ package com.db.iss.core.exception;
  * @author andy.shif
  * 远程服务异常
  */
-public class RemoteException extends RuntimeException {
+public class RemoteException extends ISSException {
 
     public RemoteException() {
 

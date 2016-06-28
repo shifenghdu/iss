@@ -5,7 +5,7 @@ package com.db.iss.core.exception;
  * @author andy.shi
  * ISS 基础异常
  */
-public class ISSException extends Exception {
+public class ISSException extends RuntimeException {
 
     public ISSException() {
     }

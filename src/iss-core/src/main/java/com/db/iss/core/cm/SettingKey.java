@@ -13,6 +13,10 @@ public enum SettingKey {
 
     REGISTRY("iss.registry"), // zookeeper://127.0.0.1:2181,zookeeper://127.0.0.1:2182
 
+    NODE("iss.node"), //节点名称
+
+    LISTEN("iss.listen"), //服务监听端口
+
     PIPE("iss.pipe"); // 消息处理链  cluster | dispatcher
 
 

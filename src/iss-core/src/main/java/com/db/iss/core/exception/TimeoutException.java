@@ -5,10 +5,9 @@ package com.db.iss.core.exception;
  * @author andy.shif
  * 超时异常
  */
-public class TimeoutException extends RuntimeException {
+public class TimeoutException extends ISSException {
 
     public TimeoutException() {
-
     }
 
     public TimeoutException(String message) {

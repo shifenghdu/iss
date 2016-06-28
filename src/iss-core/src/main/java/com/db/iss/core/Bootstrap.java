@@ -14,8 +14,6 @@ import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -58,13 +56,7 @@ public class Bootstrap implements ApplicationContextAware {
     private void onStart() {
         Setting setting = SettingLoader.getSetting();
         String[] names = setting.getProperty(SettingKey.PIPE.getValue()).split("\\|");
-        String node = "default";
-        try {
-            node = InetAddress.getLocalHost().toString();
-        } catch (UnknownHostException e) {
-            logger.error("get local address by host name failed",e);
-            System.exit(0);
-        }
+        String node = setting.getProperty(SettingKey.NODE.getValue());
         logger.info("node [{}] wait for start",node);
         int current = 0;
         IMessagePlugin pre = null;

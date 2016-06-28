@@ -19,8 +19,12 @@ public class SettingLoader {
         setProperty(SettingKey.SERIALIZER.getValue(),"json");
         setProperty(SettingKey.COMPRESSOR.getValue(),"lz4");
         setProperty(SettingKey.PIPE.getValue(),"cluster-mina|dispatcher");
-        setProperty(SettingKey.REGISTRY.getValue(),"");
+        setProperty(SettingKey.LISTEN.getValue(),"9001");
     }};
+
+    private static String[] checking = new String[]{
+            SettingKey.REGISTRY.getValue(),SettingKey.NODE.getValue()
+    };
 
     /**
      * 载入配置
@@ -33,10 +37,23 @@ public class SettingLoader {
             System.err.println("load classpath iss.properties failed");
         }
         setting.setProperties(properties);
+        if(!checkSetting()){
+            throw new SettingException(String.format("required settings not found %s",checking.toString()));
+        }
     }
 
     public static Setting getSetting(){
         return setting;
+    }
+
+    public static boolean checkSetting(){
+        for(String check : checking){
+            String s = setting.getProperty(check);
+            if(s == null || s.isEmpty()){
+                return false;
+            }
+        }
+        return true;
     }
 
 
