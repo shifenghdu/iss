@@ -4,10 +4,8 @@ import com.db.iss.core.alarm.AlarmLevel;
 import com.db.iss.core.cm.Setting;
 import com.db.iss.core.cm.SettingException;
 
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.LinkedBlockingQueue;
-import java.util.concurrent.ThreadPoolExecutor;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
@@ -22,7 +20,7 @@ public abstract class AbstractMessagePlugin extends AbstractPlugin implements IM
     //线程池
     protected ExecutorService threadPool;
     //线程数
-    protected Integer threadCount = 10;
+    protected Integer threadCount = Runtime.getRuntime().availableProcessors() * 2;
     //队列大小
     protected Integer queueSize = 10000;
     //线程模型
@@ -70,12 +68,36 @@ public abstract class AbstractMessagePlugin extends AbstractPlugin implements IM
         }
     }
 
+    private class PoolThreadFactory implements ThreadFactory {
+        private final ThreadGroup group;
+        private final AtomicInteger threadNumber = new AtomicInteger(1);
+        private final String namePrefix;
+
+        PoolThreadFactory() {
+            SecurityManager s = System.getSecurityManager();
+            group = (s != null) ? s.getThreadGroup() :
+                    Thread.currentThread().getThreadGroup();
+            namePrefix = name + "-pool-thread-";
+        }
+
+        public Thread newThread(Runnable r) {
+            Thread t = new Thread(group, r,
+                    namePrefix + threadNumber.getAndIncrement(),
+                    0);
+            if (t.isDaemon())
+                t.setDaemon(false);
+            if (t.getPriority() != Thread.NORM_PRIORITY)
+                t.setPriority(Thread.NORM_PRIORITY);
+            return t;
+        }
+    }
+
     @Override
     public void start() throws PluginException {
         try {
             if (mode == ThreadMode.ISOLATE) {
                 inQueue = new LinkedBlockingQueue<Runnable>(queueSize);
-                threadPool = new ThreadPoolExecutor(threadCount, threadCount, 0, TimeUnit.SECONDS, inQueue);
+                threadPool = new ThreadPoolExecutor(threadCount, threadCount, 0, TimeUnit.SECONDS, inQueue,new PoolThreadFactory());
             }
             onStart();
         }catch (Throwable e) {

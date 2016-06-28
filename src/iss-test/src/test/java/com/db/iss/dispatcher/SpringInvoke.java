@@ -26,6 +26,8 @@ import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
 import java.lang.reflect.Method;
 import java.util.*;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.atomic.AtomicLong;
 
 /**
  * Created by andy on 16/6/25.
@@ -33,7 +35,7 @@ import java.util.*;
 @Service
 @RunWith(SpringJUnit4ClassRunner.class)
 @ContextConfiguration(locations = "classpath:spring-ctx.xml")
-public class SpringInvoke implements ApplicationContextAware {
+public class SpringInvoke implements ApplicationContextAware ,Runnable{
 
     private ApplicationContext context;
 
@@ -49,6 +51,10 @@ public class SpringInvoke implements ApplicationContextAware {
 
     @Autowired
     private IRemoteServiceProvider serviceProvider;
+
+    private AtomicLong count;
+
+    private CountDownLatch single;
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -168,8 +174,36 @@ public class SpringInvoke implements ApplicationContextAware {
 
 
     @Test
-    public void serviceProxy(){
-        IDemo demo = serviceProvider.getService(IDemo.class);
-        logger.error("{}",demo.hello("andy.shif"));
+    public void serviceProxy() throws InterruptedException {
+        int TIMES = 100000;
+        int THREAD = 1;
+
+
+        count = new AtomicLong(TIMES);
+        single = new CountDownLatch(THREAD);
+
+
+        long start = System.currentTimeMillis();
+
+        for(int i=0 ;i< THREAD; i++){
+            new Thread(this).start();
+        }
+        single.await();
+
+        long end = System.currentTimeMillis();
+
+        logger.error("msgpack time [{}] tps",TIMES/(end - start)*1000);
+
+    }
+
+    @Override
+    public void run() {
+        long cur = count.get();
+        while(cur > 0){
+            IDemo demo = serviceProvider.getService(IDemo.class);
+            String response = demo.hello("andy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifshifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifshifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shif");
+            cur = count.decrementAndGet();
+        }
+        single.countDown();
     }
 }

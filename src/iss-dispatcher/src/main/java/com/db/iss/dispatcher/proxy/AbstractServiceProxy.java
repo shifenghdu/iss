@@ -32,7 +32,7 @@ public abstract class AbstractServiceProxy implements IServiceProxy{
 
     private IMessageSend messageSend;
 
-    private long timeout = 10000L;
+    private long timeout = 30000L;  //默认超时30s
 
     protected Object invoke(String namespace,String method,Object[] args,Class<?> returnType) {
         total.incrementAndGet();
