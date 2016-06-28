@@ -2,6 +2,7 @@ package com.db.iss.core.plugin;
 
 import com.db.iss.core.alarm.AlarmLevel;
 import com.db.iss.core.registry.IRegistry;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Created by andy on 16/6/20.
@@ -10,7 +11,7 @@ import com.db.iss.core.registry.IRegistry;
  */
 public abstract class AbstractTransportPlugin extends AbstractMessagePlugin {
 
-//    @Autowired
+    @Autowired
     protected IRegistry registry;
 
     public AbstractTransportPlugin(String name, String version) {

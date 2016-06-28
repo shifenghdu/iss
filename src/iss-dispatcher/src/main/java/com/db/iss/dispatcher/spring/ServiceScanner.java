@@ -1,5 +1,6 @@
 package com.db.iss.dispatcher.spring;
 
+import com.db.iss.core.registry.IRegistry;
 import com.db.iss.dispatcher.annotation.Remote;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -8,6 +9,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.stereotype.Service;
+
 import java.lang.reflect.Method;
 import java.util.Map;
 
@@ -26,8 +28,8 @@ public class ServiceScanner implements ApplicationContextAware {
 
     private ApplicationContext context;
 
-//    @Autowired
-//    private IRegistry registry;
+    @Autowired
+    private IRegistry registry;
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
@@ -52,6 +54,7 @@ public class ServiceScanner implements ApplicationContextAware {
                     String describe = (String) remote.annotationType().getDeclaredMethod("describe", null).invoke(remote, null);
                     String version = (String) remote.annotationType().getDeclaredMethod("version", null).invoke(remote, null);
                     Method[] methods = inter.getDeclaredMethods();
+                    registry.register(inter.getName());
                     logger.debug("register remote service [{}] version [{}] ",inter.getName(),version);
                     for (Method method : methods) {
                         try {
