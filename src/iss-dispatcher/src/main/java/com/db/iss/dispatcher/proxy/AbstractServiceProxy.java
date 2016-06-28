@@ -34,7 +34,7 @@ public abstract class AbstractServiceProxy implements IServiceProxy{
 
     private long timeout = 10000L;
 
-    protected Object invoke(String namespace,String method,Object[] args) {
+    protected Object invoke(String namespace,String method,Object[] args,Class<?> returnType) {
         total.incrementAndGet();
         try {
             if(logger.isDebugEnabled()){
@@ -57,7 +57,7 @@ public abstract class AbstractServiceProxy implements IServiceProxy{
             }else{
                 List<byte[]> list = response.getContent();
                 if(list != null && list.size() >= 1){
-                    return serializerWrapper.getSerializer().decode(list.get(0),EsbMsg.class);
+                    return serializerWrapper.getSerializer().decode(list.get(0),returnType);
                 }
             }
 

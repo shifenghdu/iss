@@ -37,9 +37,7 @@ public class SettingLoader {
             System.err.println("load classpath iss.properties failed");
         }
         setting.setProperties(properties);
-        if(!checkSetting()){
-            throw new SettingException(String.format("required settings not found %s",checking.toString()));
-        }
+        checkSetting();
     }
 
     public static Setting getSetting(){
@@ -50,7 +48,7 @@ public class SettingLoader {
         for(String check : checking){
             String s = setting.getProperty(check);
             if(s == null || s.isEmpty()){
-                return false;
+                throw new SettingException(String.format("required settings not found %s",check));
             }
         }
         return true;

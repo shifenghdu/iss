@@ -31,7 +31,7 @@ public class EsbMsg {
     public static final int ESB_BIZ_EXECUTE_ERR = 4;
     public static final String ESB_BIZ_EXECUTE_ERR_MSG = "业务处理错误";
 
-    private String version;
+    private String version = CURRENT_VERSION;
     //返回码
     private int retcode;
     //返回消息
@@ -123,9 +123,8 @@ public class EsbMsg {
 
     @Override
     public String toString() {
-        return String
-                .format("msgtype:[%d] namespace:[%d] method:[%d] sender:[%s|%s] next[%s] session[%d]",
-                        msgtype, namespace, method, sendname, sendarg, nextnode, sessionId);
+        return String.format("msgtype:[%d] namespace:[%s] method:[%s] ",
+                        msgtype, namespace, method);
     }
 
     public Long getPackageid() {

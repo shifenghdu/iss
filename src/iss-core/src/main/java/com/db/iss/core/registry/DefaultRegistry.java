@@ -4,8 +4,12 @@ import com.alibaba.fastjson.JSON;
 import com.db.iss.core.cm.SettingException;
 import com.db.iss.core.cm.SettingKey;
 import com.db.iss.core.cm.SettingLoader;
+import com.db.iss.core.registry.url.ExtendURLStreamHandlerFactory;
 import org.I0Itec.zkclient.IZkChildListener;
+import org.I0Itec.zkclient.IZkDataListener;
 import org.I0Itec.zkclient.ZkClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
@@ -26,7 +30,8 @@ public class DefaultRegistry implements IRegistry,IZkChildListener {
 
     private ZkClient zkClient;
 
-    private final String DEFAULT_ROOT_NODE = "/com/db/iss/registry";
+    private final String DEFAULT_STATUS_ROOT_NODE = "/com/db/iss/registry/nodes";
+    private final String DEFAULT_INFO_ROOT_NODE = "/com/db/iss/registry/info";
 
     private final int SESSION_TIME_OUT = 10000;
 
@@ -46,9 +51,13 @@ public class DefaultRegistry implements IRegistry,IZkChildListener {
     //本地注册信息
     private RegistryNode registryNode;
     //本节点zk节点路径
-    private String zkNodePath;
+    private String zkNodeStatusPath;
+    //本节点zk节点路径
+    private String zkNodeInfoPath;
     //注册信息映射表
     private Map<String,RegistryNode> registryMap = new ConcurrentHashMap<>();
+
+    private Logger logger = LoggerFactory.getLogger(this.getClass());
 
 
     @PostConstruct
@@ -58,19 +67,25 @@ public class DefaultRegistry implements IRegistry,IZkChildListener {
             node =  SettingLoader.getSetting().getProperty(SettingKey.NODE.getValue());
             listenPort = SettingLoader.getSetting().getProperty(SettingKey.LISTEN.getValue());
             localIp = getLocalHostIp();
-            listenUrl = new URL(String.format("%s:%s",localIp,listenPort));
+            URL.setURLStreamHandlerFactory(new ExtendURLStreamHandlerFactory());
+            listenUrl = new URL(String.format("tcp://%s:%s",localIp,listenPort));
             nodeKey = String.format("%s#%s",node,localIp);
-            zkNodePath = String.format("%s/%s",DEFAULT_ROOT_NODE,nodeKey);
+            zkNodeStatusPath = String.format("%s/%s",DEFAULT_STATUS_ROOT_NODE,nodeKey);
+            zkNodeInfoPath = String.format("%s/%s",DEFAULT_INFO_ROOT_NODE,nodeKey);
+
 
             registryNode = new RegistryNode();
             registryNode.setNode(nodeKey);
             registryNode.setUrl(listenUrl);
 
             zkClient = new ZkClient(registry, SESSION_TIME_OUT, CONNECT_TIME_OUT);
-            if(!zkClient.exists(DEFAULT_ROOT_NODE)){
-                zkClient.createPersistent(DEFAULT_ROOT_NODE,true);
+            if(!zkClient.exists(zkNodeInfoPath)){
+                zkClient.createPersistent(zkNodeInfoPath,true);
             }
-            zkClient.subscribeChildChanges(DEFAULT_ROOT_NODE, this);
+            if(!zkClient.exists(DEFAULT_STATUS_ROOT_NODE)){
+                zkClient.createPersistent(DEFAULT_STATUS_ROOT_NODE,true);
+            }
+            zkClient.subscribeChildChanges(DEFAULT_STATUS_ROOT_NODE, this);
 
         }catch (Throwable e){
             throw new SettingException("connect to zookeeper failed",e);
@@ -82,10 +97,14 @@ public class DefaultRegistry implements IRegistry,IZkChildListener {
      * @return
      */
     private boolean writeZk(){
-        if(!zkClient.exists(zkNodePath)){
-            zkClient.createEphemeral(zkNodePath);
+        logger.debug("publish registry {}",JSON.toJSONString(registryNode));
+
+        //先写入数据在通知
+        zkClient.writeData(zkNodeInfoPath, JSON.toJSONBytes(registryNode));
+        if(!zkClient.exists(zkNodeStatusPath)){
+            zkClient.createEphemeral(zkNodeStatusPath);
         }
-        zkClient.writeData(zkNodePath, JSON.toJSONBytes(registryNode));
+
         return true;
     }
 
@@ -122,15 +141,25 @@ public class DefaultRegistry implements IRegistry,IZkChildListener {
      * @throws Exception
      */
     @Override
-    public void handleChildChange(String s, List<String> list) throws Exception {
-        Map<String,RegistryNode> map = new ConcurrentHashMap<>();
-        for(String cur : list) {
-            byte[] data = zkClient.readData(String.format("%s/%s", s, cur));
-            RegistryNode node = JSON.parseObject(data,RegistryNode.class);
-            for(String namespace : node.getNamespaces()){
-                map.put(namespace,node);
+    public void handleChildChange(final String s, final List<String> list) throws Exception {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                logger.debug("receive zk node change {} {}", s, list);
+                Map<String,RegistryNode> map = new ConcurrentHashMap<>();
+                for(String cur : list) {
+                    byte[] data = zkClient.readData(String.format("%s/%s", DEFAULT_INFO_ROOT_NODE, cur));
+                    if(data != null) {
+                        RegistryNode node = JSON.parseObject(data, RegistryNode.class);
+                        for (String namespace : node.getNamespaces()) {
+                            map.put(namespace, node);
+                        }
+                    }
+                }
+                logger.debug("receive zk registry info {}",map);
+                registryMap = map;
             }
-        }
-        registryMap = map;
+        }).start();
+
     }
 }

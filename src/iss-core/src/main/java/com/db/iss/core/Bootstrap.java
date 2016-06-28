@@ -35,8 +35,13 @@ public class Bootstrap implements ApplicationContextAware {
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.context = applicationContext;
-        loadPlugins();
-        onStart();
+        try {
+            loadPlugins();
+            onStart();
+        }catch (Throwable e){
+            e.printStackTrace();
+            System.exit(0);
+        }
     }
 
     /**
@@ -69,14 +74,12 @@ public class Bootstrap implements ApplicationContextAware {
             if(current == (names.length - 1) && !(plugin instanceof AbstractDispatcherPlugin)){
                 throw new RuntimeException("pipe tail must dispatcher plugin");
             }
-            try {
-                plugin.setNode(node);
-                ((IConfigurable) plugin).setSetting(setting);
-                plugin.setPre(pre);
-                plugin.start();
-            }catch (Throwable e){
-                logger.error("iss start failed",e);
-            }
+
+            plugin.setNode(node);
+            ((IConfigurable) plugin).setSetting(setting);
+            plugin.setPre(pre);
+            plugin.start();
+
             if(pre != null){
                 pre.setNext(plugin);
             }

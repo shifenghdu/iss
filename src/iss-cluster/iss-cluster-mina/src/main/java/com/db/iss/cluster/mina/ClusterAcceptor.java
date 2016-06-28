@@ -48,11 +48,11 @@ public class ClusterAcceptor {
 
     /**
      * 监听端口
-     * @param url
+     * @param port
      * @throws IOException
      */
-    public void bind(URL url) throws IOException {
-        acceptor.bind(new InetSocketAddress(url.getHost(),url.getPort()));
+    public void bind(int port) throws IOException {
+        acceptor.bind(new InetSocketAddress(port));
     }
 
     /**

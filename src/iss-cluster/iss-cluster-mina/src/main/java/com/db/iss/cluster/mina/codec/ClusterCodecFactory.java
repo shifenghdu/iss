@@ -11,7 +11,7 @@ import org.apache.mina.filter.codec.ProtocolEncoder;
 
 public class ClusterCodecFactory implements ProtocolCodecFactory {
 
-	private ThreadLocal<ClusterDecoder> clusterDecoder;
+	private ThreadLocal<ClusterDecoder> clusterDecoder = new ThreadLocal<>();
 
 	private SerializerType type = SerializerType.MSGPACK;
 

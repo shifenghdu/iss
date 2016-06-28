@@ -26,7 +26,7 @@ public class ServiceInterceptor extends AbstractServiceProxy implements MethodIn
     @Override
     public Object intercept(Object o, Method method, Object[] objects, MethodProxy methodProxy) throws Throwable {
         if(method.getDeclaringClass().equals(inter)){
-            return this.invoke(inter.getName(),method.getName(),objects);
+            return this.invoke(inter.getName(),method.getName(),objects,method.getReturnType());
         }else{
             return method.invoke(this,objects);
         }

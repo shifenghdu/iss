@@ -90,7 +90,7 @@ public class ClusterConnector {
         int times = 0;
         while(times < RETRY_TIMES) {
             times ++;
-            WriteFuture future = session.write(msg, new InetSocketAddress(url.getHost(), url.getPort()));
+            WriteFuture future = session.write(msg);
             future.awaitUninterruptibly();
             if (future.isWritten()) {
                 return true;

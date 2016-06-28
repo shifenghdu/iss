@@ -11,6 +11,8 @@ import com.db.iss.core.registry.RegistryNode;
 import com.db.iss.core.serializer.SerializerType;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+
 /**
  * Created by andy on 16/6/23.
  * @author andy.shif
@@ -31,10 +33,17 @@ public class MinaTransportPlugin extends AbstractTransportPlugin {
         super("cluster-mina", "v1.0.0",ThreadMode.SHARED);
     }
 
+    private int listen;
+
     @Override
     protected void onStart() throws PluginException {
         connector = new ClusterConnector(type,compressorType,this);
         acceptor = new ClusterAcceptor(type,compressorType,this);
+        try {
+            acceptor.bind(listen);
+        } catch (IOException e) {
+            throw new PluginException(String.format("listen on port %s failed",listen),e);
+        }
     }
 
     @Override
@@ -45,7 +54,9 @@ public class MinaTransportPlugin extends AbstractTransportPlugin {
 
     @Override
     protected void onStetting(Setting setting) throws SettingException {
+
         String serializer = setting.getProperty(SettingKey.SERIALIZER.getValue());
+
         if(serializer != null && serializer.equalsIgnoreCase(SerializerType.MSGPACK.getValue())){
             type = SerializerType.MSGPACK;
         }else if(serializer != null && serializer.equalsIgnoreCase(SerializerType.JSON.getValue())){
@@ -58,6 +69,8 @@ public class MinaTransportPlugin extends AbstractTransportPlugin {
         } else {
             compressorType = CompressorType.NULL;
         }
+
+        listen = Integer.parseInt(setting.getProperty(SettingKey.LISTEN.getValue()));
     }
 
     @Override

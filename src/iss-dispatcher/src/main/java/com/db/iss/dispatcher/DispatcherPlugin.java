@@ -43,6 +43,7 @@ public class DispatcherPlugin extends AbstractDispatcherPlugin implements IMessa
     protected EsbMsg onRequest(EsbMsg message) throws PluginException {
         long start = System.currentTimeMillis();
         try {
+            message.changeToResponse();
             List<byte[]> contents = message.getContent();
             List<Object> params = new ArrayList<>();
             if (contents != null) {
@@ -86,7 +87,6 @@ public class DispatcherPlugin extends AbstractDispatcherPlugin implements IMessa
             }
         } catch (Throwable e) {
             logger.error("service execute error", e);
-            message.changeToResponse();
             message.setRetcode(EsbMsg.ESB_BIZ_EXECUTE_ERR);
             message.setRetmsg(e.getMessage());
         }
@@ -99,7 +99,8 @@ public class DispatcherPlugin extends AbstractDispatcherPlugin implements IMessa
 
     @Override
     protected void onResponse(EsbMsg message) throws PluginException {
-
+        IFuture<EsbMsg> future = responseMapper.get(message.getNamespace(),message.getMethod());
+        future.set(message);
     }
 
     @Override

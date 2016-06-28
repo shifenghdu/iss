@@ -22,7 +22,7 @@ public abstract class AbstractPlugin implements IPlugin,IConfigurable {
     //节点名称
     protected String node;
     //插件命名空间
-    protected final String namespace = String.format("%s.plugins.%s",node,name);
+    protected String namespace;
     //警报器
     private IAlarm alarm;
 
@@ -52,6 +52,7 @@ public abstract class AbstractPlugin implements IPlugin,IConfigurable {
     @Override
     public void setNode(String node) {
         this.node = node;
+        namespace = String.format("%s.plugins.%s",node,name);
     }
 
     @Override
