@@ -44,7 +44,7 @@ public class ClusterConnector {
         connector.getSessionConfig().setSoLinger(-1);
         DefaultIoFilterChainBuilder chain = connector.getFilterChain();
         chain.addLast("codec", new ProtocolCodecFilter(new ClusterCodecFactory(type,compressorType)));
-        chain.addLast("pool", new ExecutorFilter(Runtime.getRuntime().availableProcessors() + 1));
+        //chain.addLast("pool", new ExecutorFilter(Runtime.getRuntime().availableProcessors() + 1));
         connector.setHandler(new ClientMsgHandler(plugin,this));
         connector.setConnectTimeoutMillis(CONNECT_TIME_OUT);
     }

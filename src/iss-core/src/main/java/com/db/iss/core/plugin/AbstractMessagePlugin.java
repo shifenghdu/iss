@@ -49,20 +49,17 @@ public abstract class AbstractMessagePlugin extends AbstractPlugin implements IM
         this.mode = mode;
     }
 
-    @Override
-    public void setSetting(Setting setting) throws SettingException {
+    public void doSetting() throws SettingException {
         try {
-            String value = setting.getProperty(name + ".thread");
+            String value = configManager.getSettingValue(name + ".thread");
             if(value != null && !value.isEmpty()) {
                 threadCount = Integer.valueOf(value);
             }
 
-            value = setting.getProperty(name + ".queue");
+            value = configManager.getSettingValue(name + ".queue");
             if(value != null && !value.isEmpty()) {
                 queueSize = Integer.valueOf(value);
             }
-
-            onStetting(setting);
         }catch (Throwable e){
             throw new SettingException("Setting configuration error",e);
         }
@@ -95,6 +92,7 @@ public abstract class AbstractMessagePlugin extends AbstractPlugin implements IM
     @Override
     public void start() throws PluginException {
         try {
+            doSetting();
             if (mode == ThreadMode.ISOLATE) {
                 inQueue = new LinkedBlockingQueue<Runnable>(queueSize);
                 threadPool = new ThreadPoolExecutor(threadCount, threadCount, 0, TimeUnit.SECONDS, inQueue,new PoolThreadFactory());
@@ -211,7 +209,6 @@ public abstract class AbstractMessagePlugin extends AbstractPlugin implements IM
      */
     protected abstract void onStart() throws PluginException;
     protected abstract void onStop() throws PluginException;
-    protected abstract void onStetting(Setting setting) throws SettingException;
     protected abstract EsbMsg onForward(EsbMsg message) throws PluginException;
     protected abstract EsbMsg onBackward(EsbMsg message) throws PluginException;
 }

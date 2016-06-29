@@ -4,6 +4,9 @@ import com.alibaba.fastjson.JSON;
 import com.db.iss.core.cm.SettingException;
 import com.db.iss.core.cm.SettingKey;
 import com.db.iss.core.cm.SettingLoader;
+import com.db.iss.core.exception.ISSException;
+import com.db.iss.core.exception.RemoteException;
+import com.db.iss.core.plugin.PluginException;
 import com.db.iss.core.registry.url.ExtendURLStreamHandlerFactory;
 import org.I0Itec.zkclient.IZkChildListener;
 import org.I0Itec.zkclient.IZkDataListener;
@@ -13,9 +16,11 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import javax.sql.rowset.spi.SyncResolver;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -55,7 +60,9 @@ public class DefaultRegistry implements IRegistry,IZkChildListener {
     //本节点zk节点路径
     private String zkNodeInfoPath;
     //注册信息映射表
-    private Map<String,RegistryNode> registryMap = new ConcurrentHashMap<>();
+    private Map<String,List<RegistryNode>> registryMap = new ConcurrentHashMap<>();
+    //当前轮询节点
+    private Map<String,Integer> indexMap = new ConcurrentHashMap<>();
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -122,7 +129,23 @@ public class DefaultRegistry implements IRegistry,IZkChildListener {
 
     @Override
     public RegistryNode getNode(String namespace) {
-        return registryMap.get(namespace);
+        Integer index = indexMap.get(namespace);
+        if(index == null){
+            index = 0;
+            indexMap.put(namespace,index);
+        }
+        List<RegistryNode> registryNodes = registryMap.get(namespace);
+        if(registryNodes != null) {
+            if (index < registryNodes.size()) {
+                return registryNodes.get(index);
+            } else {
+                index = 0;
+                indexMap.put(namespace, index);
+                return registryNodes.get(0);
+            }
+        }else {
+            throw new ISSException(String.format("namespace [%s] registry info not found",namespace));
+        }
     }
 
     /**
@@ -146,13 +169,20 @@ public class DefaultRegistry implements IRegistry,IZkChildListener {
             @Override
             public void run() {
                 logger.debug("receive zk node change {} {}", s, list);
-                Map<String,RegistryNode> map = new ConcurrentHashMap<>();
+                Map<String,List<RegistryNode>> map = new ConcurrentHashMap<>();
                 for(String cur : list) {
                     byte[] data = zkClient.readData(String.format("%s/%s", DEFAULT_INFO_ROOT_NODE, cur));
                     if(data != null) {
                         RegistryNode node = JSON.parseObject(data, RegistryNode.class);
                         for (String namespace : node.getNamespaces()) {
-                            map.put(namespace, node);
+                            if(map.containsKey(namespace)){
+                                map.get(namespace).add(node);
+                            }else{
+                                List<RegistryNode> nodes = new ArrayList<RegistryNode>();
+                                nodes.add(node);
+                                map.put(namespace, nodes);
+                            }
+
                         }
                     }
                 }

@@ -105,7 +105,7 @@ public class DispatcherPlugin extends AbstractDispatcherPlugin implements IMessa
 
     @Override
     protected void onStart() throws PluginException {
-
+        onStetting();
     }
 
     @Override
@@ -113,9 +113,8 @@ public class DispatcherPlugin extends AbstractDispatcherPlugin implements IMessa
 
     }
 
-    @Override
-    protected void onStetting(Setting setting) throws SettingException {
-        String serializer = setting.getProperty(SettingKey.SERIALIZER.getValue());
+    protected void onStetting() throws SettingException {
+        String serializer = configManager.getSettingValue(SettingKey.SERIALIZER.getValue());
         if(serializer != null && serializer.equalsIgnoreCase(SerializerType.MSGPACK.getValue())){
             serializerWrapper.setSerializerType(SerializerType.MSGPACK);
         }else if(serializer != null && serializer.equalsIgnoreCase(SerializerType.JSON.getValue())){

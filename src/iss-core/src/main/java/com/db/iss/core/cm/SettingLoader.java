@@ -18,8 +18,9 @@ public class SettingLoader {
     private static Setting setting = new Setting(){{
         setProperty(SettingKey.SERIALIZER.getValue(),"json");
         setProperty(SettingKey.COMPRESSOR.getValue(),"lz4");
-        setProperty(SettingKey.PIPE.getValue(),"cluster-mina|dispatcher");
+        setProperty(SettingKey.PIPE.getValue(),"cluster-mina|logger|dispatcher");
         setProperty(SettingKey.LISTEN.getValue(),"9001");
+        setProperty(SettingKey.LOGSWICTH.getValue(),"off");
     }};
 
     private static String[] checking = new String[]{

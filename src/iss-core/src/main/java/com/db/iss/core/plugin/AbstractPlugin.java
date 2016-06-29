@@ -1,17 +1,19 @@
 package com.db.iss.core.plugin;
 
 import com.db.iss.core.alarm.IAlarm;
+import com.db.iss.core.cm.IConfigManager;
 import com.db.iss.core.cm.IConfigurable;
 import com.db.iss.core.alarm.AlarmLevel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Created by andy on 2016/6/19.
  * @author andy.shif
  * 插件基类
  */
-public abstract class AbstractPlugin implements IPlugin,IConfigurable {
+public abstract class AbstractPlugin implements IPlugin {
 
     //版本号
     protected String version;
@@ -27,6 +29,9 @@ public abstract class AbstractPlugin implements IPlugin,IConfigurable {
     private IAlarm alarm;
 
     protected Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    @Autowired
+    protected IConfigManager configManager;
 
 
     AbstractPlugin(String name,String version){

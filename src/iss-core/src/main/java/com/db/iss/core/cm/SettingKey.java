@@ -17,6 +17,8 @@ public enum SettingKey {
 
     LISTEN("iss.listen"), //服务监听端口
 
+    LOGSWICTH("iss.logger.switch"), //logger插件记录日志开关
+
     PIPE("iss.pipe"); // 消息处理链  cluster | dispatcher
 
 

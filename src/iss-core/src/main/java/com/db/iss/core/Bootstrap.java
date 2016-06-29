@@ -68,6 +68,7 @@ public class Bootstrap implements ApplicationContextAware {
         for(String name : names){
             name = name.trim().toLowerCase();
             IMessagePlugin plugin = pluginMap.get(name);
+            if(plugin == null) throw new RuntimeException(String.format("can't load plugin [%s]",name));
             if(current == 0 && !(plugin instanceof AbstractTransportPlugin)){
                 throw new RuntimeException("pipe head must transport plugin");
             }
@@ -76,7 +77,6 @@ public class Bootstrap implements ApplicationContextAware {
             }
 
             plugin.setNode(node);
-            ((IConfigurable) plugin).setSetting(setting);
             plugin.setPre(pre);
             plugin.start();
 

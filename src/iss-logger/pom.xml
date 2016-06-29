@@ -11,5 +11,16 @@
 
     <artifactId>iss-logger</artifactId>
 
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.db</groupId>
+            <artifactId>iss-core</artifactId>
+        </dependency>
+    </dependencies>
+
 
 </project>

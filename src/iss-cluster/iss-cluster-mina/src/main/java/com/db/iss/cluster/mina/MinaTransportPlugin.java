@@ -1,5 +1,6 @@
 package com.db.iss.cluster.mina;
 
+import com.db.iss.core.cm.IConfigManager;
 import com.db.iss.core.cm.Setting;
 import com.db.iss.core.cm.SettingException;
 import com.db.iss.core.cm.SettingKey;
@@ -9,6 +10,7 @@ import com.db.iss.core.plugin.EsbMsg;
 import com.db.iss.core.plugin.PluginException;
 import com.db.iss.core.registry.RegistryNode;
 import com.db.iss.core.serializer.SerializerType;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -29,6 +31,9 @@ public class MinaTransportPlugin extends AbstractTransportPlugin {
 
     private CompressorType compressorType = CompressorType.LZ4;
 
+    @Autowired
+    private IConfigManager configManager;
+
     public MinaTransportPlugin() {
         super("cluster-mina", "v1.0.0",ThreadMode.SHARED);
     }
@@ -37,6 +42,7 @@ public class MinaTransportPlugin extends AbstractTransportPlugin {
 
     @Override
     protected void onStart() throws PluginException {
+        onStetting();
         connector = new ClusterConnector(type,compressorType,this);
         acceptor = new ClusterAcceptor(type,compressorType,this);
         try {
@@ -52,10 +58,8 @@ public class MinaTransportPlugin extends AbstractTransportPlugin {
         acceptor = null;
     }
 
-    @Override
-    protected void onStetting(Setting setting) throws SettingException {
-
-        String serializer = setting.getProperty(SettingKey.SERIALIZER.getValue());
+    protected void onStetting() throws SettingException {
+        String serializer = configManager.getSettingValue(SettingKey.SERIALIZER.getValue());
 
         if(serializer != null && serializer.equalsIgnoreCase(SerializerType.MSGPACK.getValue())){
             type = SerializerType.MSGPACK;
@@ -63,14 +67,14 @@ public class MinaTransportPlugin extends AbstractTransportPlugin {
             type = SerializerType.JSON;
         }
 
-        String compressor = setting.getProperty(SettingKey.COMPRESSOR.getValue());
+        String compressor = configManager.getSettingValue(SettingKey.COMPRESSOR.getValue());
         if(compressor != null && compressor.equalsIgnoreCase(CompressorType.LZ4.getValue())){
             compressorType = CompressorType.LZ4;
         } else {
             compressorType = CompressorType.NULL;
         }
 
-        listen = Integer.parseInt(setting.getProperty(SettingKey.LISTEN.getValue()));
+        listen = Integer.parseInt(configManager.getSettingValue(SettingKey.LISTEN.getValue()));
     }
 
     @Override

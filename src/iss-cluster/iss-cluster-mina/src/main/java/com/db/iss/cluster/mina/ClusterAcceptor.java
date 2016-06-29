@@ -42,7 +42,7 @@ public class ClusterAcceptor {
         acceptor.getSessionConfig().setSoLinger(-1);
         acceptor.setBacklog(10240);
         acceptor.getFilterChain().addLast("codec", new ProtocolCodecFilter(new ClusterCodecFactory(type,compressorType)));
-        acceptor.getFilterChain().addLast("pool", new ExecutorFilter(Runtime.getRuntime().availableProcessors() + 1));
+        //acceptor.getFilterChain().addLast("pool", new ExecutorFilter(Runtime.getRuntime().availableProcessors() + 1));
         acceptor.setHandler(new ServerMsgHandler(plugin,this));
     }
 

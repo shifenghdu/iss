@@ -192,7 +192,7 @@ public class SpringInvoke implements ApplicationContextAware ,Runnable{
 
         long end = System.currentTimeMillis();
 
-        logger.error("msgpack time [{}] tps",TIMES/(end - start)*1000);
+        logger.error("invoke [{}] tps",TIMES/(end - start)*1000);
 
     }
 
