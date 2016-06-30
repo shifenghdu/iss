@@ -1,14 +1,10 @@
 package com.db.iss.dispatcher;
 
-import com.db.iss.core.cm.Setting;
 import com.db.iss.core.cm.SettingException;
 import com.db.iss.core.cm.SettingKey;
 import com.db.iss.core.plugin.AbstractDispatcherPlugin;
 import com.db.iss.core.plugin.EsbMsg;
-import com.db.iss.core.plugin.IMessagePlugin;
 import com.db.iss.core.plugin.PluginException;
-import com.db.iss.core.serializer.ISerializer;
-import com.db.iss.core.serializer.SerializerFactory;
 import com.db.iss.core.serializer.SerializerType;
 import com.db.iss.dispatcher.future.DefaultFuture;
 import com.db.iss.dispatcher.future.IFuture;
@@ -18,7 +14,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 /**
  * Created by andy on 16/6/25.
@@ -91,15 +86,15 @@ public class DispatcherPlugin extends AbstractDispatcherPlugin implements IMessa
             message.setRetmsg(e.getMessage());
         }
         long end = System.currentTimeMillis();
-        if (logger.isDebugEnabled()) {
-            logger.debug(String.format("namespace [%s] method [%s] execute time [%d] ms", message.getNamespace(), message.getMethod(), (end - start)));
+        if (logger.isInfoEnabled()) {
+            logger.warn(String.format("namespace [%s] method [%s] execute time [%d] ms", message.getNamespace(), message.getMethod(), (end - start)));
         }
         return message;
     }
 
     @Override
     protected void onResponse(EsbMsg message) throws PluginException {
-        IFuture<EsbMsg> future = responseMapper.get(message.getNamespace(),message.getMethod());
+        IFuture<EsbMsg> future = responseMapper.get(message.getNamespace(),message.getMethod(),message.getPackageid());
         future.set(message);
     }
 

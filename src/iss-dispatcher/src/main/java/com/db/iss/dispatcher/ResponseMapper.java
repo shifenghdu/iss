@@ -2,7 +2,6 @@ package com.db.iss.dispatcher;
 
 import com.db.iss.core.plugin.EsbMsg;
 import com.db.iss.dispatcher.future.IFuture;
-import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -25,15 +24,15 @@ public class ResponseMapper {
     }
 
     public void put(String namespace,String method,IFuture<EsbMsg> future){
-        mapper.put(genkey(namespace,method),future);
+        mapper.put(genkey(namespace,method,Thread.currentThread().getId()),future);
     }
 
-    public IFuture<EsbMsg> get(String namespace,String method){
-        return mapper.get(genkey(namespace,method));
+    public IFuture<EsbMsg> get(String namespace,String method,Long packId){
+        return mapper.get(genkey(namespace,method,packId));
     }
 
-    private String genkey(String namespace,String method){
-        return String.format("%s#%s",namespace,method);
+    private String genkey(String namespace,String method,Long packId){
+        return String.format("%s#%s#%d",namespace,method,packId);
     }
 
 }

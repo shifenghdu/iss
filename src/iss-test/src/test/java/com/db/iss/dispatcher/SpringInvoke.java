@@ -176,7 +176,7 @@ public class SpringInvoke implements ApplicationContextAware ,Runnable{
     @Test
     public void serviceProxy() throws InterruptedException {
         int TIMES = 100000;
-        int THREAD = 1;
+        int THREAD = 10;
 
 
         count = new AtomicLong(TIMES);
@@ -201,7 +201,7 @@ public class SpringInvoke implements ApplicationContextAware ,Runnable{
         long cur = count.get();
         while(cur > 0){
             IDemo demo = serviceProvider.getService(IDemo.class);
-            String response = demo.hello("andy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifshifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifshifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shifandy.shif");
+            String response = demo.hello(Thread.currentThread().getName());
             cur = count.decrementAndGet();
         }
         single.countDown();

@@ -43,18 +43,28 @@ public abstract class AbstractServiceProxy implements IServiceProxy{
             EsbMsg request = new EsbMsg();
             request.setNamespace(namespace);
             request.setMethod(method);
+            request.setPackageid(Thread.currentThread().getId());
             List<byte[]> params = new ArrayList<>();
             request.setContent(params);
             for (Object arg : args) {
                 params.add(serializerWrapper.getSerializer().encode(arg));
             }
 
+            long start = System.currentTimeMillis();
             IFuture<EsbMsg> future = messageSend.send(request);
             EsbMsg response = future.get(timeout);
+            long end = System.currentTimeMillis();
+            long time = end - start;
+
 
             if(response == null){
                 throw new RemoteException("remote return null");
             }else{
+
+                if(logger.isInfoEnabled()){
+                    logger.warn(String.format("namespace [%s] method [%s] invoke time [%d] ms", response.getNamespace(), request.getMethod(), (end - start)));
+                }
+
                 List<byte[]> list = response.getContent();
                 if(list != null && list.size() >= 1){
                     return serializerWrapper.getSerializer().decode(list.get(0),returnType);
