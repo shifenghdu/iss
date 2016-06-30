@@ -1,4 +1,4 @@
-package com.db.iss.dispatcher;
+package com.db.iss.launcher;
 
 import com.db.iss.core.plugin.EsbMsg;
 import com.db.iss.dispatcher.annotation.Remote;

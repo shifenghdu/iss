@@ -5,18 +5,14 @@ import com.db.iss.core.cm.SettingException;
 import com.db.iss.core.cm.SettingKey;
 import com.db.iss.core.cm.SettingLoader;
 import com.db.iss.core.exception.ISSException;
-import com.db.iss.core.exception.RemoteException;
-import com.db.iss.core.plugin.PluginException;
 import com.db.iss.core.registry.url.ExtendURLStreamHandlerFactory;
 import org.I0Itec.zkclient.IZkChildListener;
-import org.I0Itec.zkclient.IZkDataListener;
 import org.I0Itec.zkclient.ZkClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
-import javax.sql.rowset.spi.SyncResolver;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
@@ -93,10 +89,33 @@ public class DefaultRegistry implements IRegistry,IZkChildListener {
                 zkClient.createPersistent(DEFAULT_STATUS_ROOT_NODE,true);
             }
             zkClient.subscribeChildChanges(DEFAULT_STATUS_ROOT_NODE, this);
-
+            loadRemoteRegistry();
         }catch (Throwable e){
             throw new SettingException("connect to zookeeper failed",e);
         }
+    }
+
+    private void loadRemoteRegistry(){
+        List<String> children = zkClient.getChildren(DEFAULT_STATUS_ROOT_NODE);
+        Map<String,List<RegistryNode>> map = new ConcurrentHashMap<>();
+        for(String child : children){
+            byte[] data = zkClient.readData(String.format("%s/%s", DEFAULT_INFO_ROOT_NODE, child));
+            if(data != null) {
+                RegistryNode node = JSON.parseObject(data, RegistryNode.class);
+                for (String namespace : node.getNamespaces()) {
+                    if(map.containsKey(namespace)){
+                        map.get(namespace).add(node);
+                    }else{
+                        List<RegistryNode> nodes = new ArrayList<RegistryNode>();
+                        nodes.add(node);
+                        map.put(namespace, nodes);
+                    }
+
+                }
+            }
+        }
+        logger.debug("load zk registry info {}",map);
+        registryMap = map;
     }
 
     /**

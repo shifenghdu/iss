@@ -34,7 +34,7 @@ public class SettingLoader {
         Properties properties = new Properties();
         try {
             properties.load(Thread.currentThread().getContextClassLoader().getResourceAsStream(DEFAULT_CONFIG_FILE));
-        } catch (IOException e) {
+        } catch (Throwable e) {
             System.err.println("load classpath iss.properties failed");
         }
         setting.setProperties(properties);

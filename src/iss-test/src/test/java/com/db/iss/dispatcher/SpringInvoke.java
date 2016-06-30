@@ -3,15 +3,14 @@ package com.db.iss.dispatcher;
 import com.db.iss.core.cm.IConfigurable;
 import com.db.iss.core.cm.Setting;
 import com.db.iss.core.plugin.EsbMsg;
-import com.db.iss.core.plugin.IMessagePlugin;
 import com.db.iss.core.serializer.ISerializer;
 import com.db.iss.core.serializer.SerializerFactory;
 import com.db.iss.core.serializer.SerializerType;
 import com.db.iss.dispatcher.annotation.Remote;
-import com.db.iss.dispatcher.proxy.IServiceProxy;
 import com.db.iss.dispatcher.proxy.reflect.IReflectProxy;
 import com.db.iss.dispatcher.proxy.reflect.IReflectProxyFactory;
 import com.db.iss.dispatcher.spring.IRemoteServiceProvider;
+import com.db.iss.launcher.IDemo;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
@@ -24,6 +23,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 
+import java.io.IOException;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.CountDownLatch;
@@ -174,14 +174,13 @@ public class SpringInvoke implements ApplicationContextAware ,Runnable{
 
 
     @Test
-    public void serviceProxy() throws InterruptedException {
-        int TIMES = 100000;
-        int THREAD = 10;
+    public void serviceProxy() throws InterruptedException, IOException {
+        int TIMES = 1000000;
+        int THREAD = 150;
 
 
         count = new AtomicLong(TIMES);
         single = new CountDownLatch(THREAD);
-
 
         long start = System.currentTimeMillis();
 
@@ -201,7 +200,7 @@ public class SpringInvoke implements ApplicationContextAware ,Runnable{
         long cur = count.get();
         while(cur > 0){
             IDemo demo = serviceProvider.getService(IDemo.class);
-            String response = demo.hello(Thread.currentThread().getName());
+            String response = demo.hello("复方氯己定含漱液   =   7371;给药途径不合适。;本品仅供含漱用，含漱后吐出，不得咽下。;给药途径;适宜性分析复方氯己定含漱液   =   7371;给药途径不合适。;本品仅供含漱用，含漱后吐出，不得咽下。;给药途径;适宜性分析复方氯己定含漱液   =   7371;给药途径不合适。;本品仅供含漱用，含漱后吐出，不得咽下。;给药途径;适宜性分析复方氯己定含漱液   =   7371;给药途径不合适。;本品仅供含漱用，含漱后吐出，不得咽下。;给药途径;适宜性分析复方氯己定含漱液   =   7371;给药途径不合适。;本品仅供含漱用，含漱后吐出，不得咽下。;给药途径;适宜性分析复方氯己定含漱液   =   7371;给药途径不合适。;本品仅供含漱用，含漱后吐出，不得咽下。;给药途径;适宜性分析复方氯己定含漱液   =   7371;给药途径不合适。;本品仅供含漱用，含漱后吐出，不得咽下。;给药途径;适宜性分析复方氯己定含漱液   =   7371;给药途径不合适。;本品仅供含漱用，含漱后吐出，不得咽下。;给药途径;适宜性分析复方氯己定含漱液   =   7371;给药途径不合适。;本品仅供含漱用，含漱后吐出，不得咽下。;给药途径;适宜性分析复方氯己定含漱液   =   7371;给药途径不合适。;本品仅供含漱用，含漱后吐出，不得咽下。;给药途径;适宜性分析复方氯己定含漱液   =   7371;给药途径不合适。;本品仅供含漱用，含漱后吐出，不得咽下。;给药途径;适宜性分析复方氯己定含漱液   =   7371;给药途径不合适。;本品仅供含漱用，含漱后吐出，不得咽下。;给药途径;适宜性分析复方氯己定含漱液   =   7371;给药途径不合适。;本品仅供含漱用，含漱后吐出，不得咽下。;给药途径;适宜性分析复方氯己定含漱液   =   7371;给药途径不合适。;本品仅供含漱用，含漱后吐出，不得咽下。;给药途径;适宜性分析复方氯己定含漱液   =   7371;给药途径不合适。;本品仅供含漱用，含漱后吐出，不得咽下。;给药途径;适宜性分析复方氯己定含漱液   =   7371;给药途径不合适。;本品仅供含漱用，含漱后吐出，不得咽下。;给药途径;适宜性分析复方氯己定含漱液   =   7371;给药途径不合适。;本品仅供含漱用，含漱后吐出，不得咽下。;给药途径;适宜性分析复方氯己定含漱液   =   7371;给药途径不合适。;本品仅供含漱用，含漱后吐出，不得咽下。;给药途径;适宜性分析");
             cur = count.decrementAndGet();
         }
         single.countDown();

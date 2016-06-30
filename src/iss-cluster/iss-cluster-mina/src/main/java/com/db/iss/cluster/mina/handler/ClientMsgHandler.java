@@ -29,6 +29,7 @@ public class ClientMsgHandler extends IoHandlerAdapter {
     public void exceptionCaught(IoSession session, Throwable cause)
             throws Exception {
         if (session != null) {
+            logger.error("{}",cause);
             logger.warn("exceptionCaught [{}]", session);
             session.close(true);
         }

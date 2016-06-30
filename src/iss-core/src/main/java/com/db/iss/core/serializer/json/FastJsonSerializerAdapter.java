@@ -11,14 +11,16 @@ import com.db.iss.core.serializer.ISerializer;
  */
 public class FastJsonSerializerAdapter implements ISerializer {
 
+    private final String CODEC =  "UTF-8";
+
     @Override
     public byte[] encode(Object object) throws Exception {
-        return JSON.toJSONBytes(object);
+        return JSON.toJSONString(object).getBytes(CODEC);
     }
 
     @Override
     public Object decode(byte[] bytes, Class type) throws Exception {
-        return JSON.parseObject(bytes,type);
+        return JSON.parseObject(new String(bytes,CODEC),type);
     }
 
 }
