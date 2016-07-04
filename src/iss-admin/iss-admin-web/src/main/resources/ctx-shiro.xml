@@ -14,7 +14,7 @@
                 #/docs/** = authc, perms[document:read]
                 /dist/** = anon
                 /druid/** = anon
-                /** = anon
+                /** = authc
             </value>
         </property>
     </bean>
