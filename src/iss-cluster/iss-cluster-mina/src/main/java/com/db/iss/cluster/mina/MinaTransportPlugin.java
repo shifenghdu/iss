@@ -45,6 +45,7 @@ public class MinaTransportPlugin extends AbstractTransportPlugin {
         onStetting();
         connector = new ClusterConnector(type,compressorType,this);
         acceptor = new ClusterAcceptor(type,compressorType,this);
+        logger.info("iss listen on {}",listen);
         try {
             acceptor.bind(listen);
         } catch (IOException e) {

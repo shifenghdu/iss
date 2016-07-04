@@ -1,6 +1,5 @@
 package com.db.iss.core.cm;
 
-import java.io.IOException;
 import java.util.Properties;
 
 /**
@@ -19,7 +18,7 @@ public class SettingLoader {
         setProperty(SettingKey.SERIALIZER.getValue(),"json");
         setProperty(SettingKey.COMPRESSOR.getValue(),"lz4");
         setProperty(SettingKey.PIPE.getValue(),"cluster-mina|logger|dispatcher");
-        setProperty(SettingKey.LISTEN.getValue(),"9001");
+        setProperty(SettingKey.LISTEN.getValue(),String.valueOf((int)(Math.random() * 10000 + 10000))); //10000 - 20000
         setProperty(SettingKey.LOGSWICTH.getValue(),"off");
     }};
 
