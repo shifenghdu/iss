@@ -13,6 +13,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.PostConstruct;
+import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.net.URL;
 import java.net.UnknownHostException;
@@ -72,7 +73,7 @@ public class DefaultRegistry implements IRegistry,IZkChildListener {
             localIp = getLocalHostIp();
             URL.setURLStreamHandlerFactory(new ExtendURLStreamHandlerFactory());
             listenUrl = new URL(String.format("tcp://%s:%s",localIp,listenPort));
-            nodeKey = String.format("%s#%s",node,localIp);
+            nodeKey = String.format("%s#%s#%s",node,localIp, ManagementFactory.getRuntimeMXBean().getName().split("\\@")[0]);
             zkNodeStatusPath = String.format("%s/%s",DEFAULT_STATUS_ROOT_NODE,nodeKey);
             zkNodeInfoPath = String.format("%s/%s",DEFAULT_INFO_ROOT_NODE,nodeKey);
 
