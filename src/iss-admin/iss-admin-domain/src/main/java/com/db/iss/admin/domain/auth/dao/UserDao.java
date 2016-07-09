@@ -1,7 +1,7 @@
-package com.db.iss.admin.user.dao;
+package com.db.iss.admin.domain.auth.dao;
 
-import com.db.iss.admin.common.AbstractDao;
-import com.db.iss.admin.user.entity.User;
+import com.db.iss.admin.domain.common.AbstractDao;
+import com.db.iss.admin.domain.auth.entity.User;
 import org.springframework.stereotype.Repository;
 
 import javax.transaction.Transactional;

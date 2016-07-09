@@ -1,4 +1,4 @@
-package com.db.iss.admin.user.action;
+package com.db.iss.admin.web.auth.action;
 
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
@@ -23,13 +23,13 @@ public class LoginAction {
 
     @RequestMapping(value = "login",method = RequestMethod.POST)
     public String login(String name,String password){
-        logger.info("user login name: [{}] passwd: [{}]",name,password);
+        logger.info("shiro login name: [{}] passwd: [{}]",name,password);
         UsernamePasswordToken token = new UsernamePasswordToken(name, password);
         Subject user = SecurityUtils.getSubject();
         try{
             user.login(token);
         }catch (AuthenticationException e) {
-            return "redirect: /user/login";
+            return "redirect: /shiro/login";
         }
         //登录成功
         return "redirect: /home";

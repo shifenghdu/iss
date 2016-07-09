@@ -1,4 +1,4 @@
-package com.db.iss.admin.common;
+package com.db.iss.admin.domain.common;
 
 import org.hibernate.Query;
 import org.hibernate.Session;

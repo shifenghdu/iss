@@ -1,4 +1,4 @@
-package com.db.iss.admin.common;
+package com.db.iss.admin.web.common;
 
 /**
  * Created by andy on 16/7/4.

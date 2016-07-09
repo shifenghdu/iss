@@ -1,10 +1,9 @@
-package com.db.iss.admin.user.entity;
+package com.db.iss.admin.domain.auth.entity;
 
 
-import com.db.iss.admin.common.AbstractEntity;
+import com.db.iss.admin.domain.common.AbstractEntity;
 import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.CacheConcurrencyStrategy;
-import org.hibernate.annotations.GenericGenerator;
 
 import javax.persistence.*;
 
@@ -16,7 +15,7 @@ import javax.persistence.*;
 @Entity
 @Table(name = "admin_user")
 @Cache(usage = CacheConcurrencyStrategy.READ_WRITE)
-public class User extends AbstractEntity{
+public class User extends AbstractEntity {
 
     @Column(name = "name",length = 20)
     private String name;

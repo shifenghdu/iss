@@ -1,4 +1,4 @@
-package com.db.iss.admin.home.action;
+package com.db.iss.admin.web.action;
 
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;

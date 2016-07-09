@@ -1,6 +1,4 @@
-package com.db.iss.admin.common;
-
-import org.hibernate.annotations.GenericGenerator;
+package com.db.iss.admin.domain.common;
 
 import javax.persistence.Column;
 import javax.persistence.GeneratedValue;
