@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-       xmlns:context="http://www.springframework.org/schema/context"
-       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd">
+       xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
 
-    <!--<context:component-scan base-package="com.db.iss.admin.web.auth.shiro" />-->
-    <bean id="userAuthorizingRealm" class="com.db.iss.admin.web.auth.shiro.UserAuthorizingRealm"/>
+    <context:component-scan base-package="com.db.iss.admin.web.auth.shiro"/>
+    <!--<bean id="userAuthorizingRealm" class="com.db.iss.admin.web.auth.shiro.UserAuthorizingRealm"/>-->
 
     <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
         <property name="securityManager" ref="securityManager"/>
@@ -14,10 +14,10 @@
         <property name="unauthorizedUrl" value="/auth/login"/>
         <property name="filterChainDefinitions">
             <value>
-                /admin/auth/** = anon
+                /auth/** = anon
                 /dist/** = anon
                 /druid/** = anon
-                /** = anon
+                /** = authc
             </value>
         </property>
     </bean>
@@ -47,5 +47,7 @@
     <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
         <property name="securityManager" ref="securityManager"></property>
     </bean>
+
+    <tx:annotation-driven transaction-manager="transactionManager"/>
 
 </beans>

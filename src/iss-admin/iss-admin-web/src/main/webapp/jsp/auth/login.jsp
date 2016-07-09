@@ -9,7 +9,7 @@
 <div class="login-panel ui three column stackable grid">
     <div class="column"></div>
     <div class="column">
-        <form id="login" class="ui fluid form segment">
+        <form id="login" class="ui fluid form segment" method="post" action="${baseUrl}/auth/login">
             <div class="field">
                 <label class="">用户名</label>
                 <div class="ui left icon input">
@@ -64,12 +64,12 @@
 //                }
 //            });
 
-        $('.ui.form').submit(function(e){
-            var formData = $('.ui.form input').serializeArray(); //or .serialize();
-            $.post('login',formData,function (response) {
-                console.log(response);
-            });
-        });
+//        $('.ui.form').submit(function(e){
+//            var formData = $('.ui.form input').serializeArray(); //or .serialize();
+//            $.post('login',formData,function (response) {
+//                console.log(response);
+//            });
+//        });
         //checkbox init
         $('.ui.checkbox').checkbox();
     });

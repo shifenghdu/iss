@@ -9,10 +9,8 @@ import org.apache.shiro.authz.SimpleAuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.stereotype.Service;
-
-import java.util.Set;
+import org.springframework.transaction.annotation.Transactional;
 
 /**
  * Created by andy on 16/7/9.
@@ -20,6 +18,7 @@ import java.util.Set;
  * 用户注册AuthorizingRealm
  */
 @Service
+@Transactional
 public class UserAuthorizingRealm extends AuthorizingRealm {
 
     @Autowired

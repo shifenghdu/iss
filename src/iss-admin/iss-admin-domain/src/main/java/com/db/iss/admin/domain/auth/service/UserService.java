@@ -7,8 +7,8 @@ import com.db.iss.admin.domain.auth.entity.Role;
 import com.db.iss.admin.domain.auth.entity.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
+import javax.transaction.Transactional;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -18,6 +18,7 @@ import java.util.Set;
  * 用户服务实现
  */
 @Service
+@Transactional
 public class UserService implements IUserService {
 
     @Autowired

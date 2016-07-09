@@ -12,7 +12,6 @@ import javax.transaction.Transactional;
  * @author andy.shif
  */
 @Repository
-@Transactional
 public class UserDao extends AbstractDao<User>{
 
     /**

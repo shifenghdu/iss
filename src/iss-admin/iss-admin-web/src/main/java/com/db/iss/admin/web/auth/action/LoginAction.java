@@ -2,7 +2,6 @@ package com.db.iss.admin.web.auth.action;
 
 import com.db.iss.admin.domain.auth.IUserService;
 import com.db.iss.admin.domain.auth.entity.User;
-import com.db.iss.admin.domain.auth.service.UserService;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
@@ -35,16 +34,16 @@ public class LoginAction {
     public String login(String name,String password){
         logger.info("shiro login name: [{}] passwd: [{}]",name,password);
         UsernamePasswordToken token = new UsernamePasswordToken(name, password);
+        token.setRememberMe(true);
         Subject user = SecurityUtils.getSubject();
         try{
             user.login(token);
         }catch (AuthenticationException e) {
-            return "redirect: /auth/login";
+            return "redirect:/auth/login";
         }
         //登录成功
-        return "redirect: /home";
+        return "redirect:/home";
     }
-
 
     @RequestMapping(value = "login",method = RequestMethod.GET)
     public String loginView(){
