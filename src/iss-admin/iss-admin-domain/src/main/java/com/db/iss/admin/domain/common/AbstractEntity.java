@@ -1,9 +1,7 @@
 package com.db.iss.admin.domain.common;
 
-import javax.persistence.Column;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
+import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Date;
 
 /**
@@ -11,7 +9,8 @@ import java.util.Date;
  * @author andy.shif
  * entity基类
  */
-public abstract class AbstractEntity {
+@MappedSuperclass
+public abstract class AbstractEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)

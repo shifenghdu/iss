@@ -1,7 +1,39 @@
 package com.db.iss.admin.domain.auth.entity;
 
+import com.db.iss.admin.domain.common.AbstractEntity;
+
+import javax.persistence.*;
+
 /**
- * Created by apple on 16/7/9.
+ * Created by andy on 16/7/9.
+ * @author andy.shif
+ * 权限
  */
-public class Permission {
+@Entity
+@Table(name = "admin_permission")
+public class Permission extends AbstractEntity {
+
+    @Column(name = "name")
+    private String permissionName;
+
+    @ManyToOne(cascade = CascadeType.PERSIST,fetch = FetchType.LAZY)
+    @JoinColumn(name = "role_id")
+    private Role role;
+
+
+    public String getPermissionName() {
+        return permissionName;
+    }
+
+    public void setPermissionName(String permissionName) {
+        this.permissionName = permissionName;
+    }
+
+    public Role getRole() {
+        return role;
+    }
+
+    public void setRole(Role role) {
+        this.role = role;
+    }
 }

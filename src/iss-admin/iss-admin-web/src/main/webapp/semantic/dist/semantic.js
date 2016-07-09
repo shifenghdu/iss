@@ -7686,7 +7686,7 @@ $.fn.dropdown.settings = {
   selectOnKeydown        : true,       // Whether selection should occur automatically when keyboard shortcuts used
   minCharacters          : 0,          // Minimum characters required to trigger API call
   saveRemoteData         : true,       // Whether remote name/value pairs should be stored in sessionStorage to allow remote data to be restored on page refresh
-  throttle               : 200,        // How long to wait after last user input to search remotely
+  throttle               : 200,        // How long to wait after last shiro input to search remotely
 
   context                : window,     // Context to use when determining if on screen
   direction              : 'auto',     // Whether dropdown should always open in one direction
@@ -7701,8 +7701,8 @@ $.fn.dropdown.settings = {
 
   forceSelection         : true,       // force a choice on blur with search selection
 
-  allowAdditions         : false,      // whether multiple select should allow user added values
-  hideAdditions          : true,      // whether or not to hide special message prompting a user they can enter a value
+  allowAdditions         : false,      // whether multiple select should allow shiro added values
+  hideAdditions          : true,      // whether or not to hide special message prompting a shiro they can enter a value
 
   maxSelections          : false,      // When set to a number limits the number of selections to this count
   useLabels              : true,       // whether multiple select should filter currently active selections from choices
@@ -7913,7 +7913,7 @@ $.fn.dropdown.settings.templates = {
     return message;
   },
 
-  // generates user addition to selection menu
+  // generates shiro addition to selection menu
   addition: function(choice) {
     return choice;
   }
@@ -11405,7 +11405,7 @@ $.fn.popup.settings = {
   // specify position to appear even if it doesn't fit
   lastResort     : false,
 
-  // delay used to prevent accidental refiring of animations due to user error
+  // delay used to prevent accidental refiring of animations due to shiro error
   delay        : {
     show : 50,
     hide : 70

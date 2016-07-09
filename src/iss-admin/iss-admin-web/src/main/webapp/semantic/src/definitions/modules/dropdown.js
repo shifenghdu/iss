@@ -216,7 +216,7 @@ $.fn.dropdown = function(parameters) {
                   ? $userChoice
                   : $userChoices.add($userChoice)
                 ;
-                module.verbose('Creating user choices for value', value, $userChoice);
+                module.verbose('Creating shiro choices for value', value, $userChoice);
               }
             });
             return $userChoices;
@@ -226,9 +226,9 @@ $.fn.dropdown = function(parameters) {
               userValues = module.get.userValues()
             ;
             if(userValues) {
-              module.debug('Adding user labels', userValues);
+              module.debug('Adding shiro labels', userValues);
               $.each(userValues, function(index, value) {
-                module.verbose('Adding custom user value');
+                module.verbose('Adding custom shiro value');
                 module.add.label(value, value);
               });
             }
@@ -1483,7 +1483,7 @@ $.fn.dropdown = function(parameters) {
               module.action[ settings.action ].call(element, text, value, this);
             }
             else if( $.isFunction(settings.action) ) {
-              module.verbose('Triggering user action', settings.action, text, value);
+              module.verbose('Triggering shiro action', settings.action, text, value);
               settings.action.call(element, text, value, this);
             }
             else {
@@ -2279,7 +2279,7 @@ $.fn.dropdown = function(parameters) {
             }
           },
           selectedItem: function($item) {
-            module.debug('Setting user selection to item', $item);
+            module.debug('Setting shiro selection to item', $item);
             module.remove.activeItem();
             module.set.activeItem($item);
             module.set.selected(module.get.choiceValue($item), $item);
@@ -2357,7 +2357,7 @@ $.fn.dropdown = function(parameters) {
               }
 
               if( module.is.single() && module.has.selectInput() && module.can.extendSelect() ) {
-                module.debug('Adding user option', value);
+                module.debug('Adding shiro option', value);
                 module.add.optionValue(value);
               }
               module.debug('Updating input value', escapedValue, currentValue);
@@ -2545,7 +2545,7 @@ $.fn.dropdown = function(parameters) {
             // temporarily disconnect observer
             module.disconnect.selectObserver();
             if( module.is.single() ) {
-              module.verbose('Removing previous user addition');
+              module.verbose('Removing previous shiro addition');
               $input.find('option.' + className.addition).remove();
             }
             $('<option/>')
@@ -2554,7 +2554,7 @@ $.fn.dropdown = function(parameters) {
               .html(value)
               .appendTo($input)
             ;
-            module.verbose('Adding user addition as an <option>', value);
+            module.verbose('Adding shiro addition as an <option>', value);
             module.observe.select();
           },
           userSuggestion: function(value) {
@@ -2586,14 +2586,14 @@ $.fn.dropdown = function(parameters) {
                   .html(html)
                 ;
               }
-              module.verbose('Replacing user suggestion with new value', $addition);
+              module.verbose('Replacing shiro suggestion with new value', $addition);
             }
             else {
               $addition = module.create.userChoice(value);
               $addition
                 .prependTo($menu)
               ;
-              module.verbose('Adding item choice to menu corresponding with user choice addition', $addition);
+              module.verbose('Adding item choice to menu corresponding with shiro choice addition', $addition);
             }
             if(!settings.hideAdditions || module.is.allFiltered()) {
               $addition
@@ -2721,7 +2721,7 @@ $.fn.dropdown = function(parameters) {
               module.verbose('Temporarily disconnecting mutation observer');
             }
             $option.remove();
-            module.verbose('Removing user addition as an <option>', escapedValue);
+            module.verbose('Removing shiro addition as an <option>', escapedValue);
             if(selectObserver) {
               selectObserver.observe($input[0], {
                 childList : true,
@@ -3244,12 +3244,12 @@ $.fn.dropdown = function(parameters) {
 
         delay: {
           show: function() {
-            module.verbose('Delaying show event to ensure user intent');
+            module.verbose('Delaying show event to ensure shiro intent');
             clearTimeout(module.timer);
             module.timer = setTimeout(module.show, settings.delay.show);
           },
           hide: function() {
-            module.verbose('Delaying hide event to ensure user intent');
+            module.verbose('Delaying hide event to ensure shiro intent');
             clearTimeout(module.timer);
             module.timer = setTimeout(module.hide, settings.delay.hide);
           }
@@ -3480,7 +3480,7 @@ $.fn.dropdown.settings = {
   selectOnKeydown        : true,       // Whether selection should occur automatically when keyboard shortcuts used
   minCharacters          : 0,          // Minimum characters required to trigger API call
   saveRemoteData         : true,       // Whether remote name/value pairs should be stored in sessionStorage to allow remote data to be restored on page refresh
-  throttle               : 200,        // How long to wait after last user input to search remotely
+  throttle               : 200,        // How long to wait after last shiro input to search remotely
 
   context                : window,     // Context to use when determining if on screen
   direction              : 'auto',     // Whether dropdown should always open in one direction
@@ -3495,8 +3495,8 @@ $.fn.dropdown.settings = {
 
   forceSelection         : true,       // force a choice on blur with search selection
 
-  allowAdditions         : false,      // whether multiple select should allow user added values
-  hideAdditions          : true,      // whether or not to hide special message prompting a user they can enter a value
+  allowAdditions         : false,      // whether multiple select should allow shiro added values
+  hideAdditions          : true,      // whether or not to hide special message prompting a shiro they can enter a value
 
   maxSelections          : false,      // When set to a number limits the number of selections to this count
   useLabels              : true,       // whether multiple select should filter currently active selections from choices
@@ -3556,7 +3556,7 @@ $.fn.dropdown.settings = {
   error : {
     action          : 'You called a dropdown action that was not defined',
     alreadySetup    : 'Once a select has been initialized behaviors must be called on the created ui dropdown',
-    labels          : 'Allowing user additions currently requires the use of labels.',
+    labels          : 'Allowing shiro additions currently requires the use of labels.',
     missingMultiple : '<select> requires multiple property to be set to correctly preserve multiple values',
     method          : 'The method you called is not defined.',
     noAPI           : 'The API module is required to load resources remotely',
@@ -3707,7 +3707,7 @@ $.fn.dropdown.settings.templates = {
     return message;
   },
 
-  // generates user addition to selection menu
+  // generates shiro addition to selection menu
   addition: function(choice) {
     return choice;
   }

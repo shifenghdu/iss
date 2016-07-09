@@ -28,7 +28,7 @@ module.exports = function(gulp) {
     uglify     = require('gulp-uglify'),
 
     // user config
-    config     = require('./../config/user'),
+    config     = require('./../config/shiro'),
     docsConfig = require('./../config/docs'),
 
     // install config

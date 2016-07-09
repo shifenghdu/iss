@@ -7,6 +7,16 @@
         <session-timeout>30</session-timeout>
     </session-config>
 
+    <!-- Spring配置文件开始 -->
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>classpath*:ctx-domain.xml classpath*:ctx-shiro.xml</param-value>
+    </context-param>
+
+    <listener>
+        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+    </listener>
+
 
     <welcome-file-list>
         <welcome-file>index.html</welcome-file>
@@ -93,15 +103,4 @@
     </servlet-mapping>
     <!-- spring mvc end -->
 
-
-    <!-- Spring配置文件开始 -->
-    <context-param>
-        <param-name>contextConfigLocation</param-name>
-        <param-value>classpath*:ctx-domain.xml classpath*:ctx-service.xml classpath*:ctx-shiro.xml</param-value>
-    </context-param>
-
-    <listener>
-        <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
-    </listener>
-    <!-- spring mvc end -->
 </web-app>
