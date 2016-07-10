@@ -7,7 +7,7 @@
             ISS管理-用户登录
         </h1>
         <div class="home-header-welcome">
-            <span>欢迎, </span><a href="javascript: void(0);">admin</a><span> | </span><a href="${baseUrl}/auth/logout">登出</a>
+            <span>欢迎, </span><a href="javascript: void(0);">${loginUserName}</a><span> | </span><a href="${baseUrl}/auth/logout">登出</a>
         </div>
     </div>
 </div>

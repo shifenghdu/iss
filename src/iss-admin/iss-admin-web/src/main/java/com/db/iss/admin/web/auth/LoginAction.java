@@ -15,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Date;
 
 /**
@@ -38,7 +40,7 @@ public class LoginAction extends AbstractAction{
      * @return
      */
     @RequestMapping(value = "login",method = RequestMethod.POST)
-    public String login(String name,String password){
+    public String login(String name, String password, HttpServletRequest request){
         logger.info("shiro login name: [{}] [{}]",name,password);
         UsernamePasswordToken token = new UsernamePasswordToken(name, password);
         token.setRememberMe(true);
@@ -47,6 +49,7 @@ public class LoginAction extends AbstractAction{
         }catch (AuthenticationException e) {
             return "redirect:/auth/login";
         }
+        request.getSession().setAttribute("loginUserName",token.getUsername());
         //登录成功
         return "redirect:/home";
     }
