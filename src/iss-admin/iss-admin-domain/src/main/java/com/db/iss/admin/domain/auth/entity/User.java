@@ -19,7 +19,7 @@ public class User extends AbstractEntity {
     @Column(name = "name",length = 20, unique = true)
     private String userName;
 
-    @Column(name = "password",length = 20)
+    @Column(name = "password",length = 64)
     private String password;
 
     @ManyToMany(cascade = CascadeType.PERSIST,fetch = FetchType.LAZY)

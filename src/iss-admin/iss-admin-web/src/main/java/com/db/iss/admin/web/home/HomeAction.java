@@ -1,5 +1,6 @@
-package com.db.iss.admin.web.action;
+package com.db.iss.admin.web.home;
 
+import com.db.iss.admin.web.common.AbstractHomeAction;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 
@@ -9,11 +10,11 @@ import org.springframework.web.bind.annotation.RequestMapping;
  * 主页
  */
 @Controller
-public class HomeAction {
+public class HomeAction extends AbstractHomeAction {
 
     @RequestMapping("home")
     public String index(){
-        return "home";
+        return "home/home";
     }
 
 }

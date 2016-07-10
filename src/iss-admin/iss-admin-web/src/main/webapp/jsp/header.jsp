@@ -15,5 +15,8 @@
     <link rel="stylesheet" type="text/css" href="${baseUrl}/dist/admin.css">
     <script src="${baseUrl}/dist/jquery.min.js"></script>
     <script src="${baseUrl}/dist/semantic.min.js"></script>
+    <script src="${baseUrl}/dist/convert-hex.js"></script>
+    <script src="${baseUrl}/dist/convert-string.js"></script>
+    <script src="${baseUrl}/dist/sha256.js"></script>
 </head>
 <body>

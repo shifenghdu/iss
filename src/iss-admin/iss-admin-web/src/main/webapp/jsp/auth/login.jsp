@@ -64,12 +64,13 @@
 //                }
 //            });
 
-//        $('.ui.form').submit(function(e){
-//            var formData = $('.ui.form input').serializeArray(); //or .serialize();
-//            $.post('login',formData,function (response) {
-//                console.log(response);
-//            });
-//        });
+        $('.ui.form').submit(function(e){
+            var p = $('.ui.form input[name="password"]').val();
+            console.log(p);
+            console.log(sha256(p));
+            $('.ui.form input[name="password"]').val(sha256(p));
+
+        });
         //checkbox init
         $('.ui.checkbox').checkbox();
     });

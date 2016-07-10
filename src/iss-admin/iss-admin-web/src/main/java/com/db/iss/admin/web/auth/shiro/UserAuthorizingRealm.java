@@ -24,11 +24,17 @@ public class UserAuthorizingRealm extends AuthorizingRealm {
     @Autowired
     private IUserService userService;
 
+
+    /**
+     * shiro 鉴权回调
+     * @param principals
+     * @return
+     */
     @Override
     protected AuthorizationInfo doGetAuthorizationInfo(PrincipalCollection principals) {
         //获取登录的用户名
-        String loginName=(String) principals.fromRealm(getName()).iterator().next();
-        User user=userService.getUserByUserName(loginName);
+        String loginName = (String) principals.fromRealm(getName()).iterator().next();
+        User user = userService.getUserByUserName(loginName);
 
         if(user!=null){
             SimpleAuthorizationInfo info=new SimpleAuthorizationInfo();
@@ -40,6 +46,12 @@ public class UserAuthorizingRealm extends AuthorizingRealm {
         return null;
     }
 
+    /**
+     * shiro 登录回调
+     * @param token
+     * @return
+     * @throws AuthenticationException
+     */
     @Override
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
         UsernamePasswordToken usernamePasswordToken = (UsernamePasswordToken) token;

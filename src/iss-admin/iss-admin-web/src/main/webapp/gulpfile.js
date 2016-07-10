@@ -28,7 +28,7 @@ gulp.task("sass",function () {
     return gulp.src('src/**/*.sass')
         .pipe(sass())
         .pipe(concatcss('admin.css'))
-        .pipe(minifycss())
+        // .pipe(minifycss())
         .pipe(gulp.dest('dist'));
 });
 

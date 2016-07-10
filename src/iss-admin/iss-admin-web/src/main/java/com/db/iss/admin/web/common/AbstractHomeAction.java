@@ -5,7 +5,7 @@ package com.db.iss.admin.web.common;
  * @author andy.shif
  * home主页基础action
  */
-public class AbstractHomeAction {
+public abstract class AbstractHomeAction extends AbstractAction{
 
 
 }

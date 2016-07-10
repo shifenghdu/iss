@@ -1,7 +1,8 @@
-package com.db.iss.admin.web.auth.action;
+package com.db.iss.admin.web.auth;
 
 import com.db.iss.admin.domain.auth.IUserService;
 import com.db.iss.admin.domain.auth.entity.User;
+import com.db.iss.admin.web.common.AbstractAction;
 import org.apache.shiro.SecurityUtils;
 import org.apache.shiro.authc.AuthenticationException;
 import org.apache.shiro.authc.UsernamePasswordToken;
@@ -23,21 +24,26 @@ import java.util.Date;
  */
 @Controller
 @RequestMapping("auth")
-public class LoginAction {
+public class LoginAction extends AbstractAction{
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     @Autowired
     private IUserService userService;
 
+    /**
+     * 登录操作
+     * @param name
+     * @param password
+     * @return
+     */
     @RequestMapping(value = "login",method = RequestMethod.POST)
     public String login(String name,String password){
-        logger.info("shiro login name: [{}] passwd: [{}]",name,password);
+        logger.info("shiro login name: [{}] [{}]",name,password);
         UsernamePasswordToken token = new UsernamePasswordToken(name, password);
         token.setRememberMe(true);
-        Subject user = SecurityUtils.getSubject();
         try{
-            user.login(token);
+            getSubject().login(token);
         }catch (AuthenticationException e) {
             return "redirect:/auth/login";
         }
@@ -45,11 +51,20 @@ public class LoginAction {
         return "redirect:/home";
     }
 
+    /**
+     * 登录页面
+     * @return
+     */
     @RequestMapping(value = "login",method = RequestMethod.GET)
     public String loginView(){
         return "auth/login";
     }
 
+
+    /**
+     * 添加测试账号
+     * @return
+     */
     @RequestMapping(value = "add",method = RequestMethod.GET)
     public String addUser(){
         User user = new User();
@@ -61,6 +76,16 @@ public class LoginAction {
         return "home";
     }
 
-
-
+    /**
+     * 退出登录
+     * @return
+     */
+    @RequestMapping(value = "logout",method = RequestMethod.GET)
+    public String logout(){
+        Subject subject = SecurityUtils.getSubject();
+        if (subject.isAuthenticated()) {
+            subject.logout(); // session 会销毁，在SessionListener监听session销毁，清理权限缓存
+        }
+        return "redirect:/auth/login";
+    }
 }
