@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=utf-8" language="java" %>
 <div class="ui bottom attached pushable">
-    <div class="ui visible left vertical sidebar accordion menu">
+
+    <div class="ui visible left vertical sidebar menu">
         <a class="item"> 首页 </a>
         <a class="item"> 集群监控 </a>
         <a class="item"> 统一配置 </a>

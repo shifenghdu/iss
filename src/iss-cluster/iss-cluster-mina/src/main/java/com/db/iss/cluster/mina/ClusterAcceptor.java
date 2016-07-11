@@ -31,6 +31,8 @@ public class ClusterAcceptor {
 
     private final int RETRY_TIMES = 3;
 
+    private final long WRITE_TIME_OUT = 10000L;
+
     private Map<Long,IoSession> sessionMap = new ConcurrentHashMap<>();
 
     public ClusterAcceptor(SerializerType type, CompressorType compressorType, AbstractTransportPlugin plugin) {
@@ -67,7 +69,7 @@ public class ClusterAcceptor {
             while (times < RETRY_TIMES) {
                 times++;
                 WriteFuture future = session.write(msg);
-                future.awaitUninterruptibly();
+                future.awaitUninterruptibly(WRITE_TIME_OUT);
                 if (future.isWritten()) {
                     return true;
                 }

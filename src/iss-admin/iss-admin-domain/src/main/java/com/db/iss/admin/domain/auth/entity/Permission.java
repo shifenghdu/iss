@@ -1,8 +1,13 @@
 package com.db.iss.admin.domain.auth.entity;
 
 import com.db.iss.admin.domain.common.AbstractEntity;
+import org.hibernate.annotations.*;
 
 import javax.persistence.*;
+import javax.persistence.CascadeType;
+import javax.persistence.Entity;
+import javax.persistence.ForeignKey;
+import javax.persistence.Table;
 
 /**
  * Created by andy on 16/7/9.

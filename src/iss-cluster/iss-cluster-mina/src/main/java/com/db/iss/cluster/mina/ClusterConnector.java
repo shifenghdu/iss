@@ -32,6 +32,8 @@ public class ClusterConnector {
 
     private final int SIZE_128K = 131072;
 
+    private final long WRITE_TIME_OUT = 10000L;
+
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private Map<String,IoSession> sessionMap = new ConcurrentHashMap<>();
@@ -91,7 +93,7 @@ public class ClusterConnector {
         while(times < RETRY_TIMES) {
             times ++;
             WriteFuture future = session.write(msg);
-            future.awaitUninterruptibly();
+            future.awaitUninterruptibly(WRITE_TIME_OUT);
             if (future.isWritten()) {
                 return true;
             }
