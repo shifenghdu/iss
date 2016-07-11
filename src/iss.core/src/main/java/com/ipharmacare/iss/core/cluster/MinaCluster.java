@@ -8,6 +8,7 @@ import com.ipharmacare.iss.core.cluster.mina.ClusterConnector;
 import com.ipharmacare.iss.core.config.BaseConfig;
 import com.ipharmacare.iss.core.msgpack.CommonCodeFactory;
 import com.ipharmacare.iss.core.router.IRouter;
+import org.apache.mina.core.future.WriteFuture;
 import org.apache.mina.core.session.IoSession;
 import org.dom4j.Element;
 import org.msgpack.MessagePack;
@@ -48,6 +49,8 @@ public class MinaCluster implements ICluster {
     private String pluginName = "cluster";
 
     private final int RETRY_TIMES = 3;
+
+    private final long WRITE_WAIT_TIME = 10000L;
 
     @Autowired
     private CommonCodeFactory codecFactory;
@@ -118,8 +121,14 @@ public class MinaCluster implements ICluster {
         int t = 0;
         if(session == null || session.isClosing() || msg == null) return false;
         while (t < times) {
-            if(session.write(msg).awaitUninterruptibly().isWritten()){
-                return true;
+//            if(session.write(msg).awaitUninterruptibly().isWritten()){
+//                return true;
+//            }
+            WriteFuture future = session.write(msg);
+            if(future.awaitUninterruptibly(WRITE_WAIT_TIME)){
+                if(future.isWritten()) {
+                    return true;
+                }
             }
             t ++;
         }

@@ -5,6 +5,7 @@ import com.ipharmacare.iss.common.esb.EsbMsg;
 import com.ipharmacare.iss.connector.msgpack.CommonCodeFactory;
 import org.apache.mina.core.filterchain.DefaultIoFilterChainBuilder;
 import org.apache.mina.core.future.ConnectFuture;
+import org.apache.mina.core.future.WriteFuture;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.filter.executor.ExecutorFilter;
@@ -55,6 +56,8 @@ public class Connector {
     private final int SIZE_128K = 131072;
 
     private final int RETRY_TIMES = 3;
+
+    private final long WRITE_WAIT_TIME = 10000L;
 
     public AtomicLong receiveCount = new AtomicLong(0);
 
@@ -213,8 +216,14 @@ public class Connector {
         int t = 0;
         if(session == null || session.isClosing() || msg == null) return false;
         while (t < times) {
-            if(session.write(msg).awaitUninterruptibly().isWritten()){ // 存在返回延迟 需要与接收线程同步
-                return true;
+//            if(session.write(msg).awaitUninterruptibly().isWritten()){ // 存在返回延迟 需要与接收线程同步
+//                return true;
+//            }
+            WriteFuture future = session.write(msg);
+            if(future.awaitUninterruptibly(WRITE_WAIT_TIME)){
+                if(future.isWritten()) {
+                    return true;
+                }
             }
             t ++;
         }

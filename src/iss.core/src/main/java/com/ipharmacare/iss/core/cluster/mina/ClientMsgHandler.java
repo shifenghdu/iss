@@ -29,7 +29,7 @@ public class ClientMsgHandler extends ServerMsgHandler {
             throws Exception {
         MDC.put("node", owner.getNodeName());
         if (session != null) {
-            logger.warn("exceptionCaught reconnect [{}]", session);
+            logger.error(String.format("exceptionCaught reconnect [%s]", session),cause);
             session.close(true);
         }
     }
