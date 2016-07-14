@@ -6,6 +6,7 @@ import org.hibernate.annotations.CacheConcurrencyStrategy;
 
 import javax.persistence.*;
 import javax.transaction.Transactional;
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -14,19 +15,17 @@ import java.util.Set;
  * 角色
  */
 @Entity
-@Table(name = "admin_role")
+@Table(name = "ADMIN_ROLE")
 public class Role extends AbstractEntity {
 
-    @Column(name = "name",length = 20)
+    @Column(name = "NAME",length = 20)
     private String roleName;
 
-    @OneToMany(cascade = CascadeType.PERSIST,targetEntity = User.class,
-            fetch = FetchType.LAZY,mappedBy = "roles")
-    private Set<Permission> permissions;
+    @Transient
+    private UserRole userRole;
 
-    @ManyToMany(cascade = CascadeType.PERSIST,targetEntity = Permission.class,
-            fetch = FetchType.LAZY,mappedBy = "role")
-    private Set<User> users;
+    @Transient
+    private RolePermission rolePermission;
 
     public String getRoleName() {
         return roleName;
@@ -36,19 +35,19 @@ public class Role extends AbstractEntity {
         this.roleName = roleName;
     }
 
-    public Set<Permission> getPermissions() {
-        return permissions;
+    public UserRole getUserRole() {
+        return userRole;
     }
 
-    public void setPermissions(Set<Permission> permissions) {
-        this.permissions = permissions;
+    public void setUserRole(UserRole userRole) {
+        this.userRole = userRole;
     }
 
-    public Set<User> getUsers() {
-        return users;
+    public RolePermission getRolePermission() {
+        return rolePermission;
     }
 
-    public void setUsers(Set<User> users) {
-        this.users = users;
+    public void setRolePermission(RolePermission rolePermission) {
+        this.rolePermission = rolePermission;
     }
 }

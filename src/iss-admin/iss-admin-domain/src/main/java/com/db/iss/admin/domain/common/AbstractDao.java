@@ -18,35 +18,35 @@ public abstract class AbstractDao<T extends AbstractEntity> {
     @Autowired
     private SessionFactory sessionFactory;
 
-    public SessionFactory getSessionFactory() {
+    protected SessionFactory getSessionFactory() {
         return sessionFactory;
     }
 
-    public Session getCurrentSession() {
+    protected Session getCurrentSession() {
         return sessionFactory.getCurrentSession();
     }
 
-    public Serializable save(T o) {
+    protected Serializable save(T o) {
         return getCurrentSession().save(o);
     }
 
-    public void delete(T o) {
+    protected void delete(T o) {
         this.getCurrentSession().delete(o);
     }
 
-    public void update(T o) {
+    protected void update(T o) {
         this.getCurrentSession().update(o);
     }
 
-    public void saveOrUpdate(T o) {
+    protected void saveOrUpdate(T o) {
         this.getCurrentSession().merge(o);
     }
 
-    public List<T> find(String hql) {
+    protected List<T> find(String hql) {
         return this.getCurrentSession().createQuery(hql).list();
     }
 
-    public List<T> find(String hql, Object[] param) {
+    protected List<T> find(String hql, Object[] param) {
         Query q = this.getCurrentSession().createQuery(hql);
         if (param != null && param.length > 0) {
             for (int i = 0; i < param.length; i++) {
@@ -56,7 +56,7 @@ public abstract class AbstractDao<T extends AbstractEntity> {
         return q.list();
     }
 
-    public List<T> find(String hql, List<Object> param) {
+    protected List<T> find(String hql, List<Object> param) {
         Query q = this.getCurrentSession().createQuery(hql);
         if (param != null && param.size() > 0) {
             for (int i = 0; i < param.size(); i++) {
@@ -66,7 +66,7 @@ public abstract class AbstractDao<T extends AbstractEntity> {
         return q.list();
     }
 
-    public List<T> find(String hql, Object[] param, Integer page, Integer rows) {
+    protected List<T> find(String hql, Object[] param, Integer page, Integer rows) {
         if (page == null || page < 1) {
             page = 1;
         }
@@ -82,7 +82,7 @@ public abstract class AbstractDao<T extends AbstractEntity> {
         return q.setFirstResult((page - 1) * rows).setMaxResults(rows).list();
     }
 
-    public List<T> find(String hql, List<Object> param, Integer page, Integer rows) {
+    protected List<T> find(String hql, List<Object> param, Integer page, Integer rows) {
         if (page == null || page < 1) {
             page = 1;
         }
@@ -98,11 +98,11 @@ public abstract class AbstractDao<T extends AbstractEntity> {
         return q.setFirstResult((page - 1) * rows).setMaxResults(rows).list();
     }
 
-    public T get(Class<T> c, Serializable id) {
+    protected T get(Class<T> c, Serializable id) {
         return (T) this.getCurrentSession().get(c, id);
     }
 
-    public T get(String hql, Object[] param) {
+    protected T get(String hql, Object[] param) {
         List<T> l = this.find(hql, param);
         if (l != null && l.size() > 0) {
             return l.get(0);
@@ -111,7 +111,7 @@ public abstract class AbstractDao<T extends AbstractEntity> {
         }
     }
 
-    public T get(String hql, List<Object> param) {
+    protected T get(String hql, List<Object> param) {
         List<T> l = this.find(hql, param);
         if (l != null && l.size() > 0) {
             return l.get(0);
@@ -120,11 +120,11 @@ public abstract class AbstractDao<T extends AbstractEntity> {
         }
     }
 
-    public Long count(String hql) {
+    protected Long count(String hql) {
         return (Long) this.getCurrentSession().createQuery(hql).uniqueResult();
     }
 
-    public Long count(String hql, Object[] param) {
+    protected Long count(String hql, Object[] param) {
         Query q = this.getCurrentSession().createQuery(hql);
         if (param != null && param.length > 0) {
             for (int i = 0; i < param.length; i++) {
@@ -134,7 +134,7 @@ public abstract class AbstractDao<T extends AbstractEntity> {
         return (Long) q.uniqueResult();
     }
 
-    public Long count(String hql, List<Object> param) {
+    protected Long count(String hql, List<Object> param) {
         Query q = this.getCurrentSession().createQuery(hql);
         if (param != null && param.size() > 0) {
             for (int i = 0; i < param.size(); i++) {
@@ -144,11 +144,11 @@ public abstract class AbstractDao<T extends AbstractEntity> {
         return (Long) q.uniqueResult();
     }
 
-    public Integer executeHql(String hql) {
+    protected Integer executeHql(String hql) {
         return this.getCurrentSession().createQuery(hql).executeUpdate();
     }
 
-    public Integer executeHql(String hql, Object[] param) {
+    protected Integer executeHql(String hql, Object[] param) {
         Query q = this.getCurrentSession().createQuery(hql);
         if (param != null && param.length > 0) {
             for (int i = 0; i < param.length; i++) {
@@ -158,7 +158,7 @@ public abstract class AbstractDao<T extends AbstractEntity> {
         return q.executeUpdate();
     }
 
-    public Integer executeHql(String hql, List<Object> param) {
+    protected Integer executeHql(String hql, List<Object> param) {
         Query q = this.getCurrentSession().createQuery(hql);
         if (param != null && param.size() > 0) {
             for (int i = 0; i < param.size(); i++) {
