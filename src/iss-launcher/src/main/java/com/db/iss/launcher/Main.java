@@ -8,7 +8,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 public class Main {
 
     public Main run(){
-        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("classpath:ctx-app.xml");
+        ClassPathXmlApplicationContext context = new ClassPathXmlApplicationContext("classpath:spring-ctx.xml");
         context.getBean(IDemo.class);
 
         return this;

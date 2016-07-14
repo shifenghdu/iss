@@ -1,15 +1,11 @@
 package com.db.iss.core.cm;
 
 import com.alibaba.fastjson.JSON;
-import com.db.iss.core.registry.url.ExtendURLStreamHandlerFactory;
 import org.I0Itec.zkclient.IZkDataListener;
 import org.I0Itec.zkclient.ZkClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
-import java.net.URL;
 import java.util.Map;
 import java.util.Properties;
 import java.util.concurrent.ConcurrentHashMap;
@@ -41,12 +37,14 @@ public class DefaultConfigManager implements IConfigManager, IZkDataListener,Run
 
     private String node;
 
+    private String pipe;
+
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     public void connectZkServer(){
         try {
-            registry = SettingLoader.getSetting().getProperty(SettingKey.REGISTRY.getValue());
-            node = SettingLoader.getSetting().getProperty(SettingKey.NODE.getValue());
+//            registry = SettingLoader.getSetting().getProperty(SettingKey.REGISTRY.getValue());
+//            node = SettingLoader.getSetting().getProperty(SettingKey.NODE.getValue());
             zkClient = new ZkClient(registry, SESSION_TIME_OUT, CONNECT_TIME_OUT);
             nodePath = String.format("%s/%s",DEFAULT_CONFIG_ROOT_NODE,node);
             if(!zkClient.exists(nodePath)){
@@ -103,5 +101,32 @@ public class DefaultConfigManager implements IConfigManager, IZkDataListener,Run
                 handler.onChange(key,(String)entry.getValue());
             }
         }
+    }
+
+    public String getRegistry() {
+        return registry;
+    }
+
+    public void setRegistry(String registry) {
+        this.registry = registry;
+        setting.setProperty(SettingKey.REGISTRY.getValue(),registry);
+    }
+
+    public String getNode() {
+        return node;
+    }
+
+    public void setNode(String node) {
+        this.node = node;
+        setting.setProperty(SettingKey.NODE.getValue(),node);
+    }
+
+    public String getPipe() {
+        return pipe;
+    }
+
+    public void setPipe(String pipe) {
+        this.pipe = pipe;
+        setting.setProperty(SettingKey.PIPE.getValue(),pipe);
     }
 }

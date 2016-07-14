@@ -10,9 +10,7 @@ import org.I0Itec.zkclient.IZkChildListener;
 import org.I0Itec.zkclient.ZkClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
-import javax.annotation.PostConstruct;
 import java.lang.management.ManagementFactory;
 import java.net.InetAddress;
 import java.net.URL;
@@ -21,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * Created by andy on 2016/6/28.
@@ -58,7 +57,7 @@ public class DefaultRegistry implements IRegistry,IZkChildListener {
     //注册信息映射表
     private Map<String,List<RegistryNode>> registryMap = new ConcurrentHashMap<>();
     //当前轮询节点
-    private Map<String,Integer> indexMap = new ConcurrentHashMap<>();
+    private Map<String,AtomicInteger> indexMap = new ConcurrentHashMap<>();
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -144,24 +143,29 @@ public class DefaultRegistry implements IRegistry,IZkChildListener {
         return writeZk();
     }
 
+    public Integer getIndex(String namespace){
+        AtomicInteger index = indexMap.get(namespace);
+        if (index == null) {
+            synchronized (indexMap) {
+                index = indexMap.get(namespace);
+                if(index == null) {
+                    index = new AtomicInteger(0);
+                    indexMap.put(namespace, index);
+                }
+            }
+        }
+        return index.incrementAndGet();
+    }
+
     @Override
     public RegistryNode getNode(String namespace) {
-        Integer index = indexMap.get(namespace);
-        if(index == null){
-            index = 0;
-            indexMap.put(namespace,index);
-        }
+        Integer index = getIndex(namespace);
         List<RegistryNode> registryNodes = registryMap.get(namespace);
-        if(registryNodes != null) {
-            if (index < registryNodes.size()) {
-                return registryNodes.get(index);
-            } else {
-                index = 0;
-                indexMap.put(namespace, index);
-                return registryNodes.get(0);
-            }
-        }else {
-            throw new ISSException(String.format("namespace [%s] registry info not found",namespace));
+        if (registryNodes != null) {
+            index = Math.abs(index) % registryNodes.size();
+            return registryNodes.get(index);
+        } else {
+            throw new ISSException(String.format("namespace [%s] registry info not found", namespace));
         }
     }
 
@@ -208,5 +212,13 @@ public class DefaultRegistry implements IRegistry,IZkChildListener {
             }
         }).start();
 
+    }
+
+    public String getRegistry() {
+        return registry;
+    }
+
+    public void setRegistry(String registry) {
+        this.registry = registry;
     }
 }

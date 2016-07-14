@@ -175,4 +175,12 @@ public class DispatcherPlugin extends AbstractDispatcherPlugin implements IMessa
         serviceScanner = new ServiceScanner(mapper,registry);
         serviceScanner.setApplicationContext(applicationContext);
     }
+
+    public IRegistry getRegistry() {
+        return registry;
+    }
+
+    public void setRegistry(IRegistry registry) {
+        this.registry = registry;
+    }
 }
