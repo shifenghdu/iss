@@ -2,6 +2,7 @@ package com.db.iss.dispatcher.proxy;
 
 import com.db.iss.core.exception.RemoteException;
 import com.db.iss.core.plugin.EsbMsg;
+import com.db.iss.core.serializer.SerializerProvider;
 import com.db.iss.dispatcher.IMessageSend;
 import com.db.iss.dispatcher.ResponseMapper;
 import com.db.iss.dispatcher.SerializerWrapper;
@@ -22,7 +23,7 @@ public abstract class AbstractServiceProxy implements IServiceProxy{
 
     private ResponseMapper responseMapper = ResponseMapper.getInstance();
 
-    private SerializerWrapper serializerWrapper = SerializerWrapper.getInstance();
+    private SerializerWrapper serializerWrapper;
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -33,6 +34,10 @@ public abstract class AbstractServiceProxy implements IServiceProxy{
     private IMessageSend messageSend;
 
     private long timeout = 30000L;  //默认超时30s
+
+    public AbstractServiceProxy(SerializerProvider provider){
+        serializerWrapper = new SerializerWrapper(provider);
+    }
 
     protected Object invoke(String namespace,String method,Object[] args,Class<?> returnType) {
         total.incrementAndGet();

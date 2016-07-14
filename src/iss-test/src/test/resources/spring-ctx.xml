@@ -1,18 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <beans xmlns="http://www.springframework.org/schema/beans"
-       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:p="http://www.springframework.org/schema/p"
-       xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context"
-       xmlns:jee="http://www.springframework.org/schema/jee" xmlns:tx="http://www.springframework.org/schema/tx"
-       xmlns:task="http://www.springframework.org/schema/task"
-       xsi:schemaLocation="
-        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
-        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
-        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
-        http://www.springframework.org/schema/jee http://www.springframework.org/schema/jee/spring-jee-4.0.xsd
-        http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
-        http://www.springframework.org/schema/task
-        http://www.springframework.org/schema/task/spring-task-4.0.xsd">
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+        http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd">
 
     <context:property-placeholder location="classpath:iss.properties"/>
     <context:component-scan base-package="com.db.iss" />
+
+    <bean id="compressorProvider" class="com.db.iss.core.compressor.CompressorProvider"/>
+    <bean id="serializerProvider" class="com.db.iss.core.serializer.SerializerProvider"/>
+    <bean id="configManager" class="com.db.iss.core.cm.DefaultConfigManager" init-method="connectZkServer" lazy-init="false"/>
+    <bean id="registry" class="com.db.iss.core.registry.DefaultRegistry" init-method="connectZkServer" lazy-init="false"/>
+
+
+    <bean id="transportPlugin" class="com.db.iss.cluster.mina.MinaTransportPlugin">
+        <property name="configManager" ref="configManager"/>
+        <property name="registry" ref="registry"/>
+        <property name="serializerProvider" ref="serializerProvider"/>
+        <property name="compressorProvider" ref="compressorProvider"/>
+    </bean>
+
+    <bean id="loggerPlugin" class="com.db.iss.logger.LoggerPlugin">
+        <property name="configManager" ref="configManager"/>
+    </bean>
+
+    <bean id="dispatcherPlugin" class="com.db.iss.dispatcher.DispatcherPlugin">
+        <property name="configManager" ref="configManager"/>
+        <property name="serializerProvider" ref="serializerProvider"/>
+        <property name="compressorProvider" ref="compressorProvider"/>
+    </bean>
+
+    <bean id="remoteServiceProvider" class="com.db.iss.dispatcher.spring.DefaultRemoteServiceProvider">
+        <property name="messageSend" ref="dispatcherPlugin"/>
+        <property name="serializerProvider" ref="serializerProvider"/>
+    </bean>
+
+
+
 </beans>

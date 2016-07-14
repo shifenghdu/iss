@@ -5,10 +5,8 @@ import com.db.iss.dispatcher.annotation.Remote;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeansException;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
-import org.springframework.stereotype.Service;
 
 import java.lang.reflect.Method;
 import java.util.Map;
@@ -18,22 +16,26 @@ import java.util.Map;
  * @author andy.shif
  * spring服务扫描
  */
-@Service
 public class ServiceScanner implements ApplicationContextAware {
 
-    @Autowired
     private ServiceMapper mapper;
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private ApplicationContext context;
 
-    @Autowired
     private IRegistry registry;
+
+
+    public ServiceScanner(ServiceMapper mapper,IRegistry registry){
+        this.mapper = mapper;
+        this.registry = registry;
+    }
 
     @Override
     public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
         this.context = applicationContext;
+        this.mapper.setApplicationContext(applicationContext);
         registerService();
     }
 

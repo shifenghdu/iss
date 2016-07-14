@@ -11,7 +11,6 @@ import org.springframework.beans.factory.annotation.Autowired;
  */
 public abstract class AbstractTransportPlugin extends AbstractMessagePlugin {
 
-    @Autowired
     protected IRegistry registry;
 
     public AbstractTransportPlugin(String name, String version) {
@@ -62,4 +61,11 @@ public abstract class AbstractTransportPlugin extends AbstractMessagePlugin {
         }
     }
 
+    public IRegistry getRegistry() {
+        return registry;
+    }
+
+    public void setRegistry(IRegistry registry) {
+        this.registry = registry;
+    }
 }

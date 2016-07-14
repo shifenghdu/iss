@@ -1,16 +1,19 @@
 package com.db.iss.dispatcher;
 
 import com.db.iss.core.cm.SettingException;
-import com.db.iss.core.cm.SettingKey;
+import com.db.iss.core.compressor.CompressorProvider;
 import com.db.iss.core.plugin.AbstractDispatcherPlugin;
 import com.db.iss.core.plugin.EsbMsg;
 import com.db.iss.core.plugin.PluginException;
-import com.db.iss.core.serializer.SerializerType;
+import com.db.iss.core.registry.IRegistry;
+import com.db.iss.core.serializer.SerializerProvider;
 import com.db.iss.dispatcher.future.DefaultFuture;
 import com.db.iss.dispatcher.future.IFuture;
 import com.db.iss.dispatcher.spring.ServiceMapper;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.db.iss.dispatcher.spring.ServiceScanner;
+import org.springframework.beans.BeansException;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.ApplicationContextAware;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -20,15 +23,24 @@ import java.util.List;
  * @author andy.shif
  * 调度插件
  */
-@Service
-public class DispatcherPlugin extends AbstractDispatcherPlugin implements IMessageSend{
+public class DispatcherPlugin extends AbstractDispatcherPlugin implements IMessageSend ,ApplicationContextAware {
 
-    private SerializerWrapper serializerWrapper = SerializerWrapper.getInstance();
+    private SerializerWrapper serializerWrapper;
 
-    @Autowired
-    private ServiceMapper mapper;
+    private ServiceMapper mapper = new ServiceMapper();
 
     private ResponseMapper responseMapper = ResponseMapper.getInstance();
+
+    private ServiceScanner serviceScanner;
+
+    /**
+     * inject begin
+     */
+    private SerializerProvider serializerProvider;
+
+    private CompressorProvider compressorProvider;
+
+    private IRegistry registry;
 
     public DispatcherPlugin() {
         super("dispatcher", "v0.0.1");
@@ -109,12 +121,12 @@ public class DispatcherPlugin extends AbstractDispatcherPlugin implements IMessa
     }
 
     protected void onStetting() throws SettingException {
-        String serializer = configManager.getSettingValue(SettingKey.SERIALIZER.getValue());
-        if(serializer != null && serializer.equalsIgnoreCase(SerializerType.MSGPACK.getValue())){
-            serializerWrapper.setSerializerType(SerializerType.MSGPACK);
-        }else if(serializer != null && serializer.equalsIgnoreCase(SerializerType.JSON.getValue())){
-            serializerWrapper.setSerializerType(SerializerType.JSON);
-        }
+//        String serializer = configManager.getSettingValue(SettingKey.SERIALIZER.getValue());
+//        if(serializer != null && serializer.equalsIgnoreCase(SerializerType.MSGPACK.getValue())){
+//            serializerWrapper.setSerializerType(SerializerType.MSGPACK);
+//        }else if(serializer != null && serializer.equalsIgnoreCase(SerializerType.JSON.getValue())){
+//            serializerWrapper.setSerializerType(SerializerType.JSON);
+//        }
     }
 
     @Override
@@ -123,5 +135,44 @@ public class DispatcherPlugin extends AbstractDispatcherPlugin implements IMessa
         responseMapper.put(message.getNamespace(),message.getMethod(),future);
         this.backward(message);
         return future;
+    }
+
+    public ServiceMapper getMapper() {
+        return mapper;
+    }
+
+    public void setMapper(ServiceMapper mapper) {
+        this.mapper = mapper;
+    }
+
+    public SerializerWrapper getSerializerWrapper() {
+        return serializerWrapper;
+    }
+
+    public void setSerializerWrapper(SerializerWrapper serializerWrapper) {
+        this.serializerWrapper = serializerWrapper;
+    }
+
+    public CompressorProvider getCompressorProvider() {
+        return compressorProvider;
+    }
+
+    public void setCompressorProvider(CompressorProvider compressorProvider) {
+        this.compressorProvider = compressorProvider;
+    }
+
+    public SerializerProvider getSerializerProvider() {
+        return serializerProvider;
+    }
+
+    public void setSerializerProvider(SerializerProvider serializerProvider) {
+        this.serializerProvider = serializerProvider;
+        setSerializerWrapper(new SerializerWrapper(serializerProvider));
+    }
+
+    @Override
+    public void setApplicationContext(ApplicationContext applicationContext) throws BeansException {
+        serviceScanner = new ServiceScanner(mapper,registry);
+        serviceScanner.setApplicationContext(applicationContext);
     }
 }

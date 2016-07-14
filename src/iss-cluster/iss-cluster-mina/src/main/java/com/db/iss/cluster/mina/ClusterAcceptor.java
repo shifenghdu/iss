@@ -2,21 +2,19 @@ package com.db.iss.cluster.mina;
 
 import com.db.iss.cluster.mina.codec.ClusterCodecFactory;
 import com.db.iss.cluster.mina.handler.ServerMsgHandler;
-import com.db.iss.core.compressor.CompressorType;
+import com.db.iss.core.compressor.CompressorProvider;
 import com.db.iss.core.plugin.AbstractTransportPlugin;
 import com.db.iss.core.plugin.EsbMsg;
-import com.db.iss.core.serializer.SerializerType;
+import com.db.iss.core.serializer.SerializerProvider;
 import org.apache.mina.core.future.WriteFuture;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
-import org.apache.mina.filter.executor.ExecutorFilter;
 import org.apache.mina.transport.socket.nio.NioSocketAcceptor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.net.InetSocketAddress;
-import java.net.URL;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -35,7 +33,7 @@ public class ClusterAcceptor {
 
     private Map<Long,IoSession> sessionMap = new ConcurrentHashMap<>();
 
-    public ClusterAcceptor(SerializerType type, CompressorType compressorType, AbstractTransportPlugin plugin) {
+    public ClusterAcceptor(SerializerProvider serializerProvider, CompressorProvider compressorProvider, AbstractTransportPlugin plugin) {
         acceptor = new NioSocketAcceptor();
         acceptor.setReuseAddress(false);
         acceptor.getSessionConfig().setReuseAddress(false);
@@ -43,7 +41,7 @@ public class ClusterAcceptor {
 		acceptor.getSessionConfig().setReadBufferSize(SIZE_128K);
         acceptor.getSessionConfig().setSoLinger(-1);
         acceptor.setBacklog(10240);
-        acceptor.getFilterChain().addLast("codec", new ProtocolCodecFilter(new ClusterCodecFactory(type,compressorType)));
+        acceptor.getFilterChain().addLast("codec", new ProtocolCodecFilter(new ClusterCodecFactory(serializerProvider, compressorProvider)));
         //acceptor.getFilterChain().addLast("pool", new ExecutorFilter(Runtime.getRuntime().availableProcessors() + 1));
         acceptor.setHandler(new ServerMsgHandler(plugin,this));
     }

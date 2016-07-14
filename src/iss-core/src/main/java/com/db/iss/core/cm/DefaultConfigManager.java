@@ -19,7 +19,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author andy.shif
  * 默认配置服务实现
  */
-@Service
 public class DefaultConfigManager implements IConfigManager, IZkDataListener,Runnable{
 
     private Map<String,ISettingChangeHandler> handlerMap = new ConcurrentHashMap<>();
@@ -44,7 +43,6 @@ public class DefaultConfigManager implements IConfigManager, IZkDataListener,Run
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    @PostConstruct
     public void connectZkServer(){
         try {
             registry = SettingLoader.getSetting().getProperty(SettingKey.REGISTRY.getValue());

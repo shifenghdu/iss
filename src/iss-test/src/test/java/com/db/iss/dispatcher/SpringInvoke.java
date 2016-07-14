@@ -4,9 +4,10 @@ import com.db.iss.core.cm.IConfigurable;
 import com.db.iss.core.cm.Setting;
 import com.db.iss.core.plugin.EsbMsg;
 import com.db.iss.core.serializer.ISerializer;
-import com.db.iss.core.serializer.SerializerFactory;
+import com.db.iss.core.serializer.SerializerProvider;
 import com.db.iss.core.serializer.SerializerType;
 import com.db.iss.dispatcher.annotation.Remote;
+import com.db.iss.dispatcher.proxy.reflect.DefaultReflectProxyFactory;
 import com.db.iss.dispatcher.proxy.reflect.IReflectProxy;
 import com.db.iss.dispatcher.proxy.reflect.IReflectProxyFactory;
 import com.db.iss.dispatcher.spring.IRemoteServiceProvider;
@@ -39,13 +40,12 @@ public class SpringInvoke implements ApplicationContextAware ,Runnable{
 
     private ApplicationContext context;
 
-    @Autowired
-    private IReflectProxyFactory methodProxyFactory;
+    private IReflectProxyFactory methodProxyFactory = new DefaultReflectProxyFactory();
 
     @Autowired
     private DispatcherPlugin messagePlugin;
 
-    private SerializerFactory factory = new SerializerFactory();
+    private SerializerProvider factory = new SerializerProvider();
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
@@ -129,7 +129,7 @@ public class SpringInvoke implements ApplicationContextAware ,Runnable{
             EsbMsg msg = new EsbMsg();
             msg.setNamespace(IDemo.class.getName());
             msg.setMethod("call");
-            ISerializer serializer = factory.getSerializer(SerializerType.JSON);
+            ISerializer serializer = factory.getSerializer();
             List<byte[]> params = new ArrayList<>();
             params.add(serializer.encode(1));
             params.add(serializer.encode(2));
@@ -149,7 +149,7 @@ public class SpringInvoke implements ApplicationContextAware ,Runnable{
         int TIMES = 1000000;
 
         long start = System.currentTimeMillis();
-        ISerializer serializer = factory.getSerializer(SerializerType.MSGPACK);
+        ISerializer serializer = factory.getSerializer();
         for(int i=0 ; i< TIMES; i++) {
             byte[] msg = serializer.encode(esbMsg);
             SerializeObject object = (SerializeObject) serializer.decode(msg, SerializeObject.class);
@@ -161,7 +161,7 @@ public class SpringInvoke implements ApplicationContextAware ,Runnable{
 
 
         start = System.currentTimeMillis();
-        serializer = factory.getSerializer(SerializerType.JSON);
+        serializer = factory.getSerializer();
         for(int i=0 ; i< TIMES; i++) {
             byte[] msg = serializer.encode(esbMsg);
             SerializeObject object = (SerializeObject) serializer.decode(msg, SerializeObject.class);
@@ -175,8 +175,8 @@ public class SpringInvoke implements ApplicationContextAware ,Runnable{
 
     @Test
     public void serviceProxy() throws InterruptedException, IOException {
-        int TIMES = 1000000;
-        int THREAD = 150;
+        int TIMES = 1;
+        int THREAD = 1;
 
 
         count = new AtomicLong(TIMES);

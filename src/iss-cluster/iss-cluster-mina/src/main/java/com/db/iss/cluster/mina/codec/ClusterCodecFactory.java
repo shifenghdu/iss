@@ -1,7 +1,7 @@
 package com.db.iss.cluster.mina.codec;
 
-import com.db.iss.core.compressor.CompressorType;
-import com.db.iss.core.serializer.SerializerType;
+import com.db.iss.core.compressor.CompressorProvider;
+import com.db.iss.core.serializer.SerializerProvider;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecFactory;
 import org.apache.mina.filter.codec.ProtocolDecoder;
@@ -25,8 +25,8 @@ public class ClusterCodecFactory implements ProtocolCodecFactory {
 		return clusterDecoder;
 	}
 
-	public ClusterCodecFactory(SerializerType type,CompressorType compressorType){
-		clusterDecoder = new ClusterDecoder(type,compressorType);
+	public ClusterCodecFactory(SerializerProvider serializerProvider, CompressorProvider compressorProvider){
+		clusterDecoder = new ClusterDecoder(serializerProvider, compressorProvider);
 	}
 
 }

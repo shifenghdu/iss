@@ -27,7 +27,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author andy.shif
  * 默认注册中心实现
  */
-@Service
 public class DefaultRegistry implements IRegistry,IZkChildListener {
 
     private ZkClient zkClient;
@@ -63,8 +62,6 @@ public class DefaultRegistry implements IRegistry,IZkChildListener {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
-
-    @PostConstruct
     public void connectZkServer(){
         try {
             registry = SettingLoader.getSetting().getProperty(SettingKey.REGISTRY.getValue());

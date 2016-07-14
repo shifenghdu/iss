@@ -1,12 +1,12 @@
 package com.db.iss.cluster.mina.codec;
 
-import com.db.iss.core.compressor.CompressorFactory;
+import com.db.iss.core.compressor.CompressorProvider;
 import com.db.iss.core.compressor.CompressorType;
 import com.db.iss.core.compressor.ICompressor;
 import com.db.iss.core.plugin.EsbMsg;
 import com.db.iss.core.plugin.PluginException;
 import com.db.iss.core.serializer.ISerializer;
-import com.db.iss.core.serializer.SerializerFactory;
+import com.db.iss.core.serializer.SerializerProvider;
 import com.db.iss.core.serializer.SerializerType;
 import com.db.iss.core.util.HexUtil;
 import org.apache.mina.core.buffer.IoBuffer;
@@ -26,17 +26,14 @@ public class ClusterDecoder extends CumulativeProtocolDecoder implements Protoco
 
     private ThreadLocal<ICompressor> compressor = new ThreadLocal<>();
 
-    private SerializerFactory serializerFactory = new SerializerFactory();
+    private SerializerProvider serializerProvider;
 
-    private CompressorFactory compressorFactory = new CompressorFactory();
+    private CompressorProvider compressorProvider;
 
-    private SerializerType serializerType = SerializerType.MSGPACK;
 
-    private CompressorType compressorType;
-
-    public ClusterDecoder(SerializerType serializerType,CompressorType compressorType) {
-        this.serializerType = serializerType;
-        this.compressorType = compressorType;
+    public ClusterDecoder(SerializerProvider serializerProvider, CompressorProvider compressorProvider) {
+        this.serializerProvider = serializerProvider;
+        this.compressorProvider = compressorProvider;
     }
 
     private ISerializer getSerializer(){
@@ -44,7 +41,7 @@ public class ClusterDecoder extends CumulativeProtocolDecoder implements Protoco
         if(serializer == null){
             synchronized (serialize){
                 if(serialize.get() == null) {
-                    serializer = serializerFactory.getSerializer(serializerType);
+                    serializer = serializerProvider.getSerializer();
                     serialize.set(serializer);
                 }
             }
@@ -57,7 +54,7 @@ public class ClusterDecoder extends CumulativeProtocolDecoder implements Protoco
         if(tmp == null){
             synchronized (compressor){
                 if(compressor.get() == null){
-                    tmp = compressorFactory.getCompressor(compressorType);
+                    tmp = compressorProvider.getCompressor();
                     compressor.set(tmp);
                 }
             }

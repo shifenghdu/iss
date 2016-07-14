@@ -14,7 +14,6 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author andy.shif
  * 字节码反射动态代理工厂
  */
-@Service
 public class DefaultReflectProxyFactory implements IReflectProxyFactory {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());

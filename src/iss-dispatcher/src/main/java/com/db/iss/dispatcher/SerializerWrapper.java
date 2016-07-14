@@ -1,8 +1,7 @@
 package com.db.iss.dispatcher;
 
 import com.db.iss.core.serializer.ISerializer;
-import com.db.iss.core.serializer.SerializerFactory;
-import com.db.iss.core.serializer.SerializerType;
+import com.db.iss.core.serializer.SerializerProvider;
 
 /**
  * Created by andy on 16/6/26.
@@ -11,27 +10,18 @@ import com.db.iss.core.serializer.SerializerType;
  */
 public class SerializerWrapper {
 
-    private SerializerType serializerType = SerializerType.JSON;
-
-    private SerializerFactory serializerFactory = new SerializerFactory();
+    private SerializerProvider serializerProvider;
 
     private ThreadLocal<ISerializer> serializers = new ThreadLocal<>();
 
-    private static SerializerWrapper instance = new SerializerWrapper();
-
-
-    public static SerializerWrapper getInstance(){
-        return instance;
-    }
-
-    public void setSerializerType(SerializerType type){
-        this.serializerType = type;
+    public SerializerWrapper(SerializerProvider provider){
+        serializerProvider = provider;
     }
 
     public ISerializer getSerializer(){
         ISerializer serializer = serializers.get();
         if(serializer == null){
-            serializer = serializerFactory.getSerializer(serializerType);
+            serializer = serializerProvider.getSerializer();
             serializers.set(serializer);
         }
         return serializer;

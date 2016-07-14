@@ -1,6 +1,6 @@
 package com.db.iss.dispatcher.proxy;
 
-import net.sf.cglib.proxy.Enhancer;
+import com.db.iss.core.serializer.SerializerProvider;
 import net.sf.cglib.proxy.MethodInterceptor;
 import net.sf.cglib.proxy.MethodProxy;
 import org.slf4j.Logger;
@@ -19,7 +19,8 @@ public class ServiceInterceptor extends AbstractServiceProxy implements MethodIn
 
     private Class<?> inter;
 
-    public ServiceInterceptor(Class<?> inter){
+    public ServiceInterceptor(Class<?> inter, SerializerProvider provider){
+        super(provider);
         this.inter = inter;
     }
 

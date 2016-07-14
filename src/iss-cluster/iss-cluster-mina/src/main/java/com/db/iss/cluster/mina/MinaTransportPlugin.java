@@ -1,17 +1,14 @@
 package com.db.iss.cluster.mina;
 
 import com.db.iss.core.cm.IConfigManager;
-import com.db.iss.core.cm.Setting;
 import com.db.iss.core.cm.SettingException;
 import com.db.iss.core.cm.SettingKey;
-import com.db.iss.core.compressor.CompressorType;
+import com.db.iss.core.compressor.CompressorProvider;
 import com.db.iss.core.plugin.AbstractTransportPlugin;
 import com.db.iss.core.plugin.EsbMsg;
 import com.db.iss.core.plugin.PluginException;
 import com.db.iss.core.registry.RegistryNode;
-import com.db.iss.core.serializer.SerializerType;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
+import com.db.iss.core.serializer.SerializerProvider;
 
 import java.io.IOException;
 
@@ -20,19 +17,20 @@ import java.io.IOException;
  * @author andy.shif
  * mina transport 插件实现
  */
-@Service
 public class MinaTransportPlugin extends AbstractTransportPlugin {
 
     private ClusterConnector connector;
 
     private ClusterAcceptor acceptor;
 
-    private SerializerType type = SerializerType.JSON;
+    /**
+     * inject
+     */
+    private SerializerProvider serializerProvider;
 
-    private CompressorType compressorType = CompressorType.LZ4;
+    private CompressorProvider compressorProvider;
 
-    @Autowired
-    private IConfigManager configManager;
+
 
     public MinaTransportPlugin() {
         super("cluster-mina", "v1.0.0",ThreadMode.SHARED);
@@ -43,8 +41,8 @@ public class MinaTransportPlugin extends AbstractTransportPlugin {
     @Override
     protected void onStart() throws PluginException {
         onStetting();
-        connector = new ClusterConnector(type,compressorType,this);
-        acceptor = new ClusterAcceptor(type,compressorType,this);
+        connector = new ClusterConnector(serializerProvider, compressorProvider, this);
+        acceptor = new ClusterAcceptor(serializerProvider, compressorProvider, this);
         logger.info("iss listen on {}",listen);
         try {
             acceptor.bind(listen);
@@ -60,20 +58,20 @@ public class MinaTransportPlugin extends AbstractTransportPlugin {
     }
 
     protected void onStetting() throws SettingException {
-        String serializer = configManager.getSettingValue(SettingKey.SERIALIZER.getValue());
+//        String serializer = configManager.getSettingValue(SettingKey.SERIALIZER.getValue());
 
-        if(serializer != null && serializer.equalsIgnoreCase(SerializerType.MSGPACK.getValue())){
-            type = SerializerType.MSGPACK;
-        }else if(serializer != null && serializer.equalsIgnoreCase(SerializerType.JSON.getValue())){
-            type = SerializerType.JSON;
-        }
-
-        String compressor = configManager.getSettingValue(SettingKey.COMPRESSOR.getValue());
-        if(compressor != null && compressor.equalsIgnoreCase(CompressorType.LZ4.getValue())){
-            compressorType = CompressorType.LZ4;
-        } else {
-            compressorType = CompressorType.NULL;
-        }
+//        if(serializer != null && serializer.equalsIgnoreCase(SerializerType.MSGPACK.getValue())){
+//            type = SerializerType.MSGPACK;
+//        }else if(serializer != null && serializer.equalsIgnoreCase(SerializerType.JSON.getValue())){
+//            type = SerializerType.JSON;
+//        }
+//
+//        String compressor = configManager.getSettingValue(SettingKey.COMPRESSOR.getValue());
+//        if(compressor != null && compressor.equalsIgnoreCase(CompressorType.LZ4.getValue())){
+//            compressorType = CompressorType.LZ4;
+//        } else {
+//            compressorType = CompressorType.NULL;
+//        }
 
         listen = Integer.parseInt(configManager.getSettingValue(SettingKey.LISTEN.getValue()));
     }
@@ -94,5 +92,21 @@ public class MinaTransportPlugin extends AbstractTransportPlugin {
                 throw new PluginException("write response message to endpoint failed " + message);
             }
         }
+    }
+
+    public CompressorProvider getCompressorProvider() {
+        return compressorProvider;
+    }
+
+    public void setCompressorProvider(CompressorProvider compressorProvider) {
+        this.compressorProvider = compressorProvider;
+    }
+
+    public SerializerProvider getSerializerProvider() {
+        return serializerProvider;
+    }
+
+    public void setSerializerProvider(SerializerProvider serializerProvider) {
+        this.serializerProvider = serializerProvider;
     }
 }

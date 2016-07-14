@@ -14,7 +14,6 @@ import org.springframework.stereotype.Service;
  * @author andy.shif
  * 流水线日志记录插件
  */
-@Service
 public class LoggerPlugin extends AbstractMessagePlugin {
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());

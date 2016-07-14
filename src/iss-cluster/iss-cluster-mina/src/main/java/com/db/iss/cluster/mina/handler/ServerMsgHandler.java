@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 
 public class ServerMsgHandler extends IoHandlerAdapter {
 
-    private final int IDLE = 60 * 30; // 30min
+    private final int IDLE = 60 * 10; // 10min
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 

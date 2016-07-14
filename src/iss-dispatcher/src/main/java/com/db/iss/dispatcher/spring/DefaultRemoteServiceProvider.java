@@ -1,16 +1,14 @@
 package com.db.iss.dispatcher.spring;
 
 import com.db.iss.core.exception.RemoteException;
-import com.db.iss.dispatcher.DispatcherPlugin;
+import com.db.iss.core.serializer.SerializerProvider;
 import com.db.iss.dispatcher.IMessageSend;
-import com.db.iss.dispatcher.proxy.AbstractServiceProxy;
 import com.db.iss.dispatcher.proxy.IServiceProxy;
 import com.db.iss.dispatcher.proxy.ServiceInterceptor;
 import net.sf.cglib.proxy.Enhancer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -20,15 +18,15 @@ import java.util.concurrent.ConcurrentHashMap;
  * @author andy.shif
  * 远程服务provider
  */
-@Service
 public class DefaultRemoteServiceProvider implements IRemoteServiceProvider{
 
     private Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private Map<Class,Object> proxyMap = new ConcurrentHashMap<>();
 
-    @Autowired
     private IMessageSend messageSend;
+
+    private SerializerProvider serializerProvider;
 
     @Override
     public <T> T getService(Class<T> type) {
@@ -50,7 +48,7 @@ public class DefaultRemoteServiceProvider implements IRemoteServiceProvider{
             Enhancer enhancer = new Enhancer();
             enhancer.setClassLoader(Thread.currentThread().getContextClassLoader());
             enhancer.setInterfaces(new Class[]{inter,IServiceProxy.class});
-            enhancer.setCallback(new ServiceInterceptor(inter));
+            enhancer.setCallback(new ServiceInterceptor(inter,serializerProvider));
             T proxy = (T) enhancer.create();
             ((IServiceProxy)proxy).setIMessageSend(messageSend);
             return proxy;
@@ -61,4 +59,19 @@ public class DefaultRemoteServiceProvider implements IRemoteServiceProvider{
         }
     }
 
+    public SerializerProvider getSerializerProvider() {
+        return serializerProvider;
+    }
+
+    public void setSerializerProvider(SerializerProvider serializerProvider) {
+        this.serializerProvider = serializerProvider;
+    }
+
+    public IMessageSend getMessageSend() {
+        return messageSend;
+    }
+
+    public void setMessageSend(IMessageSend messageSend) {
+        this.messageSend = messageSend;
+    }
 }
