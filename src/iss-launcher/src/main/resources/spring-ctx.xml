@@ -8,8 +8,12 @@
     <context:property-placeholder location="classpath:iss.properties"/>
     <context:component-scan base-package="com.db.iss.launcher"/>
 
-    <bean id="compressorProvider" class="com.db.iss.core.compressor.CompressorProvider"/>
-    <bean id="serializerProvider" class="com.db.iss.core.serializer.SerializerProvider"/>
+    <bean id="compressorProvider" class="com.db.iss.core.compressor.CompressorProvider">
+        <property name="type" value="lz4"/>
+    </bean>
+    <bean id="serializerProvider" class="com.db.iss.core.serializer.SerializerProvider">
+        <property name="type" value="json"/>
+    </bean>
     <bean id="configManager" class="com.db.iss.core.cm.DefaultConfigManager" init-method="connectZkServer" lazy-init="false">
         <property name="registry" value="${iss.registry}"/>
         <property name="node" value="${iss.node}"/>

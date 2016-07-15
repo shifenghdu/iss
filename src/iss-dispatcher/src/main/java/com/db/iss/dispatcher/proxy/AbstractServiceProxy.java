@@ -67,7 +67,7 @@ public abstract class AbstractServiceProxy implements IServiceProxy{
             }else{
 
                 if(logger.isInfoEnabled()){
-                    logger.warn(String.format("namespace [%s] method [%s] invoke time [%d] ms", response.getNamespace(), request.getMethod(), (end - start)));
+                    logger.info(String.format("namespace [%s] method [%s] invoke time [%d] ms", response.getNamespace(), request.getMethod(), (end - start)));
                 }
 
                 List<byte[]> list = response.getContent();

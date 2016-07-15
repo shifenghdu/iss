@@ -175,8 +175,8 @@ public class SpringInvoke implements ApplicationContextAware ,Runnable{
 
     @Test
     public void serviceProxy() throws InterruptedException, IOException {
-        int TIMES = 100000;
-        int THREAD = 2;
+        int TIMES = 1000000;
+        int THREAD = 50;
 
 
         count = new AtomicLong(TIMES);
