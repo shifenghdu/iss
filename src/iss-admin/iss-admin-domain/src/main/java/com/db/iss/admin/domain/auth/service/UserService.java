@@ -32,33 +32,33 @@ public class UserService implements IUserService {
 
     @Override
     public Set<String> getRolesByUserName(String userName) {
-        User user = userDao.getUserByName(userName);
-        Set<String> result = new LinkedHashSet<>();
-        Set<Role> roles = user.getRoles();
-        if (roles != null){
-            for (Role role : roles) {
-                result.add(role.getRoleName());
-            }
-        }
-        return result;
+//        User user = userDao.getUserByName(userName);
+//        Set<String> result = new LinkedHashSet<>();
+//        Set<Role> roles = user.getRoles();
+//        if (roles != null){
+//            for (Role role : roles) {
+//                result.add(role.getRoleName());
+//            }
+//        }
+        return null;
     }
 
     @Override
     public Set<String> getPermissionsByUserName(String userName) {
         User user = userDao.getUserByName(userName);
-        Set<Role> roles = user.getRoles();
-        Set<String> permissions = new LinkedHashSet<>();
-        if (roles != null){
-            for (Role role : roles) {
-                Set<Permission> permissionSet = role.getPermissions();
-                if(permissionSet != null) {
-                    for (Permission permission : permissionSet) {
-                        permissions.add(permission.getPermissionName());
-                    }
-                }
-            }
-        }
-        return permissions;
+//        Set<Role> roles = user.getRoles();
+//        Set<String> permissions = new LinkedHashSet<>();
+//        if (roles != null){
+//            for (Role role : roles) {
+//                Set<Permission> permissionSet = role.getPermissions();
+//                if(permissionSet != null) {
+//                    for (Permission permission : permissionSet) {
+//                        permissions.add(permission.getPermissionName());
+//                    }
+//                }
+//            }
+//        }
+        return null;
     }
 
     @Override

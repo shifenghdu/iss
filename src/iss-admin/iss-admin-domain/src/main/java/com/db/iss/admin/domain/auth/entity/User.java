@@ -13,25 +13,17 @@ import java.util.Set;
  * 用户
  */
 @Entity
-@Table(name = "admin_user")
+@Table(name = "ADMIN_USER")
 public class User extends AbstractEntity {
 
-    @Column(name = "name",length = 20, unique = true)
+    @Column(name = "NAME",length = 20, unique = true)
     private String userName;
 
-    @Column(name = "password",length = 64)
+    @Column(name = "PASSWORD",length = 64)
     private String password;
 
-    @ManyToMany(cascade = CascadeType.PERSIST,fetch = FetchType.LAZY)
-    @JoinTable(
-            name = "admin_user_role",
-            joinColumns = {
-                    @JoinColumn(name = "user_id")
-            },
-            inverseJoinColumns = {
-                    @JoinColumn(name="role_id")
-            })
-    private Set<Role> roles;
+    @Transient
+    private List<Role> roles;
 
     public String getUserName() {
         return userName;
@@ -49,11 +41,11 @@ public class User extends AbstractEntity {
         this.password = password;
     }
 
-    public Set<Role> getRoles() {
+    public List<Role> getRoles() {
         return roles;
     }
 
-    public void setRoles(Set<Role> roles) {
+    public void setRoles(List<Role> roles) {
         this.roles = roles;
     }
 }

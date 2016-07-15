@@ -14,7 +14,8 @@ public abstract class AbstractEntity implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    private Integer id;
+    @Column(name = "id")
+    private Long id;
 
     @Column(name = "create_time")
     private Date createTime;
@@ -23,7 +24,7 @@ public abstract class AbstractEntity implements Serializable {
     private Date lastModifyTime;
 
     @Column(name = "operator")
-    private Integer operator;
+    private Long operator;
 
 
     public Date getCreateTime() {
@@ -42,11 +43,19 @@ public abstract class AbstractEntity implements Serializable {
         this.lastModifyTime = lastModifyTime;
     }
 
-    public Integer getOperator() {
+    public Long getOperator() {
         return operator;
     }
 
-    public void setOperator(Integer operator) {
+    public void setOperator(Long operator) {
         this.operator = operator;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }
