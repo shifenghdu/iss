@@ -12,10 +12,24 @@
 
     <artifactId>iss-admin</artifactId>
 
+    <properties>
+        <iss.admin.version>1.0.0-SNAPSHOT</iss.admin.version>
+    </properties>
+
 
     <modules>
         <module>iss-admin-web</module>
-        <module>iss-admin-domain</module>
+        <module>iss-admin-app</module>
     </modules>
+
+    <dependencyManagement>
+        <dependencies>
+            <dependency>
+                <groupId>com.db</groupId>
+                <artifactId>iss-admin-app</artifactId>
+                <version>${iss.admin.version}</version>
+            </dependency>
+        </dependencies>
+    </dependencyManagement>
 
 </project>

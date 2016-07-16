@@ -5,7 +5,6 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context.xsd http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx.xsd">
 
     <context:component-scan base-package="com.db.iss.admin.web.auth.shiro"/>
-    <!--<bean id="userAuthorizingRealm" class="com.db.iss.admin.web.auth.shiro.UserAuthorizingRealm"/>-->
 
     <bean id="shiroFilter" class="org.apache.shiro.spring.web.ShiroFilterFactoryBean">
         <property name="securityManager" ref="securityManager"/>
@@ -47,7 +46,5 @@
     <bean class="org.apache.shiro.spring.security.interceptor.AuthorizationAttributeSourceAdvisor">
         <property name="securityManager" ref="securityManager"></property>
     </bean>
-
-    <tx:annotation-driven transaction-manager="transactionManager"/>
 
 </beans>

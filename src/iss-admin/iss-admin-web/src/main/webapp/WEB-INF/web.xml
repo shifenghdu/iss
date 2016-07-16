@@ -10,7 +10,7 @@
     <!-- Spring配置文件开始 -->
     <context-param>
         <param-name>contextConfigLocation</param-name>
-        <param-value>classpath*:ctx-domain.xml classpath*:ctx-shiro.xml</param-value>
+        <param-value>classpath*:ctx-app.xml classpath*:ctx-shiro.xml</param-value>
     </context-param>
 
     <listener>

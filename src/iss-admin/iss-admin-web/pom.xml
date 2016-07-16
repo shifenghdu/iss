@@ -78,8 +78,7 @@
 
         <dependency>
             <groupId>com.db</groupId>
-            <artifactId>iss-admin-domain</artifactId>
-            <version>1.0.0-SNAPSHOT</version>
+            <artifactId>iss-admin-app</artifactId>
         </dependency>
 
         <!-- log -->
