@@ -1,6 +1,7 @@
 <%@ page contentType="text/html;charset=utf-8" language="java" %>
 <%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core"%>
 <c:set var="baseUrl" value="${pageContext.request.contextPath}" />
+<c:set var="staticUrl" value="/statics" />
 <!DOCTYPE html>
 <html lang="zh-CN">
 <head>
@@ -11,12 +12,12 @@
 
     <!-- Site Properities -->
     <title>iss-admin</title>
-    <link rel="stylesheet" type="text/css" href="${baseUrl}/dist/semantic.min.css">
-    <link rel="stylesheet" type="text/css" href="${baseUrl}/dist/admin.css">
-    <script src="${baseUrl}/dist/jquery.min.js"></script>
-    <script src="${baseUrl}/dist/semantic.min.js"></script>
-    <script src="${baseUrl}/dist/convert-hex.js"></script>
-    <script src="${baseUrl}/dist/convert-string.js"></script>
-    <script src="${baseUrl}/dist/sha256.js"></script>
+    <link rel="stylesheet" type="text/css" href="${staticUrl}/semantic.min.css">
+    <link rel="stylesheet" type="text/css" href="${staticUrl}/admin.css">
+    <script src="${staticUrl}/jquery.min.js"></script>
+    <script src="${staticUrl}/semantic.min.js"></script>
+    <script src="${staticUrl}/convert-hex.js"></script>
+    <script src="${staticUrl}/convert-string.js"></script>
+    <script src="${staticUrl}/sha256.js"></script>
 </head>
 <body>

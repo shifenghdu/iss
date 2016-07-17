@@ -1,11 +1,13 @@
 package com.db.iss.admin.web.auth.shiro;
 
 import com.db.iss.admin.domain.basic.User;
-import com.db.iss.admin.service.vo.LoginUserVo;
+import com.db.iss.admin.service.basic.IAuthService;
+import com.db.iss.admin.service.basic.vo.LoginUserVo;
 import org.apache.shiro.authc.*;
 import org.apache.shiro.authz.AuthorizationInfo;
 import org.apache.shiro.realm.AuthorizingRealm;
 import org.apache.shiro.subject.PrincipalCollection;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -16,6 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
  */
 @Service
 public class UserAuthorizingRealm extends AuthorizingRealm {
+
+    @Autowired
+    private IAuthService authService;
 
     /**
      * shiro 鉴权回调
@@ -48,9 +53,9 @@ public class UserAuthorizingRealm extends AuthorizingRealm {
     @Transactional
     protected AuthenticationInfo doGetAuthenticationInfo(AuthenticationToken token) throws AuthenticationException {
         UsernamePasswordToken usernamePasswordToken = (UsernamePasswordToken) token;
-        User user = User.getUserByName(usernamePasswordToken.getUsername());
+        LoginUserVo user = authService.getUserByName(usernamePasswordToken.getUsername());
         if(user != null) {
-            return new SimpleAuthenticationInfo(LoginUserVo.fromUser(user), user.getPassword(), getName());
+            return new SimpleAuthenticationInfo(user, user.getPassword(), getName());
         }
         return null;
     }

@@ -2,7 +2,7 @@ package com.db.iss.admin.domain.resource;
 
 import com.db.iss.admin.domain.basic.Resource;
 import com.db.iss.admin.domain.basic.User;
-import com.db.iss.admin.service.IHomeService;
+import com.db.iss.admin.service.basic.IHomeService;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;

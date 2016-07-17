@@ -2,13 +2,8 @@
 <div class="ui bottom attached pushable">
 
     <div class="ui visible left vertical sidebar menu">
-        <%--<a class="item"> 首页 </a>--%>
-        <%--<a class="item"> 集群监控 </a>--%>
-        <%--<a class="item"> 统一配置 </a>--%>
-        <%--<a class="item"> 应用管理 </a>--%>
-        <%--<a class="item"> 关于 </a>--%>
         <c:forEach var="item" items="${vo.menus}">
-            <a class="item"> ${item.name} </a>
+            <a class="item" href="${item.url}"> ${item.name} </a>
         </c:forEach>
 
     </div>
