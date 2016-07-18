@@ -35,11 +35,11 @@ public class ClusterAcceptor {
 
     public ClusterAcceptor(SerializerProvider serializerProvider, CompressorProvider compressorProvider, AbstractTransportPlugin plugin) {
         acceptor = new NioSocketAcceptor();
-        acceptor.setReuseAddress(false);
-        acceptor.getSessionConfig().setReuseAddress(false);
-		acceptor.getSessionConfig().setReceiveBufferSize(SIZE_128K);
-		acceptor.getSessionConfig().setReadBufferSize(SIZE_128K);
-        acceptor.getSessionConfig().setSoLinger(-1);
+//        acceptor.setReuseAddress(false);
+//        acceptor.getSessionConfig().setReuseAddress(false);
+//		acceptor.getSessionConfig().setReceiveBufferSize(SIZE_128K);
+//		acceptor.getSessionConfig().setReadBufferSize(SIZE_128K);
+//        acceptor.getSessionConfig().setSoLinger(-1);
         acceptor.setBacklog(10240);
         acceptor.getFilterChain().addLast("codec", new ProtocolCodecFilter(new ClusterCodecFactory(serializerProvider, compressorProvider)));
         //acceptor.getFilterChain().addLast("pool", new ExecutorFilter(Runtime.getRuntime().availableProcessors() + 1));
