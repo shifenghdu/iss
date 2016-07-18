@@ -21,8 +21,8 @@ public class MonitorAction {
     private IMonitorService monitorService;
 
     @RequestMapping("monitor")
-    public String index(Model model){
-        MonitorPageVo homePageVo = monitorService.getHomePage((LoginUserVo) SecurityUtils.getSubject().getPrincipal());
+    public String index(Model model,Long mid){
+        MonitorPageVo homePageVo = monitorService.getHomePage((LoginUserVo) SecurityUtils.getSubject().getPrincipal(),mid);
         model.addAttribute("vo",homePageVo);
         return "home/home";
     }

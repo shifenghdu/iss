@@ -26,6 +26,7 @@ public class HomeService extends AbstractBasicService implements IHomeService {
     @Override
     public HomePageVo getHomePage(LoginUserVo loginUserVo) {
         buildMenus(loginUserVo,-1L);
+        buildMenuLine(-1L);
         return (HomePageVo) getBasicVo();
     }
 }

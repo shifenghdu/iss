@@ -40,4 +40,12 @@ public abstract class AbstractBasicService {
         basicVo.setMenus(MenuVo.formResources(resources));
     }
 
+    /**
+     * 构建菜单层级线
+     * @param id
+     */
+    protected void buildMenuLine(Long id){
+        basicVo.setMenuLine(MenuVo.formResources(Resource.getParentLine(id)));
+    }
+
 }

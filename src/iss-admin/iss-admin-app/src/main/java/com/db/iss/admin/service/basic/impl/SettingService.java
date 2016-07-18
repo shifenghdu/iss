@@ -21,8 +21,9 @@ public class SettingService extends AbstractBasicService implements ISettingServ
     }
 
     @Override
-    public SettingPageVo getHomePage(LoginUserVo loginUserVo) {
+    public SettingPageVo getHomePage(LoginUserVo loginUserVo,Long mid) {
         buildMenus(loginUserVo,1L);
+        buildMenuLine(mid);
         return (SettingPageVo) getBasicVo();
     }
 }

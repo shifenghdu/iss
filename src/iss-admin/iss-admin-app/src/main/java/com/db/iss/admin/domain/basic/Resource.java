@@ -3,6 +3,7 @@ package com.db.iss.admin.domain.basic;
 import com.db.iss.admin.domain.common.AbstractEntity;
 import com.db.iss.admin.domain.common.Repository;
 import com.db.iss.admin.domain.common.RepositoryProvider;
+import com.google.common.collect.Lists;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.*;
@@ -116,7 +117,7 @@ public class Resource extends AbstractEntity {
         this.children = children;
     }
 
-    private static final String SELECT_FIRST_MENU = "from Resource as r where r.type = 0 and r.parentId = ?";
+    private static final String SELECT_MENU_BY_PARENT = "from Resource as r where r.type = 0 and r.parentId = ?";
 
     /**
      * 获取所有指定菜单的子菜单
@@ -124,7 +125,26 @@ public class Resource extends AbstractEntity {
      * @return
      */
     public static List<Resource> getMenuResourceByParent(Long parentId){
-        return RepositoryProvider.getRepository(Repository.class).queryForList(SELECT_FIRST_MENU,parentId);
+        return RepositoryProvider.getRepository(Repository.class).queryForList(SELECT_MENU_BY_PARENT,parentId);
+    }
+
+    private static final String SELECT_MENU_BY_ID = "from Resource as r where r.type = 0 and r.id = ?";
+
+    /**
+     * 获取菜单的父分类线
+     * @param id
+     * @return
+     */
+    public static List<Resource> getParentLine(Long id){
+        List<Resource> result = Lists.newArrayList();
+        Resource resource = null;
+        Long parentId = id;
+        while(parentId != -1){
+            resource = RepositoryProvider.getRepository(Repository.class).query(SELECT_MENU_BY_ID,parentId);
+            parentId = resource.getParentId();
+            result.add(resource);
+        }
+       return Lists.reverse(result);
     }
 }
 

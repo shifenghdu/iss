@@ -21,8 +21,8 @@ public class SettingAction {
     private ISettingService settingService;
 
     @RequestMapping("/setting")
-    public String index(Model model){
-        SettingPageVo homePageVo = settingService.getHomePage((LoginUserVo) SecurityUtils.getSubject().getPrincipal());
+    public String index(Model model,Long mid){
+        SettingPageVo homePageVo = settingService.getHomePage((LoginUserVo) SecurityUtils.getSubject().getPrincipal(),mid);
         model.addAttribute("vo",homePageVo);
         return "home/home";
     }

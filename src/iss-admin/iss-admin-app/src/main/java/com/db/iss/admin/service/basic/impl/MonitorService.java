@@ -4,6 +4,7 @@ import com.db.iss.admin.service.basic.AbstractBasicService;
 import com.db.iss.admin.service.basic.IMonitorService;
 import com.db.iss.admin.service.basic.vo.LoginUserVo;
 import com.db.iss.admin.service.basic.vo.page.MonitorPageVo;
+import org.jboss.logging.annotations.Param;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -21,8 +22,9 @@ public class MonitorService extends AbstractBasicService implements IMonitorServ
     }
 
     @Override
-    public MonitorPageVo getHomePage(LoginUserVo loginUserVo) {
+    public MonitorPageVo getHomePage(LoginUserVo loginUserVo, Long mid) {
         buildMenus(loginUserVo,1L);
+        buildMenuLine(mid);
         return (MonitorPageVo) getBasicVo();
     }
 }

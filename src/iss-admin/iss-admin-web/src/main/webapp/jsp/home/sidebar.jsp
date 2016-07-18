@@ -3,9 +3,15 @@
 
     <div class="ui visible left vertical sidebar menu">
         <c:forEach var="item" items="${vo.menus}">
-            <a class="item" href="${item.url}"> ${item.name} </a>
+            <c:choose>
+                <c:when test="${item.id == 1}">
+                    <a class="item" href="${item.url}"> ${item.name} </a>
+                </c:when>
+                <c:otherwise>
+                    <a class="item" href="${item.url}?mid=${item.id}"> ${item.name} </a>
+                </c:otherwise>
+            </c:choose>
         </c:forEach>
-
     </div>
     <div class="pusher">
         <div class="ui basic segment">

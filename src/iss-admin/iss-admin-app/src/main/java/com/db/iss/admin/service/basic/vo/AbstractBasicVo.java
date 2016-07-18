@@ -15,6 +15,11 @@ public abstract class AbstractBasicVo implements Serializable {
      */
     protected List<MenuVo> menus;
 
+    /**
+     * 当前菜单层级关系
+     */
+    protected List<MenuVo> menuLine;
+
 
     public List<MenuVo> getMenus() {
         return menus;
@@ -24,4 +29,12 @@ public abstract class AbstractBasicVo implements Serializable {
         this.menus = menus;
     }
 
+
+    public List<MenuVo> getMenuLine() {
+        return menuLine;
+    }
+
+    public void setMenuLine(List<MenuVo> menuLine) {
+        this.menuLine = menuLine;
+    }
 }

@@ -11,6 +11,6 @@ import com.db.iss.admin.service.basic.vo.page.SettingPageVo;
  */
 public interface ISettingService {
 
-    SettingPageVo getHomePage(LoginUserVo loginUserVo);
+    SettingPageVo getHomePage(LoginUserVo loginUserVo,Long mid);
 
 }

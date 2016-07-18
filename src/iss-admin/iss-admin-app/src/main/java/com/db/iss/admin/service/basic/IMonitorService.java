@@ -11,5 +11,5 @@ import com.db.iss.admin.service.basic.vo.page.MonitorPageVo;
  */
 public interface IMonitorService {
 
-    MonitorPageVo getHomePage(LoginUserVo loginUserVo);
+    MonitorPageVo getHomePage(LoginUserVo loginUserVo,Long mid);
 }
