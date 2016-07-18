@@ -5,9 +5,9 @@ import com.db.iss.core.cm.SettingKey;
 import com.db.iss.core.plugin.AbstractMessagePlugin;
 import com.db.iss.core.plugin.EsbMsg;
 import com.db.iss.core.plugin.PluginException;
+import com.google.common.base.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.stereotype.Service;
 
 /**
  * Created by andy on 16/6/29.
@@ -26,10 +26,10 @@ public class LoggerPlugin extends AbstractMessagePlugin {
 
     @Override
     protected void onStart() throws PluginException {
-        String switchFlag = configManager.getSettingValue(SettingKey.LOGSWICTH.getValue());
-        if(switchFlag.equalsIgnoreCase("on")){
+        Optional<String> switchFlag = Optional.fromNullable(configManager.getSettingValue(SettingKey.LOGSWICTH.getValue()));
+        if(switchFlag.or("").equalsIgnoreCase("on")){
             sw = 1;
-        }else if(switchFlag.equalsIgnoreCase("off")){
+        }else if(switchFlag.or("").equalsIgnoreCase("off")){
             sw = 0;
         }
     }
