@@ -11,17 +11,17 @@ import org.slf4j.MDC;
 
 public class ClientMsgHandler extends ServerMsgHandler {
 
-    private EsbMsg heatbeatMsg;
+//    private EsbMsg heatbeatMsg;
 
-    private final int IDLE = 10;
+//    private final int IDLE = 10;
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
     public ClientMsgHandler(IPlugin plugin) {
         super(plugin);
-        heatbeatMsg = new EsbMsg();
-        heatbeatMsg.setMsgtype(EsbMsg.MSGTYPE_CLUSTER);
-        heatbeatMsg.setFunctionid(1);
+//        heatbeatMsg = new EsbMsg();
+//        heatbeatMsg.setMsgtype(EsbMsg.MSGTYPE_CLUSTER);
+//        heatbeatMsg.setFunctionid(1);
     }
 
     @Override
@@ -52,16 +52,16 @@ public class ClientMsgHandler extends ServerMsgHandler {
     @Override
     public void sessionIdle(IoSession session, IdleStatus status)
             throws Exception {
-        if(session != null && !session.isClosing()) {
-            session.write(heatbeatMsg);
-        }
+//        if(session != null && !session.isClosing()) {
+//            session.write(heatbeatMsg);
+//        }
     }
 
     @Override
     public void sessionOpened(IoSession session) throws Exception {
-        if(session != null) {
-            session.getConfig().setIdleTime(IdleStatus.BOTH_IDLE, IDLE);
-        }
+//        if(session != null) {
+//            session.getConfig().setIdleTime(IdleStatus.BOTH_IDLE, IDLE);
+//        }
     }
 
     @Override

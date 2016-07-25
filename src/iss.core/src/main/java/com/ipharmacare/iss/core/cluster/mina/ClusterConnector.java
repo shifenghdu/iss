@@ -1,11 +1,17 @@
 package com.ipharmacare.iss.core.cluster.mina;
 
 import com.ipharmacare.iss.core.cluster.MinaCluster;
+import com.ipharmacare.iss.core.cluster.keepalive.KeepAliveMessageFactoryImpl;
+import com.ipharmacare.iss.core.cluster.keepalive.KeepAliveRequestTimeoutHandlerImpl;
 import org.apache.mina.core.filterchain.DefaultIoFilterChainBuilder;
 import org.apache.mina.core.future.ConnectFuture;
+import org.apache.mina.core.session.IdleStatus;
 import org.apache.mina.core.session.IoSession;
 import org.apache.mina.filter.codec.ProtocolCodecFilter;
 import org.apache.mina.filter.executor.ExecutorFilter;
+import org.apache.mina.filter.keepalive.KeepAliveFilter;
+import org.apache.mina.filter.keepalive.KeepAliveMessageFactory;
+import org.apache.mina.filter.keepalive.KeepAliveRequestTimeoutHandler;
 import org.apache.mina.transport.socket.nio.NioSocketConnector;
 
 import java.net.InetSocketAddress;
@@ -31,6 +37,9 @@ public class ClusterConnector {
         connector.getSessionConfig().setSoLinger(-1);
         DefaultIoFilterChainBuilder chain = connector.getFilterChain();
         chain.addLast("codec", new ProtocolCodecFilter(owner.getCodecFactory()));
+        KeepAliveMessageFactory keepAliveMessageFactory = new KeepAliveMessageFactoryImpl();
+        KeepAliveFilter keepAliveFilter = new KeepAliveFilter(keepAliveMessageFactory);
+        chain.addLast("keepalive",keepAliveFilter);
         chain.addLast("threadpool", new ExecutorFilter(Runtime.getRuntime().availableProcessors() + 1));
         connector.setHandler(new ClientMsgHandler(owner));
         connector.setConnectTimeoutMillis(CONNECT_TIME_OUT);

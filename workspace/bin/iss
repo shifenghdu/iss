@@ -83,7 +83,11 @@ function start(){
 	else
         	PWD=`pwd`
         	JAR=`ls $ISS_HOME/lib | grep iss.core`
-        	$JRE_HOME/bin/java -Diss.config=$1.xml -Diss.path=$ISS_HOME $OPTION -jar $ISS_HOME/lib/$JAR &
+		if [ -n "$2" ] ; then 
+        		$JRE_HOME/bin/java -Diss.config=$1.xml -Diss.path=$ISS_HOME $OPTION -jar $ISS_HOME/lib/$JAR > $ISS_HOME/log/$1.log 2>&1 &
+		else
+        		$JRE_HOME/bin/java -Diss.config=$1.xml -Diss.path=$ISS_HOME $OPTION -jar $ISS_HOME/lib/$JAR &
+		fi 
 		echo $! > $ISS_HOME/bin/pid/$1.pid
 
 	fi
@@ -142,7 +146,7 @@ function setvm(){
 
 if [ $# -ge 1 ] ; then
 	if [ $1 == "start" ] ; then
-		start $2
+		start $2 $3
 	elif [ $1 == "stop" ] ; then
 		stop $2
 	elif [ $1 == "list" ] ; then

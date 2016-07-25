@@ -20,14 +20,13 @@ import org.springframework.stereotype.Service;
 import java.io.File;
 import java.net.URL;
 import java.net.URLClassLoader;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicLong;
 import java.util.jar.JarFile;
 
 @Service("p_dispatcher")
-public class Dispatcher implements IDispacher, IBizRegister {
+public class Dispatcher implements IDispacher, IBizRegister,Runnable {
 
     public static final String CORE_POOL_SIZE = "corePoolSize";
 
@@ -39,6 +38,8 @@ public class Dispatcher implements IDispacher, IBizRegister {
 
     public static final String REQUEST_QUEUE_SIZE = "queueSize";
 
+    public static final String REPORT_INTERVAL = "reportInterval";
+
     private ExecutorService threadPool = null;
 
     // 单位微秒
@@ -48,11 +49,14 @@ public class Dispatcher implements IDispacher, IBizRegister {
 
     private String nodeName;
 
+    private Integer reportInterval = 0;
+
     @Autowired
     private IRouter router;
 
     // 业务处理映射
     private Map<String, IBizProcessor> bizProcessMap = new ConcurrentHashMap<String, IBizProcessor>();
+    private Map<String, AtomicLong> bizCounterMap = new ConcurrentHashMap<String, AtomicLong>();
 
     private Map<Long, EsbMsg> msgMap = new java.util.concurrent.ConcurrentHashMap<Long, EsbMsg>();
 
@@ -94,11 +98,13 @@ public class Dispatcher implements IDispacher, IBizRegister {
     // 分派任务给各个业务处理器
     public void dispatch(EsbMsg esbMsg) throws InterruptedException {
         IBizProcessor processor = bizProcessMap.get(String.format("%d#%d", esbMsg.getSystemid(), esbMsg.getFunctionid()));
+        AtomicLong counter = bizCounterMap.get(String.format("%d#%d", esbMsg.getSystemid(), esbMsg.getFunctionid()));
         // 判断消息是否是请求消息,如请求放入线程池处理
         if (esbMsg.getMsgtype() == EsbMsg.MSGTYPE_REQ) {
             if(processor == null){
                 throw new RuntimeException(String.format("未注册对应业务实现：system[%d] function[%d]",esbMsg.getSystemid(),esbMsg.getFunctionid()));
             }
+            counter.incrementAndGet();
             BizExecutor executor = new BizExecutor(this, router);
             executor.setTimeout(reqTimeout);
             executor.setProcessor(processor);
@@ -156,7 +162,9 @@ public class Dispatcher implements IDispacher, IBizRegister {
         int queueSize = Integer.valueOf(null != dispatcherEle
                 .attributeValue(REQUEST_QUEUE_SIZE) ? dispatcherEle
                 .attributeValue(REQUEST_QUEUE_SIZE) : "0");
-
+        reportInterval = Integer.valueOf( null != dispatcherEle
+                .attributeValue(REPORT_INTERVAL) ? dispatcherEle
+                .attributeValue(REPORT_INTERVAL) : "0");
         String url = String.format("%s/ext/",
                 System.getProperty(Laucher.SYSPATH));
 
@@ -218,6 +226,9 @@ public class Dispatcher implements IDispacher, IBizRegister {
                 IBizMgr bizMgr = componentClass.newInstance();
                 bizMgr.onRegister(this,new BizExecutor(this,router,this.reqTimeout));
             }
+            if(reportInterval > 0){
+                new Thread(this).start();
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -240,6 +251,7 @@ public class Dispatcher implements IDispacher, IBizRegister {
             logger.error("重复注册服务 System [{}]  Function [{}]",systemno,functionid);
         }else {
             bizProcessMap.put(key, bizProcessor);
+            bizCounterMap.put(key,new AtomicLong(0));
         }
     }
 
@@ -247,4 +259,40 @@ public class Dispatcher implements IDispacher, IBizRegister {
         return this.nodeName;
     }
 
+    @Override
+    public void run() {
+        while(true) {
+            try {
+                if (logger.isWarnEnabled()) {
+                    SortedSet<Map.Entry<String,AtomicLong>> sortedSet = new TreeSet<Map.Entry<String, AtomicLong>>(new Comparator<Map.Entry<String, AtomicLong>>() {
+                        @Override
+                        public int compare(Map.Entry<String, AtomicLong> o1, Map.Entry<String, AtomicLong> o2) {
+                            if(o1.getValue().get() > o2.getValue().get()){
+                                return -1;
+                            }else if(o1.getValue().get() == o2.getValue().get()){
+                                return 0;
+                            }else {
+                                return 1;
+                            }
+                        }
+                    });
+                    Set<Map.Entry<String, AtomicLong>> counterSet = bizCounterMap.entrySet();
+                    for (Map.Entry<String, AtomicLong> entry : counterSet) {
+                        sortedSet.add(entry);
+                    }
+                    int num = 0;
+                    logger.warn("Biz process counter report begin ====================");
+                    for(Map.Entry<String,AtomicLong> entry : sortedSet){
+                        if(num > 10) break;
+                        logger.warn(String.format("system & function [%s] count[%d] ",entry.getKey(),entry.getValue().get()));
+                        num ++;
+                    }
+                    logger.warn("Biz process counter report end========================");
+                }
+                Thread.sleep(reportInterval * 1000);
+            }catch (Throwable e){
+                logger.error("采集计数数据失败",e);
+            }
+        }
+    }
 }

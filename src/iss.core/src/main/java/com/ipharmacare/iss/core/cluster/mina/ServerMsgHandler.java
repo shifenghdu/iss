@@ -12,7 +12,7 @@ import org.slf4j.MDC;
 
 public class ServerMsgHandler extends IoHandlerAdapter {
 
-    private final int IDLE = 25;
+//    private final int IDLE = 25;
 
     private Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -44,9 +44,11 @@ public class ServerMsgHandler extends IoHandlerAdapter {
         MDC.put("node", owner.getNodeName());
         EsbMsg pack = (EsbMsg) message;
         if (pack.getMsgtype() == EsbMsg.MSGTYPE_CLUSTER) {
-            if (pack.getFunctionid() == 1) {
-                session.write(message);
-            } else if (pack.getFunctionid() == 2
+            if (pack.getFunctionid() == 3) {
+                pack.setFunctionid(4);
+                session.write(pack);
+            } else
+            if (pack.getFunctionid() == 2
                     && pack.getRouteinfo().size() > 0) {
                 String node = pack.popLastRouteInfo();
                 owner.addNeighbor(node, session);
@@ -84,7 +86,7 @@ public class ServerMsgHandler extends IoHandlerAdapter {
 
     @Override
     public void sessionOpened(IoSession session) throws Exception {
-        session.getConfig().setIdleTime(IdleStatus.BOTH_IDLE, IDLE);
+//        session.getConfig().setIdleTime(IdleStatus.BOTH_IDLE, IDLE);
     }
 
 }
