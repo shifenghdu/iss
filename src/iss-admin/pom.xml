@@ -18,7 +18,7 @@
 
 
     <modules>
-        <module>iss-admin-web</module>
+        <module>iss-admin-gateway</module>
         <module>iss-admin-app</module>
     </modules>
 
