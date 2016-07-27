@@ -1,0 +1,53 @@
+@import "semantic.css";
+
+//颜色定义
+$COLOR_BLANK : #fff !default
+$COLOR_BASE : #0066b1 !default
+
+/**
+ * 基础元素样式
+ */
+*{
+	margin: 0;
+	padding: 0
+}
+
+html {
+  height: 100%;
+}
+
+body {
+  font-family: Verdana,Arial,Helvetica,sans-serif;
+  margin: 0;
+  background-color: $COLOR_BLANK;
+}
+
+a:hover {
+  text-decoration: underline;
+}
+
+footer {
+  color: $COLOR_BLANK;
+  position: fixed;
+  bottom: 0px;
+  left: 0;
+  right: 0;
+  background-color: $COLOR_BASE;
+}
+
+footer div {
+  height: 30px;
+  line-height: 30px;
+  text-align: center;
+}
+
+/**
+ * 常用样式定义
+ */
+.text-center{
+  text-align: center;
+}
+
+.bg-color {
+  background-color: $COLOR_BASE;
+}

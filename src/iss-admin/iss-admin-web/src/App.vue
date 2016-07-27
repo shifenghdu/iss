@@ -1,24 +1,52 @@
 <template>
   <div id="app">
-    <img class="logo" src="./assets/logo.png">
-    <hello></hello>
-    <p>
-      Welcome to your Vue.js app!
-    </p>
-    <p>
-      To get a better understanding of how this boilerplate works, check out
-      <a href="http://vuejs-templates.github.io/webpack" target="_blank">its documentation</a>.
-      It is also recommended to go through the docs for
-      <a href="http://webpack.github.io/" target="_blank">Webpack</a> and
-      <a href="http://vuejs.github.io/vue-loader/" target="_blank">vue-loader</a>.
-      If you have any issues with the setup, please file an issue at this boilerplate's
-      <a href="https://github.com/vuejs-templates/webpack" target="_blank">repository</a>.
-    </p>
-    <p>
-      You may also want to checkout
-      <a href="https://github.com/vuejs/vue-router/" target="_blank">vue-router</a> for routing and
-      <a href="https://github.com/vuejs/vuex/" target="_blank">vuex</a> for state management.
-    </p>
+    <template v-if="isLogin">
+      <head>
+        <div class="home-header">
+          <div>
+              <h1>
+                  <i class="settings icon"></i>
+                  ISS管理系统  <span>德宝科技有限公司</span>
+              </h1>
+              <div class="home-header-welcome">
+                  <span>欢迎, </span><a href="javascript: void(0);">{{loginUser.name}}</a><span> | </span><a href="${baseUrl}/auth/logout">登出</a>
+              </div>
+          </div>
+      </div>
+      </head>
+      <p>status: login</p>
+    </template>
+    <template v-else>
+      <!-- 登录界面 -->
+      <div class="login-panel ui three column stackable grid">
+        <div class="column"></div>
+        <div class="column">
+          <form id="login" class="ui fluid form segment">
+            <div class="field">
+              <label class="">用户名</label>
+              <div class="ui left icon input">
+                <input type="text" name="name" placeholder="" :bind="userName"> <i class="user icon"></i>
+              </div>
+            </div>
+            <div class="field">
+              <label class="">密码</label>
+              <div class="ui left icon input">
+                <input type="password" name="password" placeholder="" :bind="password"> <i class="lock icon"></i>
+              </div>
+            </div>
+            <div class="inline field">
+              <div class="ui checkbox">
+                <input type="checkbox" name="terms" :bind="savePass">
+                <label>记住密码</label>
+              </div>
+            </div>
+            <div class="inline field">
+              <a class="fluid ui blue button" @click="doLogin">登录</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </template>
   </div>
 </template>
 
@@ -26,39 +54,72 @@
 import Hello from './components/Hello'
 
 export default {
+  data: function () {
+    return {
+      isLogin: false,
+      userName: 'admin',
+      password: '123',
+      loginUser: {
+        name: 'admin'
+      }
+    }
+  },
   components: {
     Hello
+  },
+  methods: {
+    doLogin: function (event) {
+      console.log(this.userName)
+      this.isLogin = true
+    }
   }
 }
 </script>
 
-<style>
-html {
-  height: 100%;
+<style lang="scss">
+@import "common";
+
+//登录标题
+.login-header {
+  color: $COLOR_BLANK;
+  background-color: $COLOR_BASE;
+  h1 {
+    height: 60px;
+    line-height: 60px;
+    margin-left: 5px;
+  }
 }
 
-body {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  height: 100%;
+.login-panel {
+  margin-top: 30px !important;
 }
 
-#app {
-  color: #2c3e50;
-  margin-top: -100px;
-  max-width: 600px;
-  font-family: Source Sans Pro, Helvetica, sans-serif;
-  text-align: center;
+.home-header {
+  color: $COLOR_BLANK;
+  background-color: $COLOR_BASE;
+  h1 {
+    height: 30px;
+    line-height: 30px;
+    margin-left: 5px;
+    font-size: 17px;
+    span{
+      margin: 20px;
+      font-size: 10px;
+    }
+  }
+  .home-header-welcome {
+    position: absolute;
+    top: 5px;
+    right: 10px;
+    font-size: 10px;
+    a {
+      line-height: 11px;
+      color: $COLOR_BLANK;
+    }
+    a:hover {
+      text-decoration: underline;
+    }
+  }
 }
 
-#app a {
-  color: #42b983;
-  text-decoration: none;
-}
-
-.logo {
-  width: 100px;
-  height: 100px
-}
 </style>
