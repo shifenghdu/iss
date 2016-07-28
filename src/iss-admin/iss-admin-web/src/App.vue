@@ -6,15 +6,29 @@
           <div>
               <h1>
                   <i class="settings icon"></i>
-                  ISS管理系统  <span>德宝科技有限公司</span>
+                  ISS管理系统  <span></span>
               </h1>
               <div class="home-header-welcome">
-                  <span>欢迎, </span><a href="javascript: void(0);">{{loginUser.name}}</a><span> | </span><a href="${baseUrl}/auth/logout">登出</a>
+                  <span>欢迎, </span><a href="javascript: void(0);">{{loginUser.name}}</a><span> | </span><a @click="doLogout">登出</a>
               </div>
           </div>
-      </div>
+        </div>
       </head>
-      <p>status: login</p>
+      <div class="home-workspace">
+        <div class="ui breadcrumb">
+          <a class="section">Home</a>
+          <i class="right angle icon divider"></i>
+          <a class="section">Store</a>
+          <i class="right angle icon divider"></i>
+          <div class="active section">T-Shirt</div>
+        </div>
+        <div class="home-main-view">
+          <div class="home-side-bar">
+            <accordion-menu></accordion-menu>
+          </div>
+          <p :style="{ marginBottom: 0 + 'px'; }">status: login</p>
+      </div>
+      </div>
     </template>
     <template v-else>
       <!-- 登录界面 -->
@@ -51,7 +65,7 @@
 </template>
 
 <script>
-import Hello from './components/Hello'
+import AccordionMenu from './components/AccordionMenu'
 
 export default {
   data: function () {
@@ -65,12 +79,14 @@ export default {
     }
   },
   components: {
-    Hello
+    AccordionMenu
   },
   methods: {
     doLogin: function (event) {
-      console.log(this.userName)
       this.isLogin = true
+    },
+    doLogout: function (event) {
+      this.isLogin = false
     }
   }
 }
@@ -79,19 +95,8 @@ export default {
 <style lang="scss">
 @import "common";
 
-//登录标题
-.login-header {
-  color: $COLOR_BLANK;
-  background-color: $COLOR_BASE;
-  h1 {
-    height: 60px;
-    line-height: 60px;
-    margin-left: 5px;
-  }
-}
-
 .login-panel {
-  margin-top: 30px !important;
+  margin-top: 100px !important;
 }
 
 .home-header {
@@ -112,12 +117,30 @@ export default {
     top: 5px;
     right: 10px;
     font-size: 10px;
+    display: inline-block;
     a {
       line-height: 11px;
       color: $COLOR_BLANK;
     }
     a:hover {
       text-decoration: underline;
+    }
+  }
+}
+.home-workspace {
+  position: absolute;
+  bottom: 0px;
+  top: 30px;
+  left: 0px;
+  right: 0px;
+  background-color: $COLOR_GRAY_LIGHT;
+  .home-main-view {
+    background-color: $COLOR_BLANK;
+    height: 100%;
+    .home-side-bar {
+      float: left;
+      height: 100%;
+      border-right: 1px solid $COLOR_GRAY; 
     }
   }
 }
