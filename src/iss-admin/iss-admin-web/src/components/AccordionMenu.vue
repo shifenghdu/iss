@@ -2,7 +2,10 @@
   <div class="ui vertical menu accordion">
     <template v-for="menu in menus">
       <div class="item">
-        <a @click="expand($index)" class="title"> <b>{{menu.name}}</b> <i class="dropdown icon"></i>
+        <a @click="expand($index)" class="title">
+         <i class="icon accordion-menu-icon" :class="menu.icon"></i>
+         <span>{{menu.name}}</span>
+         <i class="icon" :class="[ current == $index ? 'caret down' : 'caret left']"></i>
         </a>
         <div class="content menu" :class="[ current == $index ? 'active': '' ]">
           <template v-for="c in menu.children">
@@ -21,24 +24,29 @@ export default {
       current: -1,
       menus: [
         {
-          name: 'update',
+          name: '集群管理',
+          icon: 'cubes',
           children: [
             {
-              name: 'update-c1'
+              name: '节点状态'
             },
             {
-              name: 'update-c2'
+              name: '服务查询'
+            },
+            {
+              name: '调用统计'
+            },
+            {
+              name: '警告查询'
             }
           ]
         },
         {
-          name: 'insert',
+          name: '配置中心',
+          icon: 'settings',
           children: [
             {
-              name: 'insert-c1'
-            },
-            {
-              name: 'insert-c2'
+              name: '配置管理'
             }
           ]
         }
@@ -59,12 +67,43 @@ export default {
 
 <style lang="scss">
 @import "../common";
+  $ITEM_HEIGHT: 15px;
+  .ui.vertical.menu.accordion {
+    border-right: none;
+    border-radius: 0px;
+    box-shadow: none;
     .item {
+      .title {
+        margin-left: 20px;
+        height: $ITEM_HEIGHT;
+        line-height: $ITEM_HEIGHT;
+        color: $COLOR_BASE;
+        .accordion-menu-icon {
+          float: left !important;
+          margin-right: 10px;
+        }
+        i {
+          float: right;
+        }
+      }
+      .content {
+        margin-top: 12px;
+        padding-top: 0;
+        background-color: $COLOR_GRAY_LIGHT;
+        margin-bottom: -13px;
+        .item {
+          color: $COLOR_BASE;
+          margin: 0;
+          padding: 0;
+          height: 35px;
+          line-height: 35px;
+          padding-left: 60px;
+          border-top: 1px solid $COLOR_GRAY; 
+        }
+      }
       a:hover {
         text-decoration: none;
       }
-      b {
-        font-size: 10px;
-      }
     }
+  }
 </style>

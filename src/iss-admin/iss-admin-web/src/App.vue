@@ -16,17 +16,17 @@
       </head>
       <div class="home-workspace">
         <div class="ui breadcrumb">
-          <a class="section">Home</a>
+          <a class="section">首页</a>
           <i class="right angle icon divider"></i>
-          <a class="section">Store</a>
+          <a class="section">集群管理</a>
           <i class="right angle icon divider"></i>
-          <div class="active section">T-Shirt</div>
+          <div class="active section">节点状态</div>
         </div>
         <div class="home-main-view">
           <div class="home-side-bar">
             <accordion-menu></accordion-menu>
           </div>
-          <p :style="{ marginBottom: 0 + 'px'; }">status: login</p>
+          <p>status: login</p>
       </div>
       </div>
     </template>
@@ -100,12 +100,15 @@ export default {
 }
 
 .home-header {
+  width: 100%;
+  height: 40px;
   color: $COLOR_BLANK;
   background-color: $COLOR_BASE;
   h1 {
-    height: 30px;
-    line-height: 30px;
-    margin-left: 5px;
+    float: left;
+    height: 40px;
+    line-height: 40px;
+    margin-left: 20px;
     font-size: 17px;
     span{
       margin: 20px;
@@ -113,13 +116,13 @@ export default {
     }
   }
   .home-header-welcome {
-    position: absolute;
-    top: 5px;
-    right: 10px;
+    float: right;
     font-size: 10px;
-    display: inline-block;
+    height: 40px;
+    line-height: 40px;
+    margin-right: 20px;
     a {
-      line-height: 11px;
+      line-height: 15px;
       color: $COLOR_BLANK;
     }
     a:hover {
@@ -130,7 +133,7 @@ export default {
 .home-workspace {
   position: absolute;
   bottom: 0px;
-  top: 30px;
+  top: 40px;
   left: 0px;
   right: 0px;
   background-color: $COLOR_GRAY_LIGHT;
@@ -142,6 +145,12 @@ export default {
       height: 100%;
       border-right: 1px solid $COLOR_GRAY; 
     }
+  }
+  .breadcrumb {
+    font-size: 5px;
+    margin-left: 20px;
+    height: 20px;
+    line-height: 20px;
   }
 }
 
