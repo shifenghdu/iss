@@ -39,18 +39,18 @@
             <div class="field">
               <label class="">用户名</label>
               <div class="ui left icon input">
-                <input type="text" name="name" placeholder="" :bind="userName"> <i class="user icon"></i>
+                <input type="text" name="name" placeholder="" :value="userName"> <i class="user icon"></i>
               </div>
             </div>
             <div class="field">
               <label class="">密码</label>
               <div class="ui left icon input">
-                <input type="password" name="password" placeholder="" :bind="password"> <i class="lock icon"></i>
+                <input type="password" name="password" placeholder="" :value="password"> <i class="lock icon"></i>
               </div>
             </div>
             <div class="inline field">
               <div class="ui checkbox">
-                <input type="checkbox" name="terms" :bind="savePass">
+                <input type="checkbox" name="terms" v-model="savePass">
                 <label>记住密码</label>
               </div>
             </div>
@@ -73,6 +73,7 @@ export default {
       isLogin: false,
       userName: 'admin',
       password: '123',
+      savePass: true,
       loginUser: {
         name: 'admin'
       }
@@ -117,12 +118,12 @@ export default {
   }
   .home-header-welcome {
     float: right;
-    font-size: 10px;
+    font-size: 13px;
     height: 40px;
     line-height: 40px;
     margin-right: 20px;
     a {
-      line-height: 15px;
+      // line-height: 40px;
       color: $COLOR_BLANK;
     }
     a:hover {
@@ -138,6 +139,7 @@ export default {
   right: 0px;
   background-color: $COLOR_GRAY_LIGHT;
   .home-main-view {
+    // margin-top: 5px;
     background-color: $COLOR_BLANK;
     height: 100%;
     .home-side-bar {
@@ -147,9 +149,10 @@ export default {
     }
   }
   .breadcrumb {
-    font-size: 5px;
+    font-size: 13px;
     margin-left: 20px;
     height: 20px;
+    width: 100%;
     line-height: 20px;
   }
 }

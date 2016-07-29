@@ -1,7 +1,7 @@
 <template>
   <div class="ui vertical menu accordion">
     <template v-for="menu in menus">
-      <div class="item">
+      <div class="item" :class="[ current == $index ? 'active': '' ]">
         <a @click="expand($index)" class="title">
          <i class="icon accordion-menu-icon" :class="menu.icon"></i>
          <span>{{menu.name}}</span>
@@ -89,7 +89,7 @@ export default {
       .content {
         margin-top: 12px;
         padding-top: 0;
-        background-color: $COLOR_GRAY_LIGHT;
+        //background-color: $COLOR_GRAY_LIGHT;
         margin-bottom: -13px;
         .item {
           color: $COLOR_BASE;
@@ -98,7 +98,7 @@ export default {
           height: 35px;
           line-height: 35px;
           padding-left: 60px;
-          border-top: 1px solid $COLOR_GRAY; 
+          border-top: 1px solid $COLOR_GRAY;
         }
       }
       a:hover {
