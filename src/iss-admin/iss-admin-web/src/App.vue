@@ -140,12 +140,18 @@ export default {
   background-color: $COLOR_GRAY_LIGHT;
   .home-main-view {
     // margin-top: 5px;
+    position: absolute;
+    bottom: 0px;
+    top: 20px;
+    left: 0px;
+    right: 0px;
     background-color: $COLOR_BLANK;
-    height: 100%;
+    // height: 100%;
     .home-side-bar {
       float: left;
       height: 100%;
       border-right: 1px solid $COLOR_GRAY; 
+      overflow: auto;
     }
   }
   .breadcrumb {
